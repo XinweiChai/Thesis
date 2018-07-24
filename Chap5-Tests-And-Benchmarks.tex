@@ -1,0 +1,37 @@
+\chapter{Tests and Benchmarks}
+\section{Comparison of Reachability Analyzers}
+
+\begin{table}[ht]
+    \tiny
+    \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+    \hline
+  	Model	&\multicolumn{3}{c|}{$\lambda$-phage}	&	  \multicolumn{3}{c|}{TCR} & \multicolumn{3}{c|}{EGFR}  \\
+    \hline
+    Inputs&\multicolumn{3}{c|}{4}	&	  \multicolumn{3}{c|}{3} & \multicolumn{3}{c|}{13}\\
+    \hline
+    Outputs&\multicolumn{3}{c|}{4} &	  \multicolumn{3}{c|}{5} & \multicolumn{3}{c|}{12} \\
+    \hline
+    Total tests&\multicolumn{3}{c|}{$2^4\times 4=64$} & \multicolumn{3}{c|}{$2^3\times 5=40$} & \multicolumn{3}{c|}{$2^{13}\times 12=98,304$}\\
+    \hline
+    Analyzer  &  Pint  &  \textbf{PermReach}   &\textbf{ASPReach}    &  Pint  &  \textbf{PermReach}     &\textbf{ASPReach}   &  Pint  &  \textbf{PermReach}     &\textbf{ASPReach}             \\
+    \hline
+    Reachable    & 36(56\%)& 38(59\%)& 38(59\%)   &  \multicolumn{3}{c|}{16(40\%)}  & 64,282(65.4\%)  & \multicolumn{2}{c|}{74,268(75.5\%)}\\
+    \hline
+    \textbf{Inconclusive} & \textcolor{red}{\textbf{2(3\%)}}&\multicolumn{2}{c|}{\textcolor{blue}{\textbf{0(0\%)}}}& \multicolumn{3}{c|}{0(0\%)}    &\textcolor{red}{\textbf{9,986(10.1\%)}}&\multicolumn{2}{c|}{\textcolor{blue}{\textbf{0(0\%)}}}  \\
+    \hline
+    Unreachable     &  \multicolumn{3}{c|}{26(41\%)} &  \multicolumn{3}{c|}{24(60\%)} &\multicolumn{3}{c|}{24,036(24.5\%)}\\
+    \hline
+    Total time &  \multicolumn{3}{c|}{$<1$s}        &  7s     &0.85s  &  40s        & \textbf{9h50min}      & \textbf{15min31s}         & \textbf{3h46min}      \\
+    \hline
+    \end{tabular}
+   
+\caption[Comparison of different analyzers]{
+Tests are carried on a computer of Intel Core i7-3770 CPU, \@3.4GHz, 8.00G RAM. 
+Results of the tests on small ($\lambda$-phage) and large (TCR,EGFR) examples from biology literature. 
+Results of model-checkers using global search are memory-out so are not listed in the table.
+``Reachable", ``Inconclusive" and ``Unreachable" give respectively the number of different results of reachability.
+It is worth noticing that the inconclusive cases in Pint are caused by time-out \cite{folschette2015}. 
+Column “Pint” gives the related results on ANs, while column “PermReach” gives the results for ABANs. 
+“True”, “Inconclusive” and “False” give respectively the number of different results of reachability, while “Max time” and “Total time” depict respectively the maximum time of the individual computations.}
+\end{table}
+\section{TBA, waiting for the collaboration with LFIT}

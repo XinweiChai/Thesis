@@ -1,15 +1,64 @@
 \documentclass[12pt]{report}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[noend]{algpseudocode}
+
+\usepackage{subfigure}
+\usepackage{tikz}
+\usetikzlibrary{arrows, automata,calc}
+\usetikzlibrary{er,positioning}
+\tikzstyle{block} = [rectangle, draw, fill=blue!20, 
+    text width=6em, text centered, rounded corners, minimum height=4em]
+\tikzstyle{line} = [draw, -latex']
+\input{macros}
+\input{macros-ph}
+\input{macros-abstr}
+\input{tikzstyles2}
+\makeatletter
+\def\input@path{{figures/}}
+\makeatother
+\newcommand{\acm}[3]{\{#1\}\rightarrow#2}
+\newcommand{\ac}[3]{$\{#1\}\rightarrow#2$}
+\newcommand{\omesi}{^\omega_\alpha}
+
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{example}{Example}[chapter]
+\newtheorem{proposition}{Proposition}[chapter]
+
 \title{Doctoral Thesis}
+\date{December 2018}
 \author{Xinwei Chai}
 \begin{document}
 \maketitle
-\chapter{Introduction}
-\chapter{Preliminaries}
-\chapter{Modelings}
-\chapter{Model Inference}
-\chapter{Model Checking}
-\chapter{Related Works}
-\chapter{Conclusion and Future Work}
+\tableofcontents
+\listoffigures
+\listoftables
+\begin{abstract}
+    In this thesis, we investigate several modeling frameworks and study several model checking techniques.
+    
+\end{abstract}
+
+\chapter*{List of symbols}
+$a_i$ means automaton $a$ is taking value $i$;
+
+$x::y$ is sequential connector of entities $x$ and $y$, where $x$ happens just before $y$;
+
+$a.next$ is the successor of $a$; $a.pred$ is the predecessor of $a$.
+
+\input{Chap1-Introduction.tex}
+
+\input{Chap2-State-Of-The-Art.tex}
+
+\input{Chap3-Refinements-Of-Reachability-Analysis.tex}
+
+\input{Chap4-Model-Inference-And-Revision.tex}
+
+\input{Chap5-Tests-And-Benchmarks.tex}
+
+\input{Chap6-Conclusion-And-Future-Work.tex}
+
 \bibliographystyle{plain}
 \bibliography{bib.bib}
+
 \end{document}
