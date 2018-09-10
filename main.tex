@@ -1,9 +1,32 @@
 \documentclass[12pt]{report}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{algorithm}
+\usepackage{algcompatible}
 \usepackage[noend]{algpseudocode}
-
+\usepackage{fancyvrb}
+\usepackage{hyperref}
 \usepackage{subfigure}
+\usepackage{graphicx}
+\usepackage{pgfplots}
+\usepackage{multirow}
+\usepackage{kbordermatrix}
+\usepackage{siunitx}
+
+\pgfplotsset{
+    compat=1.15,
+    %every axis legend/.append style={at={(0.5,-0.13)},anchor=north,legend cell align=left},
+    legend pos=north west,
+    legend style={draw=none,
+              text width=0.9in,           %% adjust
+              %minimum height=0.5in,     %% adjust
+              %anchor=center,
+              %cells={anchor=west},
+            },
+    %axis lines=left,
+}
+
 \usepackage{tikz}
 \usetikzlibrary{arrows, automata,calc}
 \usetikzlibrary{er,positioning}
@@ -17,14 +40,15 @@
 \makeatletter
 \def\input@path{{figures/}}
 \makeatother
-\newcommand{\acm}[3]{\{#1\}\rightarrow#2}
-\newcommand{\ac}[3]{$\{#1\}\rightarrow#2$}
+\newcommand{\acm}[3]{\{#1\}\rightarrow#3}
+\newcommand{\ac}[3]{$\{#1\}\rightarrow#3$}
 \newcommand{\omesi}{^\omega_\alpha}
 
 \newtheorem{definition}{Definition}[chapter]
 \newtheorem{theorem}{Theorem}[chapter]
 \newtheorem{example}{Example}[chapter]
 \newtheorem{proposition}{Proposition}[chapter]
+%\newtheorem{proof}{Proof}[chapter]
 
 \title{Doctoral Thesis}
 \date{December 2018}
@@ -40,11 +64,23 @@
 \end{abstract}
 
 \chapter*{List of symbols}
-$a_i$ means automaton $a$ is taking value $i$;
+\begin{tabular}{c|c}
+   $a_i$  & automaton $a$ is taking value $i$ \\
+    $x::y$ &  $x$ happens just before $y$\\
+    $a.next$&the successor of $a$\\
+     $a.pred$ & the predecessor of $a$
+\end{tabular}
 
-$x::y$ is sequential connector of entities $x$ and $y$, where $x$ happens just before $y$;
+%\begin{itemize}
+%    \item $a_i$ means automaton $a$ is taking value $i$
+%    \item $x::y$ is sequential connector of entities $x$ and $y$, where $x$ happens just before $y$
+%    \item $a.next$ is the successor of $a$; $a.pred$ is the predecessor of $a$
+%\end{itemize}
 
-$a.next$ is the successor of $a$; $a.pred$ is the predecessor of $a$.
+
+
+
+
 
 \input{Chap1-Introduction.tex}
 
@@ -61,4 +97,6 @@ $a.next$ is the successor of $a$; $a.pred$ is the predecessor of $a$.
 \bibliographystyle{plain}
 \bibliography{bib.bib}
 
+\appendix
+\input{Chap7-Appendix.tex}
 \end{document}
