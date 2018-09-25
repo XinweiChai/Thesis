@@ -13,6 +13,12 @@
 \usepackage{multirow}
 \usepackage{kbordermatrix}
 \usepackage{siunitx}
+\usepackage[framemethod=tikz]{mdframed}
+
+\definecolor{mycolor}{rgb}{0.122, 0.435, 0.698}
+
+\newmdenv[innerlinewidth=0.5pt, roundcorner=4pt,linecolor=mycolor,innerleftmargin=6pt, innerrightmargin=6pt,innertopmargin=6pt,innerbottommargin=6pt]{mybox}
+
 
 \pgfplotsset{
     compat=1.15,
@@ -33,6 +39,16 @@
 \tikzstyle{block} = [rectangle, draw, fill=blue!20, 
     text width=6em, text centered, rounded corners, minimum height=4em]
 \tikzstyle{line} = [draw, -latex']
+
+\newcommand\irregularcircle[2]{% radius, irregularity
+  \pgfextra {\pgfmathsetmacro\len{(#1)+rand*(#2)}}
+  +(0:\len pt)
+  \foreach \a in {10,20,...,350}{
+    \pgfextra {\pgfmathsetmacro\len{(#1)+rand*(#2)}}
+    -- +(\a:\len pt)
+  } -- cycle
+}
+
 \input{macros}
 \input{macros-ph}
 \input{macros-abstr}
@@ -48,6 +64,7 @@
 \newtheorem{theorem}{Theorem}[chapter]
 \newtheorem{example}{Example}[chapter]
 \newtheorem{proposition}{Proposition}[chapter]
+\newtheorem{remark}{Remark}[chapter]
 %\newtheorem{proof}{Proof}[chapter]
 
 \title{Doctoral Thesis}

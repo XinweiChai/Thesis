@@ -1,4 +1,4 @@
-\chapter{State of the Art}
+\chapter{State of the Art}\label{chap:stateOfTheArt}
 
 \section{Modeling Frameworks}
 Original biological problems are usually difficult to study directly due to the uncertainty and the big scale of biological systems. 
@@ -108,8 +108,15 @@ to deal with software’s infinite state space, requiring abstraction techniques
 SPIN \cite{holzmann1997model} and Goanna \cite{fehnker2006goanna} are designed as source code analyzers, by verifying a set of over-approximative conditions, they managed to check the safety/liveness properties of a program or whether certain program behaves as expected. 
 However, the static code analyzers only determines run-time properties of programs by examining the code structure, which may produce false-positive and false-negative results \cite{vorobyov2010comparing}.
 
-Inspired by these ideas, Pint \cite{Pint}  is a pure static analyzer using at the same time over-approximation and under-approximation to try to solve the original reachability problem of a PH or an AAN.
+Inspired by these ideas, Pint \cite{Pint} takes the initiative to apply pure static analysis, combine over-approximation and under-approximation to squeeze the state space try to solve the original reachability problem of a PH or an AAN.
 Similarly, due to the approximations, the result of Pint is not necessarily conclusive \cite{folschette2015}.
+
+\begin{figure}
+    \centering
+    \input{figures/vennDiagram.tex}
+    \caption[Static analysis]{Schema of real dynamics and over-approximation and under-approximation}
+    \label{fig:vennDiagram}
+\end{figure}
 
 \subsection{Reachability Problem}
 In the domain of model checking, reachability has been of great interest for over 30 years \cite{clarke2008birth,clarke20142}. 
@@ -170,6 +177,13 @@ This results in a potential combinatorial explosion of the number of reachable s
 In systems biology, however, the asynchronous semantics is widely used to model biological systems because it is closer to real biological phenomena than synchronous one.
 Given BN with $n$ variables, from a certain state, there are at most $n$ future states, after $t$ step of evolution, there are O$(n^t)$ possible branches which leads to state space explosion problem.
 Due to the complexity, there are less study on analysis of dynamic properties than the synchronous one.
+\begin{figure}
+    \centering
+    \input{discretization.tex}
+    \caption[Discretization]{Adapted version of discretization to asynchronous systems}
+    \label{fig:my_label}
+\end{figure}
+
 This PhD thesis focuses on the study of reachability of asynchronous modeling frameworks.
 \subsection{General Semantics}
 General semantics is even more complex than asynchronous semantics.

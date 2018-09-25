@@ -1,14 +1,48 @@
 \chapter{Model Inference and Revision}
+\begin{mybox}
+In the last chapter, we introduced several approaches of refined reachability analysis, which are more suitable for practical use (more efficient and more conclusive).
+Nevertheless, these approaches can never take effect no matter how powerful they are, if the original model does not reflect the reality.
+
+To model a biological computational system, one consider usually two aspects: a first-step model built by biologists (variables, some confirmed transitions, some \textit{a priori} properties etc.) and the observation of the experiments (time-series data, steady states, oscillations, etc.).
+
+This chapter is going to introduce several different approaches of model inference: 
+\begin{itemize}
+    \item \textit{via} partial correlation (statistics)
+    \item \textit{via} reachability properties and candidate regulations
+    \item \textit{via} reachability properties and time-series data
+\end{itemize}
+\end{mybox}
+
 When modeling a real system, it is usually demanded to assess the correctness of a Boolean network with the concrete system by checking if the observed configurations are indeed reachable in the Boolean network.
-Whenever it is not the case, it typically means that the designed Boolean functions do not model the given system correctly, and thus should be revised before further model analysis.
+Whenever it is not the case, it typically means that the designed Boolean functions do not model the given system correctly and thus should be revised before further model analysis.
+
+To do so, there are mainly three parts: inferring models from observation (continuous observation data); revision of models from \textit{a priori} knowledge; minimum revision of existing models via dynamical properties (mainly reachability information).
 
 \section{Model Inference via Statistics}
+%P-value
+ANs in the chapters above only allow delay 1,
 
-\subsection{P-value and Partial Correlation}
-A drawback of previous approaches is that it needs hypotheses (possible regulations). In case of networks of big scale, it is not possible to calculate hypotheses by hand nor traverse all the possible addable actions, as stated formerly, verification of  $\mathcal{O}(3^{|Global States|})$ states is a huge task (for any component, each of other components has 3 possibilities, promotion, inhibition and no regulation).\par
-To deal with the great complexity of verification of states, prior knowledge is needed. It reduces the amount of states to be verified.  statistical approaches come into sight,
-Also, original time series data are discretized before being used in the last section, 
-Also, the data used in last section are not ``original'' as they are discretized. Considering the complexity of verification of hypotheses and making full use of these data, statistical approaches are considered in generation of possible regulations before discretization.\par
+For an observation of a given period $T$, the delay cna be at most $T-1$.
+\subsection{Delayed System}
+
+\begin{definition}[Automata Network with delay]
+    
+\end{definition}
+
+\subsection{Partial Correlation}
+ In huge biological networks, it is not possible to calculate hypotheses by hand nor traverse all the possible addable actions, as stated formerly, verification of $\mathcal{O}(3^{|Global States|})$ states is a huge task (for any component, each of other components has 3 possibilities, promotion, inhibition and no regulation).
+ 
+To deal with the great complexity of verification, \textit{a priori} knowledge is needed. 
+Some unsatisfied states can be eliminated without global verification.  
+In order to take all the information into account, statistical approaches come into sight.
+They try to find relations between different components from the observation of all the time points.
+
+One additional profit of statistical approaches is that original time series data are discretized before being used, which cause a loss of information.
+This loss could lead to an imprecise model.
+However, some statistical approaches could use directly the continuous time series data as input which avoid this trouble.
+
+\subsubsection{Overall Process}
+We proposed a method applying partial correlation to detect the relevance of each pair of components.
 
 \begin{figure}[ht]
 \centering
@@ -17,7 +51,7 @@ Also, the data used in last section are not ``original'' as they are discretized
     \node [block] (originalData) {original data};
     \node [block, right = of originalData] (dataDiscretization) {data discretization};
      \node [block, right = of dataDiscretization] (varReconstruction) {variable reconstruction};
-    \node [block, below = of originalData] (ranking) {ranking};
+    \node [block, below = of originalData] (ranking) {sorting};
     \node [block, right = of ranking] (changeRate) {change rate};
     \node [block, below = of ranking] (dataReg) {data regrouping \& Spearman coefficient};
      \node [block, right = of dataReg] (partialCoeff) {partial coefficient};
@@ -37,16 +71,23 @@ Also, the data used in last section are not ``original'' as they are discretized
     \path [line,dashed] (regulations) -- (actions);
     \path [line,dashed] (originalData) -|  (abstract)node[rotate=90,below=2pt]{Pearson Coefficient} |-(dataReg);
 \end{tikzpicture}
-\caption{Workflow of the whole procedure of hypotheses generation (dashed arrows stand for optional processes)}\label{plan}
+\caption[Workflow of model inference via partial correlation]{Workflow of the whole procedure of hypotheses generation (dashed arrows stand for optional processes)}\label{plan}
 \end{figure}
-Figure \ref{plan} shows the procedure of regulation generation: before discretizing original data, Pearson or Spearman correlation coefficient \cite{samaga2009logic,hauke2011comparison} are calculated for identifying the relevance between original data and change rates of components (in linear or monotonic way respectively). If cooperation between components exists, former coefficients need replacing by partial ones \cite{de2004discovery} for more precise result. High resulting coefficients (an arbitrary threshold of relevance can be set, e.g.  0.8) suggest the add of regulations.\par
-Furthermore, to complete BRN in form of Process Hitting, more accurate regulations are inferred through variable reconstruction, which splits a variable into several new variable according to its qualitative levels, e.g. component $a$ has two levels $a_0$ $a_1$, then correlation coefficients as well as partial coefficients are calculated in the domain of $a_0$ and of $a_1$ separately. As a result, the relevance between $a_0$ and other components and that of $a_1$ are calculated, with which possible addable actions of Process Hitting are deduced.\par
+Figure \ref{plan} shows the procedure of regulation generation: before discretizing original data, Pearson or Spearman correlation coefficient \cite{samaga2009logic,hauke2011comparison} are calculated for identifying the relevance between original data and change rates of components (in linear or monotonic way respectively). If cooperation between components exists, former coefficients need replacing by partial ones \cite{de2004discovery} for more precise result.
+Resulting coefficients above the threshold (One can set a threshold of relevance, e.g. 0.7) suggest there probably exist regulations between components.
+
+Furthermore, to complete Biological Regulatory Networks in form of Automata Network, more accurate regulations are inferred through variable reconstruction, which splits a variable into several new variable according to its qualitative levels.
+For example, component $a$ has two discrete levels $a_0$ $a_1$, then correlation coefficients as well as partial coefficients are calculated in the domain of $a_0$ and of $a_1$ separately.
+As a result, the relevance between $a_0$ and other components and that of $a_1$ are calculated, with which possible addable actions of Process Hitting are deduced.
+
 As all the subroutines depicted in Figure \ref{plan} are implemented, starting from original data, regulations in form of Thomas' model or Process Hitting are resulted step by step. In the next, the data treatments Figure \ref{plan} will be introduced with examples.
 
 %\subsection{Partial Correlation Coefficients}
 \subsection{Data Regrouping}
-To gain an understanding of correlations between observation data and change rate, certain observed data of one component are replaced by corresponding change rate. By calculating the correlation coefficients of such matrix, regulation on this component is characterized.\par
-Example:\par
+To gain a better understanding of correlations between observation data and change rate, certain observed data of one component are replaced by corresponding change rate. By calculating the correlation coefficients of such matrix, regulation on this component is characterized.
+
+Example:
+
 $$\kbordermatrix{\mbox{}&t_0&t_1&t_2&t_3\\
 a&a_{t_0}&a_{t_1}&a_{t_2}&a_{t_3}\\
 b&b_{t_0}&b_{t_1}&b_{t_2}&b_{t_3}\\
@@ -61,10 +102,12 @@ d&d_{t_0}&d_{t_1}&d_{t_2}
 }$$
 
 With delay = 1 time unit, $a'$ is the change rate of $a$, calculated via 
-$$a'=\dfrac{\mathrm{d}a(t)}{\mathrm{d}t}=\dfrac{a(t+1)-a(t)}{(t+1)-t}=a(t+1)-a(t)$$ In this way, regulations of $b,c,d$ on $a$ are then evaluated by aforementioned coefficients. Also matrices representing different delays can be formed likewise.
+$$a'=\dfrac{\mathrm{d}a(t)}{\mathrm{d}t}=\dfrac{a(t+1)-a(t)}{(t+1)-t}=a(t+1)-a(t)$$ In this way, regulations of $b,c,d$ on $a$ are then evaluated by aforementioned coefficients. Also matrices representing different delays can be formed analogously.
+
 \subsection{Inference of Different Delay using Variable Reconstruction}
-By applying aforementioned approaches, regulations in the form of $a\xrightarrow{+/-}b$ are deduced, but the result is not in the precise form of Process Hitting. To obtain a result in such form, variable reconstruction is compulsory. \par
-\begin{figure}[!ht]
+By applying aforementioned approaches, regulations in the form of $a\xrightarrow{+/-}b$ are deduced, but the result is not in the precise form of Process Hitting. To obtain a result in such form, variable reconstruction is compulsory.
+
+\begin{figure}[ht]
 \centering
 \begin{tikzpicture}
 \draw[->] (0,0) -- (0,2.5);
@@ -85,18 +128,22 @@ By applying aforementioned approaches, regulations in the form of $a\xrightarrow
 \draw (0,2.5) node[left]{qualitative level of a};
 \draw(3,2)node[above]{$a=0.8\sin t+1$};
 \end{tikzpicture}
-\caption{Example of variable reconstruction, former variable $a=0.8\sin t+1(t\in [0,7])$ is split into 2 variables $a_0=0.8\sin t+1(t\in (\pi,2\pi))$ (dark gray) and $a_1=0.8\sin t+1(t\in [0,\pi]\cup[2\pi,7])$ (light gray) with different domains according to the qualitative threshold}\label{varRec}
+\caption[Variable reconstruction]{Example of variable reconstruction, former variable $a=0.8\sin t+1(t\in [0,7])$ is split into 2 variables $a_0=0.8\sin t+1(t\in (\pi,2\pi))$ (dark gray) and $a_1=0.8\sin t+1(t\in [0,\pi]\cup[2\pi,7])$ (light gray) with different domains according to the qualitative threshold}\label{varRec}
 \end{figure}
-After the treatment of component $a$, suppose there is another variable $b$ split into 2 variables $b_1,b_2$, then the matrix for inference of Process Hitting is done as follows:\par
-Global state after discretization: $L=\{a_0,a_1\}\times \{b_0,b_1\}\ $\par
+After the treatment of component $a$, suppose there is another variable $b$ split into 2 variables $b_1,b_2$, then the matrix for inference of Process Hitting is done as follows:
+
+Global state after discretization: $L=\{a_0,a_1\}\times \{b_0,b_1\}\ $
+
 Pearson / Spearman Matrix: $r=\left[
 \begin{array}{*{20}c}
 1 & r_{ab}\\
 r_{ba} & 1 \\
 \end{array}
 \right]\ 
-$\par
-After variable reconstruction:\par
+$
+
+After variable reconstruction:
+
 $$r'=\left[
 \begin{array}{*{20}c}
 1 & r_{a_0a_1}& r_{a_0b_0}&r_{a_0b_1}\\
@@ -112,9 +159,11 @@ r_{b_1a_0} & r_{b_1a_1}& 0&1\\
 \end{array}\right]$$
 Here, even though the size of matrix has doubled(or n times large, depending on discrete levels), as the domains of $a_0,a_1,b_0,b_1$ are not continuous and variables with same origins have no common domain, thus $r_{a_0a_1}=r_{a_1a_0}=r_{b_0b_1}=r_{b_1b_0}=0$. Also, there are probably some $r_{a_ib_j}$ equal to zero making resulted matrix sparse, which gives possibilities of optimization.
 \subsection{Toy Example}
-To better illustrate the whole procedure of hypothesis generation, a toy example of $4$ genes $a$, $b$, $c$ and $d$ is given below. To have an understanding of the dynamics of the system of 4 genes, we want to output regulation hypothesis for completion.\par
-Input: time series data in Table \ref{TyTable1}, equitemporal measurement of 8 time units.\par
-Output: regulation hypotheses for completion of over/under-approximation.\par
+To better illustrate the whole procedure of hypothesis generation, a toy example of $4$ genes $a$, $b$, $c$ and $d$ is given below. To have an understanding of the dynamics of the system of 4 genes, we want to output regulation hypothesis for completion.
+
+Input: time series data in Table \ref{TyTable1}, equitemporal measurement of 8 time units.
+
+Output: regulation hypotheses for completion of over/under-approximation.
 
 \begin{table}[!ht]
 \centering
@@ -139,10 +188,10 @@ $b$&0.13&-0.09&-0.45&0.18&0.31&0.04&0.95&-0.73\\
 $c$&-0.25&0.24&-0.19&-0.06&0.06&0.09&0.21&0.27\\
 $d$&-0.4&-0.15&-0.5&-0.3&0.01&-0.04&0.03&0.04
 \end{tabular} 
-\caption{Change rates derived from original data by $x'[t]=x[t+1]-x[t]$}\label{TyTable2}
+\caption[Change rates]{Change rates derived from original data by $x'[t]=x[t+1]-x[t]$}\label{TyTable2}
 \end{table}
 
-Change rates are obtained by subtraction, see Table \ref{TyTable2}. After data regrouping, we obtain 4 matrices with change rate of  each component respectively, 4 matrices of correlation are then calculated: \par
+Change rates are obtained by subtraction, see Table \ref{TyTable2}. After data regrouping, we obtain 4 matrices with change rate of  each component respectively, 4 matrices of correlation are then calculated: 
 
 $$\kbordermatrix{\mbox{}&a'&b&c&d\\
 a'&1.0&0.091&-0.296&-0.090   \\
@@ -179,7 +228,8 @@ d&0.884&-0.867&0.907&1.0
 We can set an arbitrary threshold e.g. 0.6, all the coefficients with their absolute value greater than 0.6 are listed below:
 $$(b\ a\ 1\ 0.652),(b\ c\ 1\ 0.747),(b\ d\ 1\ -0.615),(c\ b\ 1\ -0.709)$$
 $$(c\ d\ 1\ 0.704),(d\ a\ 1\ 0.884),(d\ b\ 1\ -0.867),(d\ c\ 1\ 0.907)$$
-For example $(d\ b\ 1\ -0.867)$ tells that $d\xrightarrow{-}b$ is probably a good hypothesis as its absolute value of correlation coefficient is close enough to 1. Like this, a BRN model is formed, see Figure \ref{ResultBRN}. According to the configuration of Process Hitting (whether absence of regulation is regarded as counter regulation), a Process Hitting is then deduced.\par
+For example $(d\ b\ 1\ -0.867)$ tells that $d\xrightarrow{-}b$ is probably a good hypothesis as its absolute value of correlation coefficient is close enough to 1. Like this, a BRN model is formed, see Figure \ref{ResultBRN}. According to the configuration of Process Hitting (whether absence of regulation is regarded as counter regulation), a Process Hitting is then deduced.
+
 \begin{figure}[ht]
 \centering
 \scalebox{1.2}{
@@ -206,12 +256,14 @@ For example $(d\ b\ 1\ -0.867)$ tells that $d\xrightarrow{-}b$ is probably a goo
 \caption{Resulting hypotheses of the toy example}\label{ResultBRN}
 \end{figure}
 In fact the choice of threshold of correlation coefficients has little influence: if resulting regulations do not satisfy desired properties, we can decrease the threshold down to 0.5, because when coefficient $r =0.5$, then the 95\% prediction interval of $Y|X$ will be about 13\% smaller than the 95\% prediction interval of $Y$, i.e. Y behaves more individually than relevantly \cite{hull1927correlation}.
-\section{Model Inference via a priori Constraints}
+\section{Model Inference \textit{via a priori} Constraints}
 \subsection{Completion}
-In the context of GLC, completion is defined as follows: given a state sequence $S$ of observation and a set of possible regulations $H$ (in the form of Process Hitting) to be verified,  find the minimum subset of $H$ such that $S$ is realizable from initial state. 
+In the context of LCG, completion is defined as follows: given a state sequence $S$ of observation and a set of possible regulations $H$ (in the form of Process Hitting) to be verified,  find the minimum subset of $H$ such that $S$ is realizable from initial state. 
 \subsection{Completion by Over-Approximation}
-Over-approximation links local states with initial state: if there exists a pathway from certain state and initial state, it is said that this state is reachable in the reasoning of over-approximation. Over-approximation does not take into consideration the order of occurrence, which may make certain state unreachable (literally it over-approximates the reachability). Thus over-approximation is a sufficient condition.\par
+Over-approximation links local states with initial state: if there exists a pathway from certain state and initial state, it is said that this state is reachable in the reasoning of over-approximation. Over-approximation does not take into consideration the order of occurrence, which may make certain state unreachable (literally it over-approximates the reachability). Thus over-approximation is a sufficient condition.
+
 In Figure \ref{CompOv}, the visualization of the set of possible regulations $R=\{(a,b,+),(c,a,-)\}$ is on the left. With initial state $\langle a_0,b_0,c_0\rangle$, at first $b_1$ is not reachable because of the inreachability of $a_1$, as $(c,a,-)\in R$, \ac{c_0}{a_0}{a_1} is added then $a_1$ becomes reachable which makes $b_1$ also reachable.
+
 \begin{figure}[ht]
 \centering
 \begin{tikzpicture}
@@ -245,12 +297,15 @@ In Figure \ref{CompOv}, the visualization of the set of possible regulations $R=
 ;
 \TState{a_0,b_0,c_0}
 \end{tikzpicture}
-\caption{Completion by over-approximation. Dashed thick arrow represents added action.}\label{CompOv}
+\caption[Completion by over-approximation]{Completion by over-approximation. Dashed arrows represent added action.}\label{CompOv}
 \end{figure}
+
 %By means of over-approximation, if certain state is still not reachable after completion, we can say that the state is 
-\subsection{Completion by Under-Approximation}
-Under-approximation links local states with any possibly appearing states instead of initial state. Likewise, if there is a pathway from certain state and initial state, this state is reachable in the reasoning of under-approximation. However, all the orders of occurrence do not necessarily appear during the simulation, which suggests that this approach ``under-approximates'' the reachability. If under-approximation of certain state is true, then this state is certainly reachable. Nevertheless, the calculation of under-approximation is more complicated than over approximation, as the set of appearing states grows during the computation, former added links need to be verified with new appearing states until the set becomes stable. This process is called ``update''. \par
-Take Process Hitting in Figure \ref{ExUnder} as example with initial state $\langle a_0,b_0,c_0,d_0\rangle$. Figure \ref{Under1}, Figure \ref{Under2} and Figure \ref{Under3} show the procedures of under-approximation: after two additions of actions and an update, the GLC becomes stable and $a_2$ is reachable.
+
+\subsection{Completion \textit{via} Under-Approximation}
+Under-approximation links local states with any possibly appearing states instead of initial state. Likewise, if there is a pathway from certain state and initial state, this state is reachable in the reasoning of under-approximation. However, all the orders of occurrence do not necessarily appear during the simulation, which suggests that this approach ``under-approximates'' the reachability. If under-approximation of certain state is true, then this state is certainly reachable. Nevertheless, the calculation of under-approximation is more complicated than over approximation, as the set of appearing states grows during the computation, former added links need to be verified with new appearing states until the set becomes stable. This process is called ``update''. 
+
+Take Process Hitting in Figure \ref{ExUnder} as example with initial state $\langle a_0,b_0,c_0,d_0\rangle$. Figure \ref{Under1}, Figure \ref{Under2} and Figure \ref{Under3} show the procedures of under-approximation: after two additions of actions and an update, the LCG becomes stable and $a_2$ is reachable.
 \begin{figure}[!htbp]
 \centering
 \begin{tikzpicture}
@@ -278,7 +333,7 @@ Take Process Hitting in Figure \ref{ExUnder} as example with initial state $\lan
 ;
 \TState{a_0,b_0,c_0,d_0}
 \end{tikzpicture}
-\caption{Example of under-approximation. Dashed thick arrows represent added actions.}\label{ExUnder}
+\caption[Completion by under-approximation]{Example of completion by under-approximation. Dashed arrows represent added actions.}\label{ExUnder}
 \end{figure}
 \begin{figure}[!htbp]
 \centering
@@ -308,7 +363,7 @@ Take Process Hitting in Figure \ref{ExUnder} as example with initial state $\lan
 \draw (S5) circle (3pt);
 \draw[->] (O5) -- (S5);
 \end{tikzpicture}
-\caption{Under-approximation GLC of Figure \ref{ExUnder} studying the reachability of $a_2$. \fbox{$c_1$} unreachable as $(b_1\land c_1)=$ false, $a_2$ is not reachable (small circles stand for solutions and squares stand for processes)}\label{Under1}
+\caption[Operations on LCG(1)]{Under-approximation LCG of Figure \ref{ExUnder} studying the reachability of $a_2$. \fbox{$c_1$} unreachable as $(b_1\land c_1)=$ false, $a_2$ is not reachable (small circles stand for solutions and squares stand for processes)}\label{Under1}
 \end{figure}
 
 \begin{figure}[!htbp]
@@ -359,7 +414,7 @@ Take Process Hitting in Figure \ref{ExUnder} as example with initial state $\lan
 \draw[->] (O7) -- (S7);
 \draw[->] ($(S7)+(0,3pt)$) -- (P1);
 \end{tikzpicture}
-\caption{According to possible regulation $r={(d,c,+)}\in R$, \ac{d_1}{c_0}{c_1} is added, but the reachability of under-approximation requires all the possible occurrences are realizable, e.g. transition $d_1\Rsh^*d_0$ must be realizable (filled small circles stand for new possible solutions after completion)}\label{Under2}
+\caption[Operations on LCG(2)]{According to possible regulation $r={(d,c,+)}\in R$, \ac{d_1}{c_0}{c_1} is added, but the reachability of under-approximation requires all the possible occurrences are realizable, e.g. transition $d_1\Rsh^*d_0$ must be realizable (filled small circles stand for new possible solutions after completion)}\label{Under2}
 \end{figure}
 
 \begin{figure}[!htbp]
@@ -412,8 +467,9 @@ Take Process Hitting in Figure \ref{ExUnder} as example with initial state $\lan
 \draw[->] ($(S5)-(0,3pt)$) -- (P2);
 \draw[->] ($(S7)+(0,3pt)$) -- (P1);
 \end{tikzpicture}
-\caption{Second step: the under-approximation GLC after completion shows $a_2$ is now reachable after adding $\acm{c_1}{d_1}{d_0}$ (filled small circles stand for new possible solutions after updates)}\label{Under3}
-\end{figure}\section{Model Revision via Reachability Properties}
+\caption[Operations on LCG(3)]{Second step: the under-approximation LCG after completion shows $a_2$ is now reachable after adding $\acm{c_1}{d_1}{d_0}$ (filled small circles stand for new possible solutions after updates)}\label{Under3}
+\end{figure}
+\section{Model Revision \textit{via} Reachability Properties and Time-Series Data}
 In \cite{inoue2011logic}, it has been shown that Boolean networks can be represented by logic programs.
 In this paper, we provide a method to revise a logic program to fit temporal properties regarding reachability of partial states.
 %
@@ -434,6 +490,9 @@ LFIT framework so far can only capture finite dynamical properties, i.e. relatio
 In asynchronous systems, non-determinism can lead to loops for several times before taking a path to a certain state.
 In this paper, we adapt the algorithms of \cite{ribeiro2015learning,DMTRICLP15} to capture asynchronous dynamics and extend upon this method to propose an approach allowing to fit a logic program to reachability properties.
 By modifying rules of the program using logic generalization/specialization operations, we iteratively revise the program to fit a set of reachability/unreachability constraints while keeping the observation and learned rules consistent.
+
+Tony's Algo: how does the asynchronous version work
+
 \subsection{Formalization}
     
 	Boolean asynchronous systems can be non-deterministic, thus from the same state a variable can take both value $0$ or $1$.
@@ -464,7 +523,7 @@ By modifying rules of the program using logic generalization/specialization oper
 A Boolean Asynchronous system can be represented by a multi-valued logic program.
 This section provides the necessary additional formalization to interpret asynchronous dynamics by such program and to learn from state transitions.
 
-\subsection{Modeling and learning of asynchronous dynamics}\label{sec:alfit}
+\subsection{Modeling and Learning of Asynchronous Dynamics}\label{sec:alfit}
 
 Due to the non-deterministic nature of asynchronous systems and its restriction to atmost one variable change per transition,
 the notion of consistency, realization and successor has to be adapted as follows.
@@ -653,7 +712,7 @@ In the next section we propose an algorithm exploiting the LCG structure to rest
     %we revise first the elements whose LCG contain least other elements in order to modify less $P$.
     Finally, if a revision of $P$ consistent with all given properties is found the algorithm terminates and outputs it.
     
-\section{Summary}
+\section{R\'esum\'e}
 Asynchronicity implies non-determinism which is meaningful to the modeling of uncertain parts in biology.
 %In order to get a more realistic modeling, reachability is taken into account.
 We propose a method revising the logic program learned by LFIT w.r.t. the knowledge on reachability properties. If the logic program is revisable, the revision is consistent with both state transitions and reachability information.
