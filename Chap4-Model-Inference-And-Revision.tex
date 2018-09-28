@@ -3,34 +3,54 @@
 In the last chapter, we introduced several approaches of refined reachability analysis, which are more suitable for practical use (more efficient and more conclusive).
 Nevertheless, these approaches can never take effect no matter how powerful they are, if the original model does not reflect the reality.
 
-To model a biological computational system, one consider usually two aspects: a first-step model built by biologists (variables, some confirmed transitions, some \textit{a priori} properties etc.) and the observation of the experiments (time-series data, steady states, oscillations, etc.).
+To model a biological computational system, one may consider two possible aspects: a first-step model built by biologists (variables, some confirmed transitions, some \textit{a priori} properties etc.) and the observation of the experiments (time-series data, steady states, oscillations, etc.).
 
-This chapter is going to introduce several different approaches of model inference: 
+This chapter is dedicated to the introduction of three different approaches of model inference/revision:
+
 \begin{itemize}
     \item \textit{via} partial correlation (statistics)
     \item \textit{via} reachability properties and candidate regulations
     \item \textit{via} reachability properties and time-series data
 \end{itemize}
+
+There lies very little nuance between model inference and mode revision: these two operations begin with some \textit{a priori} information and/or observations, aiming at constructing a new model/modifying an existed model.
+As a result, they take the information apart from the existing transitions into account, using different tools to transform this information into possible transitions in the model (also can modify or deny existing transitions).
+
 \end{mybox}
 
-When modeling a real system, it is usually demanded to assess the correctness of a Boolean network with the concrete system by checking if the observed configurations are indeed reachable in the Boolean network.
+When modeling a real system, it is usually demanded to assess the consistency between a given modeling network and the concrete system by checking whether the observed configurations are indeed reachable in the Boolean network.
 Whenever it is not the case, it typically means that the designed Boolean functions do not model the given system correctly and thus should be revised before further model analysis.
 
-To do so, there are mainly three parts: inferring models from observation (continuous observation data); revision of models from \textit{a priori} knowledge; minimum revision of existing models via dynamical properties (mainly reachability information).
+Concretely speaking, there are three approaches:
+\begin{itemize}
+    \item Inferring models from continuous observation data
+    \item Revising models from \textit{a priori} knowledge
+    \item Least revising existing models via dynamical properties (mainly reachability information)
+\end{itemize}
+
+ 
 
 \section{Model Inference via Statistics}
 %P-value
-ANs in the chapters above only allow delay 1,
+In the previous sections, only systems with delay 1 is discussed (BN, ABAN, etc.), i.e. the impact done by some variables will take place at the next time point (immediately).
+However, in biological context, some reactions need a long reaction time, some even need a whole observation period to take place.
+For this concern, we require approaches to reveal transitions of different delays: for an observation of period $T$, possible delay lies in $[1,T-1]$.
 
-For an observation of a given period $T$, the delay cna be at most $T-1$.
 \subsection{Delayed System}
-
-\begin{definition}[Automata Network with delay]
-    
+To integrate the notion of delay into ABAN, we modify the form of transitions.
+\begin{definition}[ABAN with delay]
+An ABAN is a triplet $AB = (\Sigma,L,T)$, where:
+\begin{itemize}
+\item $\Sigma\triangleq\{a,b,\ldots\}$ is the finite set of automata with every component having a Boolean state;
+\item $LS\triangleq \underset{a\in \Sigma}{\cup} \{a_0,a_1\}$ is the set of all local states, $L\triangleq \underset{a\in \Sigma'}{\times} \{a_0,a_1\}$ is the set of joint states where $\Sigma'\subseteq\Sigma$. Particularly, if $\Sigma'=\Sigma$, $L$ is the set of global states. 
+\item $T\triangleq \{A\xrightarrow{t} b_i\mid b\in \Sigma \land A\in L, t\in \mathbb{N}*\}$ is the set of transitions, where $A$ (called head) is the set of required state(s) for transition $tr=A\xrightarrow{t} b_i$ , which allows to flip $b_{1-i}$ to $b_i$ (called body). In other words, transition $tr$ is said fireable iff $A\subseteq s$, where $s$ is the current global state.
+\end{itemize}
 \end{definition}
 
 \subsection{Partial Correlation}
- In huge biological networks, it is not possible to calculate hypotheses by hand nor traverse all the possible addable actions, as stated formerly, verification of $\mathcal{O}(3^{|Global States|})$ states is a huge task (for any component, each of other components has 3 possibilities, promotion, inhibition and no regulation).
+Spearman: Pearson on ranking
+
+In huge biological networks, it is not possible to calculate hypotheses by hand nor to traverse all the possible addable transitions, as stated formerly, the verification of $\mathcal{O}(3^{|Global States|})$ states is a huge task (for any component, each of other components has 3 possibilities, promotion, inhibition and no regulation).
  
 To deal with the great complexity of verification, \textit{a priori} knowledge is needed. 
 Some unsatisfied states can be eliminated without global verification.  
@@ -39,7 +59,7 @@ They try to find relations between different components from the observation of 
 
 One additional profit of statistical approaches is that original time series data are discretized before being used, which cause a loss of information.
 This loss could lead to an imprecise model.
-However, some statistical approaches could use directly the continuous time series data as input which avoid this trouble.
+However, some statistical approaches could use directly the continuous time series data as input which avoid this difficulty.
 
 \subsubsection{Overall Process}
 We proposed a method applying partial correlation to detect the relevance of each pair of components.
@@ -48,15 +68,15 @@ We proposed a method applying partial correlation to detect the relevance of eac
 \centering
 \begin{tikzpicture}[node distance = 1.5cm, auto]
     % Place nodes
-    \node [block] (originalData) {original data};
-    \node [block, right = of originalData] (dataDiscretization) {data discretization};
-     \node [block, right = of dataDiscretization] (varReconstruction) {variable reconstruction};
-    \node [block, below = of originalData] (ranking) {sorting};
-    \node [block, right = of ranking] (changeRate) {change rate};
-    \node [block, below = of ranking] (dataReg) {data regrouping \& Spearman coefficient};
-     \node [block, right = of dataReg] (partialCoeff) {partial coefficient};
-     \node [block, right = of partialCoeff] (regulations) {regulations $x\xrightarrow{+/-}y$};
-     \node [block, below = of varReconstruction] (actions) {actions \ac{x_i}{y_j}{y_k}};
+    \node [block] (originalData) {Time-series data};
+    \node [block, right = of originalData] (dataDiscretization) {Data discretization};
+     \node [block, right = of dataDiscretization] (varReconstruction) {Variable reconstruction};
+    \node [block, below = of originalData] (ranking) {Sorting};
+    \node [block, right = of ranking] (changeRate) {Change rate};
+    \node [block, below = of ranking] (dataReg) {Data regrouping \& Spearman coefficient};
+     \node [block, right = of dataReg] (partialCoeff) {Partial coefficient};
+     \node [block, right = of partialCoeff] (regulations) {Regulations $x\xrightarrow{+/-}y$};
+     \node [block, below = of varReconstruction] (actions) {Actions \ac{x_i}{y_j}{y_k}};
      \coordinate [left = of ranking,node distance=0.5cm](abstract);
     % Draw edges
     \path [line] (originalData) -- (dataDiscretization);
@@ -78,9 +98,9 @@ Resulting coefficients above the threshold (One can set a threshold of relevance
 
 Furthermore, to complete Biological Regulatory Networks in form of Automata Network, more accurate regulations are inferred through variable reconstruction, which splits a variable into several new variable according to its qualitative levels.
 For example, component $a$ has two discrete levels $a_0$ $a_1$, then correlation coefficients as well as partial coefficients are calculated in the domain of $a_0$ and of $a_1$ separately.
-As a result, the relevance between $a_0$ and other components and that of $a_1$ are calculated, with which possible addable actions of Process Hitting are deduced.
+As a result, the relevance between $a_0$ and other components and that of $a_1$ are calculated, with which possible addable actions of ABAN are deduced.
 
-As all the subroutines depicted in Figure \ref{plan} are implemented, starting from original data, regulations in form of Thomas' model or Process Hitting are resulted step by step. In the next, the data treatments Figure \ref{plan} will be introduced with examples.
+As all the subroutines depicted in Figure \ref{plan} are implemented, starting from original data, regulations in form of Thomas' model or ABAN are resulted step by step. In the next, the data treatments Figure \ref{plan} will be introduced with examples.
 
 %\subsection{Partial Correlation Coefficients}
 \subsection{Data Regrouping}
@@ -105,7 +125,7 @@ With delay = 1 time unit, $a'$ is the change rate of $a$, calculated via
 $$a'=\dfrac{\mathrm{d}a(t)}{\mathrm{d}t}=\dfrac{a(t+1)-a(t)}{(t+1)-t}=a(t+1)-a(t)$$ In this way, regulations of $b,c,d$ on $a$ are then evaluated by aforementioned coefficients. Also matrices representing different delays can be formed analogously.
 
 \subsection{Inference of Different Delay using Variable Reconstruction}
-By applying aforementioned approaches, regulations in the form of $a\xrightarrow{+/-}b$ are deduced, but the result is not in the precise form of Process Hitting. To obtain a result in such form, variable reconstruction is compulsory.
+By applying aforementioned approaches, regulations in the form of $a\xrightarrow{+/-}b$ are deduced, but the result is not in the precise form of ABAN. To obtain a result in such form, variable reconstruction is compulsory.
 
 \begin{figure}[ht]
 \centering
@@ -130,7 +150,10 @@ By applying aforementioned approaches, regulations in the form of $a\xrightarrow
 \end{tikzpicture}
 \caption[Variable reconstruction]{Example of variable reconstruction, former variable $a=0.8\sin t+1(t\in [0,7])$ is split into 2 variables $a_0=0.8\sin t+1(t\in (\pi,2\pi))$ (dark gray) and $a_1=0.8\sin t+1(t\in [0,\pi]\cup[2\pi,7])$ (light gray) with different domains according to the qualitative threshold}\label{varRec}
 \end{figure}
-After the treatment of component $a$, suppose there is another variable $b$ split into 2 variables $b_1,b_2$, then the matrix for inference of Process Hitting is done as follows:
+
+\textbf{Need formulae}
+
+After the treatment of component $a$, suppose there is another variable $b$ split into 2 variables $b_1,b_2$, then the matrix for inference of ABAN is done as follows:
 
 Global state after discretization: $L=\{a_0,a_1\}\times \{b_0,b_1\}\ $
 
@@ -226,13 +249,12 @@ c&-0.561&-0.709&1.0&0.704\\
 d&0.884&-0.867&0.907&1.0
 }$$
 We can set an arbitrary threshold e.g. 0.6, all the coefficients with their absolute value greater than 0.6 are listed below:
-$$(b\ a\ 1\ 0.652),(b\ c\ 1\ 0.747),(b\ d\ 1\ -0.615),(c\ b\ 1\ -0.709)$$
-$$(c\ d\ 1\ 0.704),(d\ a\ 1\ 0.884),(d\ b\ 1\ -0.867),(d\ c\ 1\ 0.907)$$
-For example $(d\ b\ 1\ -0.867)$ tells that $d\xrightarrow{-}b$ is probably a good hypothesis as its absolute value of correlation coefficient is close enough to 1. Like this, a BRN model is formed, see Figure \ref{ResultBRN}. According to the configuration of Process Hitting (whether absence of regulation is regarded as counter regulation), a Process Hitting is then deduced.
+$$(b\ a\ 1\ 0.652),\ (b\ c\ 1\ 0.747),\ (b\ d\ 1\ -0.615),\ (c\ b\ 1\ -0.709)$$
+$$(c\ d\ 1\ 0.704),\ (d\ a\ 1\ 0.884),\ (d\ b\ 1\ -0.867),\ (d\ c\ 1\ 0.907)$$
+For example $(d\ b\ 1\ -0.867)$ tells that $d\xrightarrow{-}b$ is probably a good hypothesis as its absolute value of correlation coefficient is close enough to 1. Like this, a BRN model is formed, see Figure \ref{ResultBRN}. According to the configuration of ABAN (whether absence of regulation is regarded as counter regulation), a ABAN is then deduced.
 
 \begin{figure}[ht]
 \centering
-\scalebox{1.2}{
 \begin{tikzpicture}[grn]
 \node[inner sep=0] (a) at (0,0) {a};
 \node[inner sep=0] (b) at (2,0) {b};
@@ -252,13 +274,13 @@ For example $(d\ b\ 1\ -0.867)$ tells that $d\xrightarrow{-}b$ is probably a goo
   (d) edge node[elabel, below=-3pt] {$-1$} (b)
   (d) edge[bend right] node[elabel, below=-3pt] {$+1$} (c);
 \end{tikzpicture}
-}
+
 \caption{Resulting hypotheses of the toy example}\label{ResultBRN}
 \end{figure}
 In fact the choice of threshold of correlation coefficients has little influence: if resulting regulations do not satisfy desired properties, we can decrease the threshold down to 0.5, because when coefficient $r =0.5$, then the 95\% prediction interval of $Y|X$ will be about 13\% smaller than the 95\% prediction interval of $Y$, i.e. Y behaves more individually than relevantly \cite{hull1927correlation}.
 \section{Model Inference \textit{via a priori} Constraints}
 \subsection{Completion}
-In the context of LCG, completion is defined as follows: given a state sequence $S$ of observation and a set of possible regulations $H$ (in the form of Process Hitting) to be verified,  find the minimum subset of $H$ such that $S$ is realizable from initial state. 
+In the context of LCG, completion is defined as follows: given a state sequence $S$ of observation and a set of possible regulations $H$ (in the form of ABAN) to be verified,  find the minimum subset of $H$ such that $S$ is realizable from initial state. 
 \subsection{Completion by Over-Approximation}
 Over-approximation links local states with initial state: if there exists a pathway from certain state and initial state, it is said that this state is reachable in the reasoning of over-approximation. Over-approximation does not take into consideration the order of occurrence, which may make certain state unreachable (literally it over-approximates the reachability). Thus over-approximation is a sufficient condition.
 
@@ -305,7 +327,7 @@ In Figure \ref{CompOv}, the visualization of the set of possible regulations $R=
 \subsection{Completion \textit{via} Under-Approximation}
 Under-approximation links local states with any possibly appearing states instead of initial state. Likewise, if there is a pathway from certain state and initial state, this state is reachable in the reasoning of under-approximation. However, all the orders of occurrence do not necessarily appear during the simulation, which suggests that this approach ``under-approximates'' the reachability. If under-approximation of certain state is true, then this state is certainly reachable. Nevertheless, the calculation of under-approximation is more complicated than over approximation, as the set of appearing states grows during the computation, former added links need to be verified with new appearing states until the set becomes stable. This process is called ``update''. 
 
-Take Process Hitting in Figure \ref{ExUnder} as example with initial state $\langle a_0,b_0,c_0,d_0\rangle$. Figure \ref{Under1}, Figure \ref{Under2} and Figure \ref{Under3} show the procedures of under-approximation: after two additions of actions and an update, the LCG becomes stable and $a_2$ is reachable.
+Take the Automata Network in Figure \ref{ExUnder} as example with initial state $\langle a_0,b_0,c_0,d_0\rangle$. Figure \ref{Under1}, Figure \ref{Under2} and Figure \ref{Under3} show the procedures of under-approximation: after two additions of actions and an update, the LCG becomes stable and $a_2$ is reachable.
 \begin{figure}[!htbp]
 \centering
 \begin{tikzpicture}
@@ -470,8 +492,8 @@ Take Process Hitting in Figure \ref{ExUnder} as example with initial state $\lan
 \caption[Operations on LCG(3)]{Second step: the under-approximation LCG after completion shows $a_2$ is now reachable after adding $\acm{c_1}{d_1}{d_0}$ (filled small circles stand for new possible solutions after updates)}\label{Under3}
 \end{figure}
 \section{Model Revision \textit{via} Reachability Properties and Time-Series Data}
-In \cite{inoue2011logic}, it has been shown that Boolean networks can be represented by logic programs.
-In this paper, we provide a method to revise a logic program to fit temporal properties regarding reachability of partial states.
+Inoue \cite{inoue2011logic} has shown that Boolean networks can be represented by logic programs.
+In this paper, we provide an approach to revise a logic program to fit temporal properties regarding reachability of partial states.
 %
 Such logic program can be learned from observations of state transition using LFIT algorithm in \cite{ribeiro2015learning}, but the approach restricts the model to only synchronous update scheme.
 One of the benefits of synchronous modeling is computational tractability, while classical state space exploration algorithms fail on asynchronous ones.
@@ -491,8 +513,6 @@ In asynchronous systems, non-determinism can lead to loops for several times bef
 In this paper, we adapt the algorithms of \cite{ribeiro2015learning,DMTRICLP15} to capture asynchronous dynamics and extend upon this method to propose an approach allowing to fit a logic program to reachability properties.
 By modifying rules of the program using logic generalization/specialization operations, we iteratively revise the program to fit a set of reachability/unreachability constraints while keeping the observation and learned rules consistent.
 
-Tony's Algo: how does the asynchronous version work
-
 \subsection{Formalization}
     
 	Boolean asynchronous systems can be non-deterministic, thus from the same state a variable can take both value $0$ or $1$.
@@ -507,7 +527,7 @@ Tony's Algo: how does the asynchronous version work
 	\begin{equation}\label{multi_value}
 		var^{val} \leftarrow var_1^{val_1} \wedge \cdots \wedge var_n^{val_n}
 	\end{equation}
-	where $var^{val}$ and $var_i^{val_i}$'s are atoms $(n \geq 1)$.
+	where $var^{val}$ and $var_i^{val_i}$ are atoms $(n \geq 1)$.
 	For any rule $R$ of the form~(\ref{multi_value}), left part of $\leftarrow$ is called the {\it head\/} of $R$ and is denoted as $h(R)$,
 	and the conjunction to the right of $\leftarrow$ is called the {\it body\/} of $R$.  
 	We represent the set of literals in the body of $R$ of the form~(\ref{multi_value}) as $b(R)=\{var_1^{val_1},\ldots,var_n^{val_n}\}$. 
@@ -561,7 +581,7 @@ Here, for the {\bf asynchronous} case, this anti-rule is generated and the revis
 i.e. it is impossible to have a transition to $var^{val}$ from $I$.
 Each rule of the currently learned program $P$ that subsumes such an anti-rule are specialized using least specialization.
 The resulting program $P'$ is consistent and realizes all previously treated transition plus $(I,J)$.
-Doing so iteratively for each transitions, the algorithm output a program $P$ which model the dynamics of the system observed in the transitions $E$.
+By doing so iteratively for each transition, the algorithm outputs a program $P$ which models the dynamics of the system observed in the transitions $E$.
 
 \vspace{0.5em}
 \noindent
