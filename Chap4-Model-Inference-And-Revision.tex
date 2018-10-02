@@ -1,6 +1,6 @@
 \chapter{Model Inference and Revision}
 \begin{mybox}
-In the last chapter, we introduced several approaches of refined reachability analysis, which are more suitable for practical use (more efficient and more conclusive).
+In the previous chapter, we introduced several approaches of refined reachability analysis, which are more suitable for practical use (more efficient and more conclusive).
 Nevertheless, these approaches can never take effect no matter how powerful they are, if the original model does not reflect the reality.
 
 To model a biological computational system, one may consider two possible aspects: a first-step model built by biologists (variables, some confirmed transitions, some \textit{a priori} properties etc.) and the observation of the experiments (time-series data, steady states, oscillations, etc.).
@@ -38,6 +38,7 @@ For this concern, we require approaches to reveal transitions of different delay
 
 \subsection{Delayed System}
 To integrate the notion of delay into ABAN, we modify the form of transitions.
+
 \begin{definition}[ABAN with delay]
 An ABAN is a triplet $AB = (\Sigma,L,T)$, where:
 \begin{itemize}
@@ -192,6 +193,7 @@ Output: regulation hypotheses for completion of over/under-approximation.
 \centering
 \begin{tabular}{*{10}{l}}
 $t$&0&1&2&3&4&5&6&7&8\\
+\hline
 $a$&2.01&2.51&1.97&1.17&0.94&0.70&0.31&0.06&0.06\\
 $b$&0.74&0.87&0.78&0.33&0.51&0.82&0.86&1.81&1.08\\
 $c$&0.43&0.18&0.42&0.23&0.17&0.23&0.32&0.53&0.80\\
@@ -206,6 +208,7 @@ $d$&1.62&1.22&1.07&0.57&0.27&0.28&0.24&0.27&0.31
 \centering
 \begin{tabular}{c*{8}{S}}
 $t$&0&1&2&3&4&5&6&7\\
+\hline
 $a$&0.5&-0.54&-0.8&-0.23&-0.24&-0.39&-0.25&0.0\\
 $b$&0.13&-0.09&-0.45&0.18&0.31&0.04&0.95&-0.73\\
 $c$&-0.25&0.24&-0.19&-0.06&0.06&0.09&0.21&0.27\\
@@ -619,14 +622,14 @@ $\forall (\alpha,\omega) \in Un, \nexists$ a trajectory $t$ in $P$ s.t. $\alpha.
 Specializing a rule is to add elements in the body of a rule,
 thus to make the condition of a rule more difficult to be satisfied (in a more specialized situation) as the condition of firing becomes more strict.
 
-\begin{definition}[Least Specialization of a rule]
+\begin{definition}[Least specialization of a rule]
 	Let $R$ be a rule, a least specialization of $R$ is a rule $R' \in ls(R) := \{h(R) \leftarrow b(R) \cup \{var^{val}\}, \nexists var^{val'} \in b(R)\}$.
 	If $R$ contains already all the variables in its body, the only way to specialize $R$ is to remove $R$.
 \end{definition}
 
     Similarly, generalization of a rule is to remove certain elements in the body of a rule, thus to make the condition of a rule easier to be satisfied.
 
-\begin{definition}[Least Generalization of a rule]
+\begin{definition}[Least generalization of a rule]
 	Let $R$ be a rule, a least generalization of $R$ is a rule $R' \in lg(R) := \{h(R) \leftarrow b(R) \setminus \{x\},  x \in b(R)\}$.
 \end{definition}
 
@@ -642,8 +645,8 @@ In the next section we propose an algorithm exploiting the LCG structure to rest
 \subsection{Revision}
 \label{sec:algorithm}
 
-    In this section we propose an algorithm that exploits the previous formalization to fit a logic program to reachability properties.
-    Given a set of transition $E$ of an asynchronous system $S$, a logic program $P$ is learned via the adaptation of \textbf{LFIT} of section \ref{sec:alfit}.
+    In this section we propose an algorithm exploiting the previous formalization to fit a logic program to reachability properties.
+    Given a set of transition $E$ of an asynchronous system $S$, a logic program $P$ is learned via the adaptation of \textbf{asynchronous LFIT} of section \ref{sec:alfit}.
     When $E$ is partial, the learned program $P$ does not have the exact dynamics of $S$.
     Given a set of reachability properties $Re$ and a set of unreachability properties $Un$ of $S$, we propose an algorithm to revise $P$ so that the dynamics of $P$ satisfy $S$.
     As discussed previously, this can be done by complete brute force but here we propose a first attempt to reduce the search space.
@@ -659,17 +662,17 @@ In the next section we propose an algorithm exploiting the LCG structure to rest
     \vspace{1em}
     Specialization:
     \begin{itemize}
-        \item Input: a logic program $P$, an unsatisfied element $(\alpha,\omega)$, a reachable set $Re$, an unreachable set $Un$%, a maximum addable components $k$
-        \item Output: modified logic program $P$ or $\varnothing$ if not revisable
+        \item \textbf{Input}: a logic program $P$, an unsatisfied element $(\alpha,\omega)$, a reachable set $Re$, an unreachable set $Un$%, a maximum addable components $k$
+        \item \textbf{Output}: modified logic program $P$ or $\varnothing$ if not revisable
     \end{itemize}
     \begin{enumerate}
         \item $Rev\gets\{\omega\}$
-        \item For each $R$ s.t. $h(R)=Rev$, for each $R'\in\{R''|R''\in ls(R)\land \nexists (I,J)\in E, \text{ s.t. } \nexists R'''\in P\cup \{R''\}\setminus \{R\}, h(R''')\in J, b(R''')\in I\}$
+        \item \textbf{For} each $R$ s.t. $h(R)=Rev$, for each $R'\in\{R''|R''\in ls(R)\land \nexists (I,J)\in E, \text{ s.t. } \nexists R'''\in P\cup \{R''\}\setminus \{R\}, h(R''')\in J, b(R''')\in I\}$
         \begin{itemize}
-            \item If $P' \gets P \setminus \{R\} \cup \{R'\}$, $unreachable(P',\alpha,\omega$) and $P'$ satisfies all previous properties, return $P'$
+            \item \textbf{If} $P' \gets P \setminus \{R\} \cup \{R'\}$, $unreachable(P',\alpha,\omega$) and $P'$ satisfies all previous properties, \textbf{return} $P'$
         \end{itemize}
         \item $Rev\gets b(R)$ with $h(R)=Rev$ and back to step 2
-        \item There is no revision for $(\alpha,\omega)$, return $\varnothing$
+        \item There is no revision for $(\alpha,\omega)$, \textbf{return} $\varnothing$
     \end{enumerate}
     \end{minipage}
     \noindent
@@ -677,17 +680,17 @@ In the next section we propose an algorithm exploiting the LCG structure to rest
     \vspace{1em}
     Generalization:
     \begin{itemize}
-        \item Input: a logic program $P$, an unsatisfied element $(\alpha,\omega)$, a reachable set $Re$, an unreachable set $Un$
-        \item Output: modified logic program $P$ or $\varnothing$ if not revisable
+        \item \textbf{Input}: a logic program $P$, an unsatisfied element $(\alpha,\omega)$, a reachable set $Re$, an unreachable set $Un$
+        \item \textbf{Output}: modified logic program $P$ or $\varnothing$ if not revisable
     \end{itemize}
     \begin{enumerate}
         \item $Rev\gets\{\omega\}$
-        \item For each $R$ s.t. $h(R)=Rev$, for each $R'\in lg(R)$
+        \item \textbf{For} each $R$ s.t. $h(R)=Rev$, for each $R'\in lg(R)$
         \begin{itemize}
-            \item If $P' \gets P \setminus \{R\} \cup \{R'\}$, $reachable(P',\alpha,\omega$) and $P'$ satisfies all previous properties, return $P'$
+            \item \textbf{If} $P' \gets P \setminus \{R\} \cup \{R'\}$, $reachable(P',\alpha,\omega$) and $P'$ satisfies all previous properties, \textbf{return} $P'$
         \end{itemize}
         \item $Rev\gets b(R)$ with $h(R)=Rev$ and back to step 2
-        \item There is no revision for $(\alpha,\omega)$, return $\varnothing$
+        \item There is no revision for $(\alpha,\omega)$, \textbf{return} $\varnothing$
     \end{enumerate}
     \vspace{0.1em}
     \end{minipage}
@@ -696,25 +699,25 @@ In the next section we propose an algorithm exploiting the LCG structure to rest
     \vspace{1em}
     Complete revision:
     \begin{itemize}
-        \item Input: a logic program $P$, a reachable set $Re$ and an unreachable set $Un$
-        \item Output: revised logic program $P$ or $\varnothing$ if not revisable
+        \item \textbf{Input}: a logic program $P$, a reachable set $Re$ and an unreachable set $Un$
+        \item \textbf{Output}: revised logic program $P$ or $\varnothing$ if not revisable
     \end{itemize}
     \begin{enumerate}
         \item Construct the cycle-free LCGs for the elements in $Re$ and $Un$ and compute unsatisfied sets $Re'\subseteq Re$ and $Un'\subseteq Un$ which are to be revised
-        \item If $Re'=\varnothing$ and $Un'=\varnothing$, return $P$
+        \item \textbf{If} $Re'=\varnothing$ and $Un'=\varnothing$, \textbf{return} $P$
         \item Let $L=\{l_i,\ldots\}$ with $i\in Re' \cup Un'$, $l_i=\{j,\ldots\}$, with $j=(\alpha,\omega)$, $\omega \in LCG(i)$ and $ j\in Re\cup Un$ \label{step:dependency}
         \item Pick one of $l_i\in L$ of the smallest cardinality: $\nexists l_i'$, $|l_i'| < |l_i|$ \label{step:cardinality}
-        \item If $l_i\cap (Re'\cup Un')\neq\varnothing$, \label{step:check}
+        \item \textbf{If} $l_i\cap (Re'\cup Un')\neq\varnothing$, \label{step:check}
         \begin{enumerate}
             \item Reconstruct the LCG for $i$
-            \item If $l_i$ becomes consistent because of former revision, $L\gets L\setminus \{l_i\}$ and back to step 4
+            \item \textbf{If} $l_i$ becomes consistent because of former revision, $L\gets L\setminus \{l_i\}$ and back to step 4
         \end{enumerate}
-        \item If $i\in Un'$, specialize $P$ to make $i$ unreachable, if not revisable, return $\varnothing$ \label{step:specialize}
-        \item Otherwise generalize $P$ to make $i$ reachable, if it is not revisable, return $\varnothing$ \label{step:generalize}
+        \item \textbf{If} $i\in Un'$, specialize $P$ to make $i$ unreachable, \textbf{if} not revisable, \textbf{return} $\varnothing$ \label{step:specialize}
+        \item Otherwise generalize $P$ to make $i$ reachable, \textbf{if} it is not revisable, \textbf{return} $\varnothing$ \label{step:generalize}
         
         \item $L\gets L\setminus\{l_i\}$ \label{step:update}
-        \item If $L\neq\varnothing$ , back to step 1 \label{step:recheck}
-        \item Return $P$
+        \item \textbf{If} $L\neq\varnothing$ , back to step 1 \label{step:recheck}
+        \item \textbf{Return} $P$
     \end{enumerate} 
     \vspace{0.1em}
     \end{minipage}
@@ -733,6 +736,15 @@ In the next section we propose an algorithm exploiting the LCG structure to rest
     Finally, if a revision of $P$ consistent with all given properties is found the algorithm terminates and outputs it.
     
 \section{R\'esum\'e}
+In this chapter we presented three approaches to infer/revise models based on different \textit{a priori} knowledge.
+Statistic approach theoretically use all the continuous time-series data to construct a model from nothing but hard to take into account additional constraints.
+The second approach allows one to construct a good model among a large number of candidate transitions.
+The drawback of the second approach is to obtain the candidates.
+
+Considering the disadvantages of the former two approaches, the third approach (naming needed) does not need candidate transitions and can adjust the result by reachability constraints.
+The drawback of the third approach is that there is a loss of information due to discretization.
+In this aspect, 
+
 Asynchronicity implies non-determinism which is meaningful to the modeling of uncertain parts in biology.
 %In order to get a more realistic modeling, reachability is taken into account.
 We propose a method revising the logic program learned by LFIT w.r.t. the knowledge on reachability properties. If the logic program is revisable, the revision is consistent with both state transitions and reachability information.
@@ -740,3 +752,5 @@ However, our algorithm does not guarantee the minimal revision of the logic prog
 As future works, considering the metric for minimal revision and designing a related algorithm will be interesting.
 %We are also developing heuristics to improve the performance of the algorithm.
 Adapting more dynamical properties other than reachability also remains as our future work.
+
+Reachability in the meaning of continuous models.

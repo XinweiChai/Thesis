@@ -1,4 +1,3 @@
-%\chapter{Refinements of Reachability Analysis}
 \chapter{Refined Reachability Analysis}
 \begin{mybox}
 Several modeling frameworks and model checking techniques are introduced in Chapter \ref{chap:stateOfTheArt}.
@@ -42,7 +41,6 @@ In ABAN, we adapted LCG to SLCG (Simplified LCG) to address reachability problem
 This approach refers to a static abstraction of the reachability (with an over-approximation of the real dynamics).
 Under ABAN, SLCG is more prone to conclude than LCG under AAN (Section \ref{sec:SLCG}).
 
-
 \subsection{Definitions}
 \begin{definition}[ABAN]
 An ABAN is a triplet $AB = (\Sigma,L,T)$, where:
@@ -70,7 +68,6 @@ From $\alpha$, the global state after firing all transitions of $t$ is $(s \cdot
 Given an ABAN $AB = (\Sigma,L,T)$ and a global initial state $\alpha\in L$ and trajectory $t$, the state sequence $seq=s_1::\cdots :: s_i::\cdots ::s_n$ with $s_i\in LS$ is formed by the updated local states during the trajectory $t$.
 \end{definition}
 
-
 \begin{example}
     Figure \ref{exampleABAN} illustrates an ABAN with set of transitions $T=\{\acm{b_1,c_1}{a_0}{a_1},\acm{e_1}{a_0}{a_1},\acm{d_0}{b_0}{b_1},\acm{d_1}{c_0}{c_1},\acm{b_1}{d_0}{d_1}\}$ and initial state $\alpha=\langle a_0,b_0,c_0,d_0,e_0\rangle$ and a possible trajectory is $t=\acm{d_0}{b_0}{b_1}::\acm{b_1}{d_0}{d_1}::\acm{d_1}{c_0}{c_1}::\acm{b_1,c_1}{a_0}{a_1}$.
     After firing the transitions in trajectory $t$, the state becomes $\Omega=s\cdot t=\langle a_1,b_1,c_1,d_1,e_0\rangle$, and $\omega= a_1= (\alpha\cdot t)[a]$. The state sequence is $seq=b_1::d_1::c_1::a_1$.
@@ -81,6 +78,7 @@ Given an ABAN $AB = (\Sigma,L,T)$ and a global initial state $\alpha\in L$ and t
 \input{exampleAN}
 \caption[Example of ABAN]{An example of ABAN}\label{exampleABAN}
 \end{figure}
+
 As to reachability problem, given ABAN, joint reachability $REACH (\alpha,\Omega)$ can be formalized as: joint state $\Omega$ is reachable iff there exists a trajectory $t$ s.t. $\alpha\cdot t=\Omega$.
 Partial reachability $reach(\alpha,\omega)$ is defined analogously: local state $\omega=a_i$ is reachable iff there exists a trajectory $t$ s.t. $(\alpha\cdot t)[a]=a_i$.
 $REACH (\alpha,\Omega)$ and $reach(\alpha,\omega)$ take Boolean values \textbf{True}, \textbf{False} or \textbf{Inconclusive} if it cannot be decided.
@@ -102,6 +100,7 @@ It is a very efficient tool as there is no global search and all the operations 
 However LCG does not guarantee to obtain a result, i.e. some inconclusive instances satisfy the necessary condition but fail sufficient conditions, thus one has no clue about the reachability of these instances.
 In this thesis, we make use of the LCG by removing some elements needed only in multivalued networks, naming it SLCG (Simplified LCG), then we try to analyze it more deeply to solve inconclusive cases of binary valued systems.
 In fact, Didier \textit{et al.} have shown a technique to transform a multivalued network to Boolean network \cite{didier2011mapping}, which provides us the applicability to multivalued networks.
+
 \begin{definition}[SLCG]\label{defSLCG}
 Given an ABAN $AB = (\Sigma,L,T)$, an initial state $\alpha$ and a target state $\omega$, LCG $l= (V_{\mathrm{state}},V_{\mathrm{solution}},E)$ is the smallest recursive structure with $E \subseteq (V_{\mathrm{state}}\times V_{\mathrm{solution}})\cap (V_{\mathrm{solution}}\times V_{\mathrm{state}})$ which satisfies:
 \begin{eqnarray*}
@@ -185,6 +184,7 @@ Dealing with cycles becomes inevitable.
     \caption[Limitation of SLCG 2]{SLCG with cycles, $\Sigma=\{a,b,c\}$, $T=\{\acm{b_0}{a_0}{a_1},\ \acm{a_0}{b_0}{b_1},\ \acm{a_1,b_1}{c_0}{c_1},\varnothing \to a_0, \varnothing \to b_0\},\omega=c_1$}
     \label{fig:limitation2}
 \end{figure}
+
 \section{Preprocessing of Simplified Local Causality Graph}\label{sec:chap3preprocessing}
 \subsection{Detection and Removal of Cycles}\label{sec:cycles}
 \begin{definition}[Cycle]
@@ -200,12 +200,14 @@ SLCG is usually a sparse graph, as in biological systems, the components mostly 
 \begin{theorem}\label{th:break_cycle}
 Given a cycle $x\to \circ \to \cdots \to \circ \to x$ in an SLCG, if there is at most one incoming edge to the cycle, the cycle can be removed.
 \end{theorem}
+
 \begin{proof}
 If there is no incoming edge, the target state $y$ must be in the cycle. 
 The edge $y.pred\to\circ\to y$ can be removed, because the reachability of $y.pred$ requires $y$, but $y$ is the target state, which is never reached before the other local states in the SLCG are reached.
 Thus the transition corresponding to this edge is never fired and the edge can be removed.
 Similarly, if there is an outside incoming edge $a\to \circ \to x$, $a$ must be the successor of target state $y$ or the target itself, $x.pred\to\circ\to x$ can hence be removed.
 \end{proof}
+
 \begin{example}
     \begin{figure}[ht]
         \centering
@@ -221,6 +223,7 @@ Similarly, if there is an outside incoming edge $a\to \circ \to x$, $a$ must be 
     Thus edge $z\to \circ \to x$ is deleted (dashed line).
 \end{example}
 Unfortunately, not all cycles are removable via Theorem \ref{th:break_cycle}. Example \ref{example:cycles} explains the issue.
+
 \begin{example}\label{example:cycles}
     \begin{figure}[ht]
         \centering
@@ -248,22 +251,25 @@ According to the definition of $reach'$, $reach'(\alpha,a)=\mathbf{True}$ only i
 If there exists such $c_k$, $C$ should not exist as the reasoning stops at $c_k$ and does not form a cycle, contradiction.
 $reach'(\alpha,a_i)=reach'(\alpha,b_j)=\cdots =\mathbf{False}$.
 \end{proof}
+
 \subsection{Decomposition of SLCG}
 As every \textbf{OR gate} has multiple choices, to avoid combinatorial explosion, we use a simple heuristic: 
 choose randomly one assignment for each trial.
 Then we can construct a new LCG without \textbf{OR gate}, every state node has exactly one successor solution node, see Figure \ref{fig:heuristics}.
+
 \begin{figure}[ht]
     \centering
     \input{heuristics.tex}
     \caption[Random choice on \textbf{OR gates}]{Random choice on \textbf{OR gates}. Descending from the target state, when we encounter an \textbf{OR gate}, we choose randomly one of its branches. Circles filled gray stand for one possible assignment.}
     \label{fig:heuristics}
 \end{figure}
+
 \section{Reachability Analysis}
 After preprocessing, we can get rid of cycles and \textbf{OR gates}.
 The next step is to analyze an SLCG with only \textbf{AND gates}.
 We need to find a trajectory reaching all the components of the \textbf{AND gates} simultaneously.
 Here we propose two approaches: Reachability via search in permutations (PermReach) which is a partial search and Reachability via Answer Set Programming (ASPReach) which is a exhaustive search.
-\subsection{Reachability via Search in Permutations}
+\subsection{Reachability via Permutations (PermReach)}
 
 The components of an \textbf{AND gate} form a joint state, and if the joint state is reachable, the corresponding transition of \textbf{AND gate} can be fired. 
 
@@ -283,6 +289,7 @@ If we begin with the branch with $a_1$, $s$ is reachable with trajectory $\acm{b
 However, if we begin with the branch $b_1$, after firing $\acm{c_0}{b_0}{b_1}$, $b_0$ is no longer reachable, resulting the unreachability of $a_1$.
 We have $REACH(\alpha,a_1::b_1::c_1)=\mathbf{True}$ and $REACH(\alpha,b_1::a_1::c_1)=\mathbf{False}$.
 \end{example}
+
 \begin{figure}[ht]
 \centering
 \input{ExampleOrderLCG}
@@ -298,11 +305,12 @@ As the firing order matters, we come to verify all the possible sequential reach
 \begin{proposition}\label{theoperm}
 Given joint state $s=\{ls_1,\ldots,ls_n\}$, with all the local states in $s$ are reachable: $reach(\alpha,ls_i)=\mathbf{True},\ \forall i\in[1,n]$, the set of permutations of $s$ is denoted $Perm(s)=\{(ls_1::ls_2,::\ldots ::ls_n),\ \cdots,\ (ls_n::ls_{n-1}::\ldots,::ls_1)\}$. $\bigvee_{i\in Perm(s)} REACH(\alpha,i)=\mathbf{True}$ is a sufficient condition of $REACH(\alpha,s)=\mathbf{True}$.
 \end{proposition}
+
 \begin{proof}
 If $\exists perm_i\in Perm(s)$ s.t. $REACH(\alpha,perm_i)=\mathbf{True}$, $s$ can be reached according to the order in $perm_i$.
 To reach $s$, every local state in SLCG is mandatory to be reached, as according to the definition of SLCG, it is the smallest structure which contains all the needed local states and transitions for the target state. As long as there is no \textbf{OR gates}, all the transitions in the SLCG must be fired to reach the target state.
 For solvable constraints, $Perm(s)$ can cover some of the admissible orders.
-\qed\end{proof}
+\end{proof}
 
 In case where the successors of certain \textbf{AND gate} contain other \textbf{AND gates}, we cannot directly obtain its reachability because the reachability of the successor \textbf{AND gates} are unknown.
 We analyze first the simple \textbf{AND gates} $simp$, i.e. the successors of $simp$ do not contain any \textbf{AND gates}.
@@ -320,7 +328,7 @@ The trajectory towards $a_1$ may not be retrievable by PermReach even if $a_1$ i
 $reach(\alpha,a_1)$=\textbf{True} but \textbf{Inconclusive} is given by PermReach.
 }\label{FigConflictInForks}
 \end{figure}
-\subsection{Reachability via Answer Set Programming}
+\subsection{Reachability via Answer Set Programming (ASPReach)}
 We use ASP  (Answer Set Programming) \cite{baral2003knowledge} to analyze the newly obtained LCG with only \textbf{AND gates}.
 ASP is a prolog-like declarative programming paradigm.
 It uses description and constraints of the problem (called rule) instead of imperative orders.
