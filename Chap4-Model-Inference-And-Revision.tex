@@ -8,45 +8,280 @@ To model a biological computational system, one may consider two possible aspect
 This chapter is dedicated to the introduction of three different approaches of model inference/revision:
 
 \begin{itemize}
-    \item \textit{via} partial correlation (statistics)
     \item \textit{via} reachability properties and candidate regulations
+    \item \textit{via} partial correlation (statistics)
     \item \textit{via} reachability properties and time-series data
 \end{itemize}
 
-There lies very little nuance between model inference and mode revision: these two operations begin with some \textit{a priori} information and/or observations, aiming at constructing a new model/modifying an existed model.
+There lies very little nuance between model inference and model revision: these two operations begin with some \textit{a priori} information and/or observations, aiming at constructing a new model/modifying an existed model.
 As a result, they take the information apart from the existing transitions into account, using different tools to transform this information into possible transitions in the model (also can modify or deny existing transitions).
 
 \end{mybox}
 
-When modeling a real system, it is usually demanded to assess the consistency between a given modeling network and the concrete system by checking whether the observed configurations are indeed reachable in the Boolean network.
-Whenever it is not the case, it typically means that the designed Boolean functions do not model the given system correctly and thus should be revised before further model analysis.
+\section{Background}
+Model inference/learning can be useful not only in biology \cite{ribeiro2015learning} but also in other domains with the need of abstraction, e.g. robotics \cite{nguyen2011model}, multi-agent systems \cite{foerster2016learning}.
+In the community of bioinformatics, DREAM  challenge\footnote{\url{http://dreamchallenges.org/about-dream}} is a well-known organization calling for the participation of the whole world on the newest bio-medical problems (called challenges). 
+Among these challenges, some of them are in the domain of inference and prediction:
+DREAM2\footnote{\url{https://www.synapse.org/\#!Synapse:syn2825374/wiki/71143}},
+DREAM4\footnote{\url{https://www.synapse.org/\#!Synapse:syn2825304/wiki/71129}},
+DREAM8\footnote{\url{https://www.synapse.org/\#!Synapse:syn1720047/wiki/55342}},
+DREAM11\footnote{\url{https://www.synapse.org/\#!Synapse:syn6131484/wiki/402026}}.
 
-Concretely speaking, there are three approaches:
-\begin{itemize}
+Like in biology, the modeling structures in robotics are usually complex and with big size, which is difficult in control, prediction and simulation.
+Constructing an abstracted (often approximated) model is a compromising way of dealing with the complexity.
+However, the abstracted models are theoretically non-equivalent with the original ones because they contain different amount of information.
+As long as the equivalence is impossible, we wish that the abstracted models are in bisimulation with the original ones with respect to certain variables and keep certain important properties.
+
+Concretely speaking, we developed three approaches which are to be presented in this chapter:
+
+\begin{enumerate}
+    \item Constructing models from incomplete model and candidate transitions plus dynamic constraints
     \item Inferring models from continuous observation data
-    \item Revising models from \textit{a priori} knowledge
-    \item Least revising existing models via dynamical properties (mainly reachability information)
-\end{itemize}
+    \item Least revising existing models via \textit{a priori} knowledge (mainly reachability information)
+\end{enumerate}
 
- 
+Among the three approaches, intuitively 1 has the least complexity. 
+Because the most naive method, brute force search is to verify every combination of the candidates if it satisfies the constraints. 
+The models to be verified are of $O(2^n)$, where $n$ is the number of candidate transitions.
+For approach 2, to explain a transition $A\to a_i$, there are at most $m-1$ possibilities for $A$ has one local state, $C_{m-1}^2$ possibilities for $A$ has 2 local states \ldots where $m$ is the number of variables.
+Similarly, approach 3 also has a factorial complexity.
 
+\section{Model Inference \textit{via a priori} Constraints}
+We begin with the problem which seems to have the smallest complexity.
+The completely exhaustive method that we presented is still meaningless in real application.
+Roughly speaking, our method aims at finding the transitions among the candidates which meet the unsatisfied constraints and keep satisfied constraints satisfied.
+
+\subsection{Completion}
+In the context of SLCG, completion is defined as follows: given a state sequence $S$ of observation and a set of possible regulations $H$ (in the form of ABAN) to be verified,  find the minimum subset of $H$ such that $S$ is realizable from initial state. 
+\subsection{Completion by Over-Approximation}
+Over-approximation links local states with initial state: if there exists a pathway from certain state and initial state, it is said that this state is reachable in the reasoning of over-approximation. Over-approximation does not take into consideration the order of occurrence, which may make certain state unreachable (literally it over-approximates the reachability). Thus over-approximation is a sufficient condition.
+
+In Figure \ref{CompOv}, the visualization of the set of possible regulations $R=\{(a,b,+),(c,a,-)\}$ is on the left. With initial state $\langle a_0,b_0,c_0\rangle$, at first $b_1$ is not reachable because of the inreachability of $a_1$, as $(c,a,-)\in R$, \ac{c_0}{a_0}{a_1} is added then $a_1$ becomes reachable which makes $b_1$ also reachable.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\coordinate (P1) at (0,0);
+\node at (P1) {{\Large c}};
+\coordinate (P2) at (2,0);
+\node at (P2) {{\Large a}};
+\coordinate (P3) at (4,0);
+\node at (P3) {{\Large b}};
+\coordinate (P4) at ($(P2)+(150:0.6)$);
+\draw (P1) circle(0.4) ;
+\draw (P2) circle(0.4);
+\draw (P3) circle(0.4);
+\draw [line width=1pt](30:0.5) .. controls  (1,0.7) .. (P4);
+\draw [->, line width=1pt]($(P2)+(30:0.5)$) .. controls  (3,0.7) .. ($(P3)+(150:0.55)$);
+\draw [line width=1pt]($(P4)+(45:0.15)$) -- ($(P4)-(45:0.15)$);
+\end{tikzpicture}\qquad
+\begin{tikzpicture}%[font=\scriptsize]
+%\path[use as bounding box] (0,-1) rectangle (4,4);
+
+\TSort{(0,0)}{c}{2}{l}
+\TSort{(3,0)}{a}{2}{r}
+\TSort{(6,0)}{b}{2}{r}
+\THit{a_1}{}{b_0}{.west}{b_1}
+\THit{c_0}{dashed,thick,color=red}{a_0}{.west}{a_1}
+
+
+\path[bounce,bend left]
+\TBounce{b_0}{}{b_1}{.west}
+\TBounce{a_0}{thick,color=red}{a_1}{.west}
+;
+\TState{a_0,b_0,c_0}
+\end{tikzpicture}
+\caption[Completion by over-approximation]{Completion by over-approximation. Dashed arrows represent added action.}\label{CompOv}
+\end{figure}
+
+%By means of over-approximation, if certain state is still not reachable after completion, we can say that the state is 
+
+\subsection{Completion \textit{via} Under-Approximation}
+Under-approximation links local states with any possibly appearing states instead of initial state. Likewise, if there is a pathway from certain state and initial state, this state is reachable in the reasoning of under-approximation. However, all the orders of occurrence do not necessarily appear during the simulation, which suggests that this approach ``under-approximates'' the reachability. If under-approximation of certain state is true, then this state is certainly reachable. Nevertheless, the calculation of under-approximation is more complicated than over approximation, as the set of appearing states grows during the computation, former added links need to be verified with new appearing states until the set becomes stable. This process is called ``update''. 
+
+Take the Automata Network in Figure \ref{ExUnder} as example with initial state $\langle a_0,b_0,c_0,d_0\rangle$. Figure \ref{Under1}, Figure \ref{Under2} and Figure \ref{Under3} show the procedures of under-approximation: after two additions of actions and an update, the LCG becomes stable and $a_2$ is reachable.
+\begin{figure}[!htbp]
+\centering
+\begin{tikzpicture}
+\TSort{(3,0)}{a}{3}{l}
+\TSort{(0,0)}{b}{2}{l}
+\TSort{(6,0)}{c}{2}{r}
+\TSort{(2,-2)}{d}{2}{b}
+\THit{b_1}{}{a_0}{.north west}{a_1}
+\THit{c_1}{}{a_1}{.east}{a_2}
+\THit{d_0}{distance=50,out=180,in=210}{b_0}{.west}{b_1}
+\THit{b_1}{}{d_0}{.north}{d_1}
+\THit{d_0}{distance=100,out=-75,in=-45,dashed,thick,color=red}{c_0}{.east}{c_1}
+\THit{c_1}{dashed,thick,color=red}{d_1}{.north}{d_0}
+
+
+\path[bounce,bend right]	
+\TBounce{a_1}{}{a_2}{.east}
+\TBounce{d_1}{thick,color=red}{d_0}{.north east}
+\TBounce{c_0}{thick,color=red}{c_1}{.east}
+;
+\path[bounce,bend left]
+\TBounce{a_0}{}{a_1}{.west}
+\TBounce{b_0}{}{b_1}{.west}
+\TBounce{d_0}{}{d_1}{.north west}
+;
+\TState{a_0,b_0,c_0,d_0}
+\end{tikzpicture}
+\caption[Completion by under-approximation]{Example of completion by under-approximation. Dashed arrows represent added actions.}\label{ExUnder}
+\end{figure}
+\begin{figure}[!htbp]
+\centering
+\begin{tikzpicture}
+\node (O1) at (0,0) {$a_0\Rsh^*a_2$};
+\node[draw] (Pm1) at (-1.75,0) {$a_2$};
+\draw[->] (Pm1)-- (O1);
+\node (S1) at ($(O1)+(1.5,0)$){};
+\draw[->] (O1) -- (S1);
+\draw (S1) circle (3pt);
+\node[draw] (P1) at ($(S1)+(1,1)$){$b_1$};
+\node[draw] (P2) at ($(S1)+(1,-1)$){$c_1$};
+\draw[->] (S1)--(P1);
+\draw[->] (S1)--(P2);
+\node (O2) at ($(P1)+(1.75,0)$) {$b_0\Rsh^*b_1$};
+\node (O3) at ($(P2)+(1.75,0)$) {$\perp$};
+\draw[->] (P1)--(O2);
+\draw[->] (P2)--(O3);
+\node (S2) at ($(O2)+(1.5,0)$){};
+\draw (S2) circle (3pt);
+\draw[->] (O2) -- (S2);
+\node[draw] (P3) at ($(S2)+(1,0)$){$d_0$};
+\draw[->] (S2) -- (P3);
+\node (O5) at ($(P3)+(1.75,0)$) {$d_0\Rsh^*d_0$};
+\draw[->] (P3)--(O5);
+\node (S5) at ($(O5)+(1.5,0)$){};
+\draw (S5) circle (3pt);
+\draw[->] (O5) -- (S5);
+\end{tikzpicture}
+\caption[Operations on LCG(1)]{Under-approximation LCG of Figure \ref{ExUnder} studying the reachability of $a_2$. \fbox{$c_1$} unreachable as $(b_1\land c_1)=$ false, $a_2$ is not reachable (small circles stand for solutions and squares stand for processes)}\label{Under1}
+\end{figure}
+
+\begin{figure}[!htbp]
+\centering
+\begin{tikzpicture}
+\node (O1) at (0,0) {$a_0\Rsh^*a_2$};
+\node[draw] (Pm1) at (-1.75,0) {$a_2$};
+\draw[->] (Pm1)-- (O1);
+\node (S1) at ($(O1)+(1.5,0)$){};
+\draw[->] (O1) -- (S1);
+\draw (S1) circle (3pt);
+\node[draw] (P1) at ($(S1)+(1,1)$){$b_1$};
+\node[draw] (P2) at ($(S1)+(1,-1)$){$c_1$};
+\draw[->] (S1)--(P1);
+\draw[->] (S1)--(P2);
+\node (O2) at ($(P1)+(1.75,0)$) {$b_0\Rsh^*b_1$};
+\node (O3) at ($(P2)+(1.75,0)$) {$c_0\Rsh^*c_1$};
+\draw[->] (P1)--(O2);
+\draw[->] (P2)--(O3);
+\node (S2) at ($(O2)+(1.5,0)$){};
+\draw (S2) circle (3pt);
+\draw[->] (O2) -- (S2);
+\node (S3) at ($(O3)+(1.5,0)$){};
+\draw[fill=black] (S3) circle (3pt);
+\draw[->] (O3) -- (S3);
+\node[draw] (P3) at ($(S2)+(1,0)$){$d_0$};
+\draw[->] (S2) -- (P3);
+\node[draw] (P4) at ($(S3)+(1,0)$){$d_1$};
+\draw[->] (S3) -- (P4);
+\node (O4) at ($(P3)+(30:1.75)$) {$d_0\Rsh^*d_0$};
+\node (O5) at ($(P3)+(1.75,0)$) {$d_1\Rsh^*d_0$};
+\draw[->] (P3)--(O4);
+\draw[->] (P3)--(O5);
+\node (O6) at ($(P4)+(-30:1.75)$) {$d_1\Rsh^*d_1$};
+\node (O7) at ($(P4)+(1.75,0)$) {$d_0\Rsh^*d_1$};
+\draw[->] (P4)--(O6);
+\draw[->] (P4)--(O7);
+\node (S4) at ($(O4)+(1.5,0)$){};
+\draw (S4) circle (3pt);
+\draw[->] (O4) -- (S4);
+\node (S5) at ($(O5)+(1.5,0)$){$\perp$};
+\draw[->] (O5) -- (S5);
+\node (S6) at ($(O6)+(1.5,0)$){};
+\draw[fill=black] (S6) circle (3pt);
+\draw[->] (O6) -- (S6);
+\node (S7) at ($(O7)+(1.5,0)$){};
+\draw[fill=black] (S7) circle (3pt);
+\draw[->] (O7) -- (S7);
+\draw[->] ($(S7)+(0,3pt)$) -- (P1);
+\end{tikzpicture}
+\caption[Operations on LCG(2)]{According to possible regulation $r={(d,c,+)}\in R$, \ac{d_1}{c_0}{c_1} is added, but the reachability of under-approximation requires all the possible occurrences are realizable, e.g. transition $d_1\Rsh^*d_0$ must be realizable (filled small circles stand for new possible solutions after completion)}\label{Under2}
+\end{figure}
+
+\begin{figure}[!htbp]
+\centering
+\begin{tikzpicture}
+\node (O1) at (0,0) {$a_0\Rsh^*a_2$};
+\node[draw] (Pm1) at (-1.75,0) {$a_2$};
+\draw[->] (Pm1)-- (O1);
+\node (S1) at ($(O1)+(1.5,0)$){};
+\draw[->] (O1) -- (S1);
+\draw (S1) circle (3pt);
+\node[draw] (P1) at ($(S1)+(1,1)$){$b_1$};
+\node[draw] (P2) at ($(S1)+(1,-1)$){$c_1$};
+\draw[->] (S1)--(P1);
+\draw[->] (S1)--(P2);
+\node (O2) at ($(P1)+(1.75,0)$) {$b_0\Rsh^*b_1$};
+\node (O3) at ($(P2)+(1.75,0)$) {$c_0\Rsh^*c_1$};
+\draw[->] (P1)--(O2);
+\draw[->] (P2)--(O3);
+\node (S2) at ($(O2)+(1.5,0)$){};
+\draw (S2) circle (3pt);
+\draw[->] (O2) -- (S2);
+\node (S3) at ($(O3)+(1.5,0)$){};
+\draw (S3) circle (3pt);
+\draw[->] (O3) -- (S3);
+\node[draw] (P3) at ($(S2)+(1,0)$){$d_0$};
+\draw[->] (S2) -- (P3);
+\node[draw] (P4) at ($(S3)+(1,0)$){$d_1$};
+\draw[->] (S3) -- (P4);
+\node (O4) at ($(P3)+(30:1.75)$) {$d_0\Rsh^*d_0$};
+\node (O5) at ($(P3)+(1.75,0)$) {$d_1\Rsh^*d_0$};
+\draw[->] (P3)--(O4);
+\draw[->] (P3)--(O5);
+\node (O6) at ($(P4)+(-30:1.75)$) {$d_1\Rsh^*d_1$};
+\node (O7) at ($(P4)+(1.75,0)$) {$d_0\Rsh^*d_1$};
+\draw[->] (P4)--(O6);
+\draw[->] (P4)--(O7);
+\node (S4) at ($(O4)+(1.5,0)$){};
+\draw (S4) circle (3pt);
+\draw[->] (O4) -- (S4);
+\node (S5) at ($(O5)+(1.5,0)$){};
+\draw[fill=black] (S5) circle (3pt);
+\draw[->] (O5) -- (S5);
+\node (S6) at ($(O6)+(1.5,0)$){};
+\draw (S6) circle (3pt);
+\draw[->] (O6) -- (S6);
+\node (S7) at ($(O7)+(1.5,0)$){};
+\draw (S7) circle (3pt);
+\draw[->] (O7) -- (S7);
+\draw[->] ($(S5)-(0,3pt)$) -- (P2);
+\draw[->] ($(S7)+(0,3pt)$) -- (P1);
+\end{tikzpicture}
+\caption[Operations on LCG(3)]{Second step: the under-approximation LCG after completion shows $a_2$ is now reachable after adding $\acm{c_1}{d_1}{d_0}$ (filled small circles stand for new possible solutions after updates)}\label{Under3}
+\end{figure}
 \section{Model Inference via Statistics}
-%P-value
-In the previous sections, only systems with delay 1 is discussed (BN, ABAN, etc.), i.e. the impact done by some variables will take place at the next time point (immediately).
-However, in biological context, some reactions need a long reaction time, some even need a whole observation period to take place.
-For this concern, we require approaches to reveal transitions of different delays: for an observation of period $T$, possible delay lies in $[1,T-1]$.
 
-\subsection{Delayed System}
-To integrate the notion of delay into ABAN, we modify the form of transitions.
+In the previous sections, only the systems with delay 1 are discussed (BN, ABAN, etc.), i.e. the impact done by variables will take place at the next time point (immediately).
+However, in biological context, some reactions have a long duration, and some even need a whole observation period to take place.
+For this reason, we require approaches to reveal transitions of different delays: for an observation of period $T$, possible delays lie in $[1,T-1]$.
+
+\subsection{Delayed Systems}
+In the Definition \ref{def:ABAN} of ABAN, every transition takes effect immediately.
+To integrate the notion of delay into ABAN, we modify the formula of transition.
 
 \begin{definition}[ABAN with delay]
 An ABAN is a triplet $AB = (\Sigma,L,T)$, where:
 \begin{itemize}
 \item $\Sigma\triangleq\{a,b,\ldots\}$ is the finite set of automata with every component having a Boolean state;
 \item $LS\triangleq \underset{a\in \Sigma}{\cup} \{a_0,a_1\}$ is the set of all local states, $L\triangleq \underset{a\in \Sigma'}{\times} \{a_0,a_1\}$ is the set of joint states where $\Sigma'\subseteq\Sigma$. Particularly, if $\Sigma'=\Sigma$, $L$ is the set of global states. 
-\item $T\triangleq \{A\xrightarrow{t} b_i\mid b\in \Sigma \land A\in L, t\in \mathbb{N}*\}$ is the set of transitions, where $A$ (called head) is the set of required state(s) for transition $tr=A\xrightarrow{t} b_i$ , which allows to flip $b_{1-i}$ to $b_i$ (called body). In other words, transition $tr$ is said fireable iff $A\subseteq s$, where $s$ is the current global state.
+\item $T\triangleq \{A\xrightarrow{t} b_i\mid b\in \Sigma \land A\in L, t\in \mathbb{N}^*\}$ is the set of transitions, where $A$ (called head) is the set of required state(s) for transition $tr=A\xrightarrow{t} b_i$ , which allows to flip $b_{1-i}$ to $b_i$ (called body). In other words, transition $tr$ is said fireable iff $A\subseteq s$, where $s$ is the current global state.
 \end{itemize}
 \end{definition}
+With the new formalization, we can describe the inference problem in a broader way.
 
 \subsection{Partial Correlation}
 Spearman: Pearson on ranking
@@ -281,220 +516,11 @@ For example $(d\ b\ 1\ -0.867)$ tells that $d\xrightarrow{-}b$ is probably a goo
 \caption{Resulting hypotheses of the toy example}\label{ResultBRN}
 \end{figure}
 In fact the choice of threshold of correlation coefficients has little influence: if resulting regulations do not satisfy desired properties, we can decrease the threshold down to 0.5, because when coefficient $r =0.5$, then the 95\% prediction interval of $Y|X$ will be about 13\% smaller than the 95\% prediction interval of $Y$, i.e. Y behaves more individually than relevantly \cite{hull1927correlation}.
-\section{Model Inference \textit{via a priori} Constraints}
-\subsection{Completion}
-In the context of LCG, completion is defined as follows: given a state sequence $S$ of observation and a set of possible regulations $H$ (in the form of ABAN) to be verified,  find the minimum subset of $H$ such that $S$ is realizable from initial state. 
-\subsection{Completion by Over-Approximation}
-Over-approximation links local states with initial state: if there exists a pathway from certain state and initial state, it is said that this state is reachable in the reasoning of over-approximation. Over-approximation does not take into consideration the order of occurrence, which may make certain state unreachable (literally it over-approximates the reachability). Thus over-approximation is a sufficient condition.
 
-In Figure \ref{CompOv}, the visualization of the set of possible regulations $R=\{(a,b,+),(c,a,-)\}$ is on the left. With initial state $\langle a_0,b_0,c_0\rangle$, at first $b_1$ is not reachable because of the inreachability of $a_1$, as $(c,a,-)\in R$, \ac{c_0}{a_0}{a_1} is added then $a_1$ becomes reachable which makes $b_1$ also reachable.
-
-\begin{figure}[ht]
-\centering
-\begin{tikzpicture}
-\coordinate (P1) at (0,0);
-\node at (P1) {{\Large c}};
-\coordinate (P2) at (2,0);
-\node at (P2) {{\Large a}};
-\coordinate (P3) at (4,0);
-\node at (P3) {{\Large b}};
-\coordinate (P4) at ($(P2)+(150:0.6)$);
-\draw (P1) circle(0.4) ;
-\draw (P2) circle(0.4);
-\draw (P3) circle(0.4);
-\draw [line width=1pt](30:0.5) .. controls  (1,0.7) .. (P4);
-\draw [->, line width=1pt]($(P2)+(30:0.5)$) .. controls  (3,0.7) .. ($(P3)+(150:0.55)$);
-\draw [line width=1pt]($(P4)+(45:0.15)$) -- ($(P4)-(45:0.15)$);
-\end{tikzpicture}\qquad
-\begin{tikzpicture}%[font=\scriptsize]
-%\path[use as bounding box] (0,-1) rectangle (4,4);
-
-\TSort{(0,0)}{c}{2}{l}
-\TSort{(3,0)}{a}{2}{r}
-\TSort{(6,0)}{b}{2}{r}
-\THit{a_1}{}{b_0}{.west}{b_1}
-\THit{c_0}{dashed,thick,color=red}{a_0}{.west}{a_1}
-
-
-\path[bounce,bend left]
-\TBounce{b_0}{}{b_1}{.west}
-\TBounce{a_0}{thick,color=red}{a_1}{.west}
-;
-\TState{a_0,b_0,c_0}
-\end{tikzpicture}
-\caption[Completion by over-approximation]{Completion by over-approximation. Dashed arrows represent added action.}\label{CompOv}
-\end{figure}
-
-%By means of over-approximation, if certain state is still not reachable after completion, we can say that the state is 
-
-\subsection{Completion \textit{via} Under-Approximation}
-Under-approximation links local states with any possibly appearing states instead of initial state. Likewise, if there is a pathway from certain state and initial state, this state is reachable in the reasoning of under-approximation. However, all the orders of occurrence do not necessarily appear during the simulation, which suggests that this approach ``under-approximates'' the reachability. If under-approximation of certain state is true, then this state is certainly reachable. Nevertheless, the calculation of under-approximation is more complicated than over approximation, as the set of appearing states grows during the computation, former added links need to be verified with new appearing states until the set becomes stable. This process is called ``update''. 
-
-Take the Automata Network in Figure \ref{ExUnder} as example with initial state $\langle a_0,b_0,c_0,d_0\rangle$. Figure \ref{Under1}, Figure \ref{Under2} and Figure \ref{Under3} show the procedures of under-approximation: after two additions of actions and an update, the LCG becomes stable and $a_2$ is reachable.
-\begin{figure}[!htbp]
-\centering
-\begin{tikzpicture}
-\TSort{(3,0)}{a}{3}{l}
-\TSort{(0,0)}{b}{2}{l}
-\TSort{(6,0)}{c}{2}{r}
-\TSort{(2,-2)}{d}{2}{b}
-\THit{b_1}{}{a_0}{.north west}{a_1}
-\THit{c_1}{}{a_1}{.east}{a_2}
-\THit{d_0}{distance=50,out=180,in=210}{b_0}{.west}{b_1}
-\THit{b_1}{}{d_0}{.north}{d_1}
-\THit{d_0}{distance=100,out=-75,in=-45,dashed,thick,color=red}{c_0}{.east}{c_1}
-\THit{c_1}{dashed,thick,color=red}{d_1}{.north}{d_0}
-
-
-\path[bounce,bend right]	
-\TBounce{a_1}{}{a_2}{.east}
-\TBounce{d_1}{thick,color=red}{d_0}{.north east}
-\TBounce{c_0}{thick,color=red}{c_1}{.east}
-;
-\path[bounce,bend left]
-\TBounce{a_0}{}{a_1}{.west}
-\TBounce{b_0}{}{b_1}{.west}
-\TBounce{d_0}{}{d_1}{.north west}
-;
-\TState{a_0,b_0,c_0,d_0}
-\end{tikzpicture}
-\caption[Completion by under-approximation]{Example of completion by under-approximation. Dashed arrows represent added actions.}\label{ExUnder}
-\end{figure}
-\begin{figure}[!htbp]
-\centering
-\begin{tikzpicture}
-\node (O1) at (0,0) {$a_0\Rsh^*a_2$};
-\node[draw] (Pm1) at (-1.75,0) {$a_2$};
-\draw[->] (Pm1)-- (O1);
-\node (S1) at ($(O1)+(1.5,0)$){};
-\draw[->] (O1) -- (S1);
-\draw (S1) circle (3pt);
-\node[draw] (P1) at ($(S1)+(1,1)$){$b_1$};
-\node[draw] (P2) at ($(S1)+(1,-1)$){$c_1$};
-\draw[->] (S1)--(P1);
-\draw[->] (S1)--(P2);
-\node (O2) at ($(P1)+(1.75,0)$) {$b_0\Rsh^*b_1$};
-\node (O3) at ($(P2)+(1.75,0)$) {$\perp$};
-\draw[->] (P1)--(O2);
-\draw[->] (P2)--(O3);
-\node (S2) at ($(O2)+(1.5,0)$){};
-\draw (S2) circle (3pt);
-\draw[->] (O2) -- (S2);
-\node[draw] (P3) at ($(S2)+(1,0)$){$d_0$};
-\draw[->] (S2) -- (P3);
-\node (O5) at ($(P3)+(1.75,0)$) {$d_0\Rsh^*d_0$};
-\draw[->] (P3)--(O5);
-\node (S5) at ($(O5)+(1.5,0)$){};
-\draw (S5) circle (3pt);
-\draw[->] (O5) -- (S5);
-\end{tikzpicture}
-\caption[Operations on LCG(1)]{Under-approximation LCG of Figure \ref{ExUnder} studying the reachability of $a_2$. \fbox{$c_1$} unreachable as $(b_1\land c_1)=$ false, $a_2$ is not reachable (small circles stand for solutions and squares stand for processes)}\label{Under1}
-\end{figure}
-
-\begin{figure}[!htbp]
-\centering
-\begin{tikzpicture}
-\node (O1) at (0,0) {$a_0\Rsh^*a_2$};
-\node[draw] (Pm1) at (-1.75,0) {$a_2$};
-\draw[->] (Pm1)-- (O1);
-\node (S1) at ($(O1)+(1.5,0)$){};
-\draw[->] (O1) -- (S1);
-\draw (S1) circle (3pt);
-\node[draw] (P1) at ($(S1)+(1,1)$){$b_1$};
-\node[draw] (P2) at ($(S1)+(1,-1)$){$c_1$};
-\draw[->] (S1)--(P1);
-\draw[->] (S1)--(P2);
-\node (O2) at ($(P1)+(1.75,0)$) {$b_0\Rsh^*b_1$};
-\node (O3) at ($(P2)+(1.75,0)$) {$c_0\Rsh^*c_1$};
-\draw[->] (P1)--(O2);
-\draw[->] (P2)--(O3);
-\node (S2) at ($(O2)+(1.5,0)$){};
-\draw (S2) circle (3pt);
-\draw[->] (O2) -- (S2);
-\node (S3) at ($(O3)+(1.5,0)$){};
-\draw[fill=black] (S3) circle (3pt);
-\draw[->] (O3) -- (S3);
-\node[draw] (P3) at ($(S2)+(1,0)$){$d_0$};
-\draw[->] (S2) -- (P3);
-\node[draw] (P4) at ($(S3)+(1,0)$){$d_1$};
-\draw[->] (S3) -- (P4);
-\node (O4) at ($(P3)+(30:1.75)$) {$d_0\Rsh^*d_0$};
-\node (O5) at ($(P3)+(1.75,0)$) {$d_1\Rsh^*d_0$};
-\draw[->] (P3)--(O4);
-\draw[->] (P3)--(O5);
-\node (O6) at ($(P4)+(-30:1.75)$) {$d_1\Rsh^*d_1$};
-\node (O7) at ($(P4)+(1.75,0)$) {$d_0\Rsh^*d_1$};
-\draw[->] (P4)--(O6);
-\draw[->] (P4)--(O7);
-\node (S4) at ($(O4)+(1.5,0)$){};
-\draw (S4) circle (3pt);
-\draw[->] (O4) -- (S4);
-\node (S5) at ($(O5)+(1.5,0)$){$\perp$};
-\draw[->] (O5) -- (S5);
-\node (S6) at ($(O6)+(1.5,0)$){};
-\draw[fill=black] (S6) circle (3pt);
-\draw[->] (O6) -- (S6);
-\node (S7) at ($(O7)+(1.5,0)$){};
-\draw[fill=black] (S7) circle (3pt);
-\draw[->] (O7) -- (S7);
-\draw[->] ($(S7)+(0,3pt)$) -- (P1);
-\end{tikzpicture}
-\caption[Operations on LCG(2)]{According to possible regulation $r={(d,c,+)}\in R$, \ac{d_1}{c_0}{c_1} is added, but the reachability of under-approximation requires all the possible occurrences are realizable, e.g. transition $d_1\Rsh^*d_0$ must be realizable (filled small circles stand for new possible solutions after completion)}\label{Under2}
-\end{figure}
-
-\begin{figure}[!htbp]
-\centering
-\begin{tikzpicture}
-\node (O1) at (0,0) {$a_0\Rsh^*a_2$};
-\node[draw] (Pm1) at (-1.75,0) {$a_2$};
-\draw[->] (Pm1)-- (O1);
-\node (S1) at ($(O1)+(1.5,0)$){};
-\draw[->] (O1) -- (S1);
-\draw (S1) circle (3pt);
-\node[draw] (P1) at ($(S1)+(1,1)$){$b_1$};
-\node[draw] (P2) at ($(S1)+(1,-1)$){$c_1$};
-\draw[->] (S1)--(P1);
-\draw[->] (S1)--(P2);
-\node (O2) at ($(P1)+(1.75,0)$) {$b_0\Rsh^*b_1$};
-\node (O3) at ($(P2)+(1.75,0)$) {$c_0\Rsh^*c_1$};
-\draw[->] (P1)--(O2);
-\draw[->] (P2)--(O3);
-\node (S2) at ($(O2)+(1.5,0)$){};
-\draw (S2) circle (3pt);
-\draw[->] (O2) -- (S2);
-\node (S3) at ($(O3)+(1.5,0)$){};
-\draw (S3) circle (3pt);
-\draw[->] (O3) -- (S3);
-\node[draw] (P3) at ($(S2)+(1,0)$){$d_0$};
-\draw[->] (S2) -- (P3);
-\node[draw] (P4) at ($(S3)+(1,0)$){$d_1$};
-\draw[->] (S3) -- (P4);
-\node (O4) at ($(P3)+(30:1.75)$) {$d_0\Rsh^*d_0$};
-\node (O5) at ($(P3)+(1.75,0)$) {$d_1\Rsh^*d_0$};
-\draw[->] (P3)--(O4);
-\draw[->] (P3)--(O5);
-\node (O6) at ($(P4)+(-30:1.75)$) {$d_1\Rsh^*d_1$};
-\node (O7) at ($(P4)+(1.75,0)$) {$d_0\Rsh^*d_1$};
-\draw[->] (P4)--(O6);
-\draw[->] (P4)--(O7);
-\node (S4) at ($(O4)+(1.5,0)$){};
-\draw (S4) circle (3pt);
-\draw[->] (O4) -- (S4);
-\node (S5) at ($(O5)+(1.5,0)$){};
-\draw[fill=black] (S5) circle (3pt);
-\draw[->] (O5) -- (S5);
-\node (S6) at ($(O6)+(1.5,0)$){};
-\draw (S6) circle (3pt);
-\draw[->] (O6) -- (S6);
-\node (S7) at ($(O7)+(1.5,0)$){};
-\draw (S7) circle (3pt);
-\draw[->] (O7) -- (S7);
-\draw[->] ($(S5)-(0,3pt)$) -- (P2);
-\draw[->] ($(S7)+(0,3pt)$) -- (P1);
-\end{tikzpicture}
-\caption[Operations on LCG(3)]{Second step: the under-approximation LCG after completion shows $a_2$ is now reachable after adding $\acm{c_1}{d_1}{d_0}$ (filled small circles stand for new possible solutions after updates)}\label{Under3}
-\end{figure}
 \section{Model Revision \textit{via} Reachability Properties and Time-Series Data}
+When modeling a real system, one usually require to assess the consistency between a given modeling network and the concrete system by checking whether the observed configurations are indeed reachable in the Boolean network.
+Whenever it is not the case, it typically means that the designed Boolean functions do not model the given system correctly and thus should be revised before further model analysis.
+
 Inoue \cite{inoue2011logic} has shown that Boolean networks can be represented by logic programs.
 In this paper, we provide an approach to revise a logic program to fit temporal properties regarding reachability of partial states.
 %
