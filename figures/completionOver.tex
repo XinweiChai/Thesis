@@ -1,0 +1,31 @@
+\begin{tikzpicture}
+\coordinate (P1) at (0,0);
+\node at (P1) {{\Large c}};
+\coordinate (P2) at (2,0);
+\node at (P2) {{\Large a}};
+\coordinate (P3) at (4,0);
+\node at (P3) {{\Large b}};
+\coordinate (P4) at ($(P2)+(150:0.6)$);
+\draw (P1) circle(0.4) ;
+\draw (P2) circle(0.4);
+\draw (P3) circle(0.4);
+\draw [line width=1pt](30:0.5) .. controls  (1,0.7) .. (P4);
+\draw [->, line width=1pt]($(P2)+(30:0.5)$) .. controls  (3,0.7) .. ($(P3)+(150:0.55)$);
+\draw [line width=1pt]($(P4)+(45:0.15)$) -- ($(P4)-(45:0.15)$);
+\end{tikzpicture}\qquad
+\begin{tikzpicture}%[font=\scriptsize]
+%\path[use as bounding box] (0,-1) rectangle (4,4);
+
+\TSort{(0,0)}{c}{2}{l}
+\TSort{(3,0)}{a}{2}{r}
+\TSort{(6,0)}{b}{2}{r}
+\THit{a_1}{}{b_0}{.west}{b_1}
+\THit{c_0}{dashed,thick,color=red}{a_0}{.west}{a_1}
+
+
+\path[bounce,bend left]
+\TBounce{b_0}{}{b_1}{.west}
+\TBounce{a_0}{thick,color=red}{a_1}{.west}
+;
+\TState{a_0,b_0,c_0}
+\end{tikzpicture}

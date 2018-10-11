@@ -21,7 +21,7 @@ The call of ASP is done by package \textit{pyasp}\footnote{\url{https://pypi.pyt
 \end{figure}
 \begin{figure}[ht]
     \centering
-    \input{ConflictInForks.tex}
+    \input{conflictInForks.tex}
     \caption[Counterexample of PermReach]{This counterexample shows former PermReach is inconclusive if multiple states of one automaton appear in the branches of one \textbf{AND gate} ($d_0$ and $d_1$ in this example). 
     However there exists a consistent state sequence: $d_1::b_1::c_1::a_1$ corresponding to the trajectory $\acm{c_0}{d_0}{d_1}::\acm{d_0,a_0}{b_0}{b_1}::\acm{d_1,e_0}{c_0}{c_1}::\acm{b_1,c_1}{a_0}{a_1}$ which could be found by ASPReach.}\label{fig:countexPerm}
 \end{figure}
