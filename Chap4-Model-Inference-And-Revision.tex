@@ -52,19 +52,35 @@ The completely exhaustive solution that we just presented is still meaningless i
 Roughly speaking, we aim at finding the transitions among the candidates which meet the unsatisfied constraints and keep satisfied constraints satisfied.
 
 \subsection{Problem Description}
+Briefly speaking, completion problem is: incomplete model + candidate regulations + constraints $\to$ complete model.
+The complete model contains all the elements in the incomplete model and consistent with all the \textit{a priori} information. 
+
 \begin{definition}[Model completion]
     Given an incomplete ABAN $AB=(\Sigma, L, T)$ (where $T$ can be empty), a complete model is an ABAN $AB'=(\Sigma, L, T')$ which satisfies $T'\supseteq T$, $AB'$ consistent with the set of reachability constraints $C$ and the completion set $CS=T'\setminus T$ is consistent with the set of candidate regulations $R$, where
     \begin{itemize}
-        \item  $R=\{(body,head,sgn)| body\in LS, head\in LS, sgn\in \{+,-\}\}$ 
-        \item $C=\{(s,reach)|s\in LS, reach\in \{\mathbf{True,False}\}\}$
+        \item $R=\{(body,head,sgn)\mid body\in \Sigma,\ head\in \Sigma,\ sgn\in \{0,1\}\}$ 
+        \item $C=\{(\alpha,\omega,r)\mid\alpha \in L,\ \omega\in LS,\ r\in \{\mathbf{True,False}\}\}$
     \end{itemize}
 \end{definition}
+
+$R$ shows the possible relations between variables, $body$ may inhibit (0) or promote (1) $head$.
+$C$ shows the \textit{a priori} reachability, $\omega$ is (un)reachable from $\alpha$.
+The definition of consistency is straightforward, but is different for reachability constraints and candidate regulations.
+
 \begin{definition}[Consistency]
+\leavevmode
+\makeatletter
+\@nobreaktrue
+\makeatother
+\begin{itemize}
+    \item An ABAN $AB$ is said consistent with a with the set of reachability constraints $C$ iff $\forall (\alpha,\omega,r)\in C$ s.t. $reach(\alpha,\omega)=r$
+    \item A completion set $CS$ is said consistent with a with the set of candidate regulations $R$ if $\forall \acm{a_i}{b_{1-j}}{b_j}\in CS, \exists (body,head,sgn)\in R$ s.t. $body=a,\ head=b,\ (i=j)=sgn$. 
+\end{itemize}
     
 \end{definition}
 Theoretically, to obtain a good new ABAN, we have to assure $T$ has no \textit{bad} transitions, because the completion operation is not able to remove bad transitions. 
 
-Before our research began, Paulev\'e \textit{et al.} have worked on cut-sets for reachability in large scale automata networks \cite{PAK13-CAV}, which is the reverse operation of completion set.
+Before our research began, Paulev\'e \textit{et al.} had worked on cut-sets for reachability in large scale automata networks \cite{PAK13-CAV}, which is the reverse operation of completion set.
 It can eliminate certain transitions according to unreachability properties.
 By combining these two operations, one can construct/revise a model according to \textit{a priori} information (candidate regulations) and constraints (reachability).
 
@@ -91,15 +107,29 @@ $T'=\{\acm{a_1}{b_0}{b_1},\acm{c_0}{a_0}{a_1}\}$, $CS=\{\acm{c_0}{a_0}{a_1}\}$.
 \input{figures/completionOver.tex}
 \caption[Completion by over-approximation]{Completion by over-approximation. Dashed arrows represent added action.}\label{CompOv}
 \end{figure}
-\textbf{Algorithm}
-%By means of over-approximation, if certain state is still not reachable after completion, we can say that the state is 
+Algorithm \ref{algComOver} shows the detailed algorithm.
 
 \subsection{Completion by Under-Approximation}
-Over-approximation in only a necessary condition of reachability.
+Over-approximation is only a necessary condition of reachability.
 If one wants to guarantee the reachability even in the price of redundant transitions, he may consider the completion by under-approximation.
-Under-approximation is another reasoning related to LCG. It associates the local states with any local states which may appear instead of the initial state. Likewise, if there is a pathway from certain local state and the initial state, this state should be reachable. However, all the orders of occurrence do not necessarily appear during the simulation, which suggests that this approach ``under-approximates'' the reachability. If under-approximation of certain state is true, then this state is certainly reachable. Nevertheless, the computation of under-approximation is more complicated than over approximation, as the set of appearing states grows during the computation, former added links need to be verified with new appearing states until the set becomes stable. This process is called ``update''. 
 
-Take the Asynchrhonous Automata Network $AAN=(\Sigma, L, T)$ in Figure \ref{ExUnder} as example with $\Sigma= \{a,b,c,d\}$, $T=\{\acm{b_1}{a_0}{a_1}, \acm{b_1}{d_0}{d_1},\acm{c_1}{a_1}{a_2}, \acm{d_0}{b_0}{b_1}\}$, initial state $\langle a_0,b_0,c_0,d_0\rangle$.
+Under-approximation is another reasoning of LCG. 
+It associates \textit{all} the local states with the initial state which may appear instead of the initial state.
+This association covers all the orders of occurrence.
+Likewise, in the LCG, if there is a pathway from certain local state and the initial state, this state \textit{should} be reachable.
+
+However, all the orders of occurrence do not necessarily appear during the simulation, which suggest that this approach ``under-approximates'' the reachability.
+
+Additionally, the computation of under-approximation is more complicated than over approximation, as the set of associated local states grows during the computation.
+Former added local states need to be regarded as new ``target states''.
+This process is called \textit{update}. 
+Update does not stop until the set of associated local states becomes stable.
+
+\begin{definition}[Under-approximation]
+    
+\end{definition}
+
+Let us take the Asynchrhonous Automata Network $AAN=(\Sigma, L, T)$ in Figure \ref{ExUnder} as example with $\Sigma= \{a,b,c,d\}$, $T=\{\acm{b_1}{a_0}{a_1}, \acm{b_1}{d_0}{d_1},\acm{c_1}{a_1}{a_2}, \acm{d_0}{b_0}{b_1}\}$, initial state $\langle a_0,b_0,c_0,d_0\rangle$.
 With candidate regulations $R=\{(d,c,-),(c,d,-)\}$, Figure \ref{Under1}, Figure \ref{Under2} and Figure \ref{Under3} show the procedures of under-approximation: after two additions of actions and an update, the LCG becomes stable and $a_2$ is reachable.
 $T'=\{\acm{b_1}{a_0}{a_1}, \acm{b_1}{d_0}{d_1},\acm{c_1}{a_1}{a_2}, \acm{d_0}{b_0}{b_1},\acm{d_1}{c_0}{c_1}, \acm{c_1}{d_1}{d_0}\}$, $CS=\{\acm{d_1}{c_0}{c_1}, \acm{c_1}{d_1}{d_0}\}$.
 
@@ -109,51 +139,56 @@ $T'=\{\acm{b_1}{a_0}{a_1}, \acm{b_1}{d_0}{d_1},\acm{c_1}{a_1}{a_2}, \acm{d_0}{b_
 \caption[Completion by under-approximation]{Example of completion by under-approximation. Dashed arrows represent added actions.}\label{ExUnder}
 \end{figure}
 
+In Figure \ref{Under1}, \fbox{$c_1$} unreachable then the joint state $\langle b_1, c_1\rangle$ is not reachable, $a_2$ is not reachable .
+
 \begin{figure}[ht]
 \centering
 \input{figures/completionUnderLCG1.tex}
-\caption[Operations on LCG(1)]{Under-approximation LCG of Figure \ref{ExUnder} studying the reachability of $a_2$. \fbox{$c_1$} unreachable then the joint state $\langle b_1, c_1\rangle$ is not reachable, $a_2$ is not reachable (small circles stand for solutions and squares stand for processes)}\label{Under1}
+\caption[Operations on LCG(1)]{Step 1, under-approximation LCG of Figure \ref{ExUnder} studying the reachability of $a_2$ (small circles stand for solutions and squares stand for processes). }\label{Under1}
 \end{figure}
+
+In Figure \ref{Under2}, according to candidate regulation ${(d,c,-)}\in R$, \ac{d_1}{c_0}{c_1} is added, but the reachability of under-approximation requires all the possible occurrences are realizable, e.g. transition $d_1\Rsh^*d_0$ must be firable.
 
 \begin{figure}[ht]
 \centering
 \input{figures/completionUnderLCG2.tex}
-\caption[Operations on LCG(2)]{According to candidate regulation ${(d,c,-)}\in R$, \ac{d_1}{c_0}{c_1} is added, but the reachability of under-approximation requires all the possible occurrences are realizable, e.g. transition $d_1\Rsh^*d_0$ must be firable (filled small circles stand for new possible solutions after completion)}\label{Under2}
+\caption[Operations on LCG(2)]{Step 2 of completion by under-approximation (filled small circles stand for new possible solutions after completion).}\label{Under2}
 \end{figure}
+
+In Figure \ref{Under3}, the completed under-approximation LCG shows $a_2$ is now reachable after adding $\acm{c_1}{d_1}{d_0}$ according to ${(c,d,-)}\in R$.
 
 \begin{figure}[ht]
 \centering
 \input{figures/completionUnderLCG3.tex}
-\caption[Operations on LCG(3)]{Second step: the under-approximation LCG after completion shows $a_2$ is now reachable after adding $\acm{c_1}{d_1}{d_0}$ according to ${(c,d,-)}\in R$ (filled small circles stand for new possible solutions after updates)}\label{Under3}
+\caption[Operations on LCG(3)]{Step 3 of completion by under-approximation (filled small circles stand for new possible solutions after completion).}\label{Under3}
 \end{figure}
+
+Algorithm \ref{algComUnder} shows the whole process.
+
+Also, if one wants to study the candidate transitions with multiple variables in the head, he can also replace regulations with transitions, using the same process to complete the ABAN. 
+
 \section{Model Inference via Statistics}
 
-In the previous sections, only the systems with delay 1 are discussed (BN, ABAN, etc.), i.e. the impact done by variables will take place at the next time point (immediately).
+In the previous contents, only the systems with delay 1 are discussed (BN, ABAN, etc.), i.e. the influence done by variables will take place at the next time point (immediately).
 However, in biological context, some reactions have a long duration, and some even need a whole observation period to take place.
 For this reason, we require approaches to reveal transitions of different delays: for an observation of period $T$, possible delays lie in $[1,T-1]$.
 
 \subsection{Preliminaries}
-In the Definition \ref{def:ABAN} of ABAN, every transition takes effect immediately.
-To integrate the notion of delay into ABAN, we modify the formula of transition.
+In Section \ref{sec:regNetwork}, the definition of regulatory network requires every regulation take effect immediately, as the definition is originally related to ordinary differential equations \cite{khalis2009smbionet}.
 
-\begin{definition}[ABAN with delay]
-An ABAN is a triplet $AB = (\Sigma,L,T)$, where:
+To integrate the notion of delay into regulatory network, we modify the definition of regulatory network.
+\begin{definition}[Regulatory network with delay]
+A biological regulatory graph is a labeled directed graph $G=(V,E)$ where 
 \begin{itemize}
-\item $\Sigma\triangleq\{a,b,\ldots\}$ is the finite set of automata with every component having a Boolean state;
-\item $LS\triangleq \underset{a\in \Sigma}{\cup} \{a_0,a_1\}$ is the set of all local states, $L\triangleq \underset{a\in \Sigma'}{\times} \{a_0,a_1\}$ is the set of joint states where $\Sigma'\subseteq\Sigma$. Particularly, if $\Sigma'=\Sigma$, $L$ is the set of global states. 
-\item $T\triangleq \{A\xrightarrow{t} b_i\mid b\in \Sigma \land A\in L, t\in \mathbb{N}^*\}$ is the set of transitions, where $A$ (called head) is the set of required state(s) for transition $tr=A\xrightarrow{t} b_i$ , which allows to flip $b_{1-i}$ to $b_i$ (called body). In other words, transition $tr$ is said fireable iff $A\subseteq s$, where $s$ is the current global state.
+    \item each vertex $v$ of $V$, called variable, is provided with a boundary $b_v\in \mathbb{N}$ less or equal to the out-degree of v in G.
+    \item each arc $u\in v$ of $E$ is labelled with a couple ($t_{uv}$, $\alpha_{uv}$) where $t_{uv}$ is an integer between 1 and $b_v$, called qualitative threshold and where $\alpha_{uv}\in \{+,-\}$ is the sign of the regulation.
 \end{itemize}
 \end{definition}
+
+
 With the new formalization, we can describe the inference problem in a broader way.
 
 
-Over-approximation, 
-
-\begin{definition}[Under-approximation]
-    
-\end{definition}
-
-\textbf{Algorithm}
 
 \subsection{Partial Correlation}
 Spearman: Pearson on ranking

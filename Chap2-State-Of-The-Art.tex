@@ -6,6 +6,18 @@ Modeling is a process of abstracting the real system into a more concise and mor
 To solve a certain problem, an appropriate modeling framework is crucial because different models have different bias from reality and have also different advantages in computation, e.g. fix point, reachability etc.
 Here I introduce several most frequent modeling frameworks and compare their advantages and disadvantages.
 
+\subsection{Regulatory Network}\label{sec:regNetwork}
+Regulatory Network (RN) has characteristics of a static network, representing the interactions between components.
+It is applied in static analysis, gene expression \cite{shinozaki2003regulatory}, \textit{etc}.
+
+\begin{definition}[Regulatory network]
+A regulatory network is a labeled digraph $G=(V,E)$ where 
+\begin{itemize}
+    \item each vertex $v$ of $V$, called variable, is provided with a boundary $b_v\in \mathbb{N}$ less or equal to the out-degree of v in G.
+    \item each arc $u\in v$ of $E$ is labelled with a couple ($t_{uv}$, $\alpha_{uv}$) where $t_{uv}$ is an integer between 1 and $b_v$, called qualitative threshold and where $\alpha_{uv}\in \{+,-\}$ is the sign of the regulation.
+\end{itemize}
+\end{definition}
+
 \subsection{Boolean Network}
 Boolean Network (BN) is a traditional framework studied for decades \cite{kauffman1969}.
 A BN $G(V,F)$ consists of a set of nodes $V=\{v_1,\cdots,v_n\}$ and a set of Boolean functions $F=(f_1,\cdots,f_n)$ where $f_i(v_1,\cdots,v_n)$ decides the value of node $v_i$ of the next time point.
@@ -17,7 +29,6 @@ In some applications, the nodes are classified into incoming nodes, outgoing nod
     \label{fig:booleannetwork}
 \end{figure}
 
-Regulatory Network (RN) has more characteristics of a static network, representing the interactions between components. It is applied in static analysis, gene expression \cite{shinozaki2003regulatory}, \textit{etc}.
 The representation of Boolean functions is concise but does not indicate intuitively the state change between moment $t$ and $t+1$.
 Transition interpretations and state transition graph are straightforward but there are two drawbacks: 
 \begin{itemize}
