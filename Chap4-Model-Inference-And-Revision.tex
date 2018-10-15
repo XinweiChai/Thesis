@@ -168,30 +168,62 @@ Algorithm \ref{algComUnder} shows the whole process.
 Also, if one wants to study the candidate transitions with multiple variables in the head, he can also replace regulations with transitions, using the same process to complete the ABAN. 
 
 \section{Model Inference via Statistics}
+As we already have the completion approaches, to make it applicable, we need to obtain candidate regulations.
+Here we introduce an approach to generate hypotheses to be verified from time series data.
 
 In the previous contents, only the systems with delay 1 are discussed (BN, ABAN, etc.), i.e. the influence done by variables will take place at the next time point (immediately).
 However, in biological context, some reactions have a long duration, and some even need a whole observation period to take place.
 For this reason, we require approaches to reveal transitions of different delays: for an observation of period $T$, possible delays lie in $[1,T-1]$.
 
 \subsection{Preliminaries}
-In Section \ref{sec:regNetwork}, the definition of regulatory network requires every regulation take effect immediately, as the definition is originally related to ordinary differential equations \cite{khalis2009smbionet}.
+In Definition \ref{def:RN}, the definition of regulatory network (RN) is originally related to a set of approximated ordinary differential equations (ODEs) \cite{khalis2009smbionet}:
+%$$\dv{x_v}{t}=k_v+\sum_{u\in v.pred}{x_uk_{uv}s^{\alpha_{uv}}(x_u,\theta_{uv})}-\lambda_v x_v$$
+$$\dv{x_v}{t}=k_v+\sum_{u\in v.pred}{x_uk_{uv}}-\lambda_v x_v$$
+where $x_v$ is the concentration of variable $v$, $k_v, \lambda_v\in \mathbb{R}$ are self-regulation kinetic parameters and $k_{uv}\in \mathbb{R}$ are kinetic parameters of external regulations.
 
-To integrate the notion of delay into regulatory network, we modify the definition of regulatory network.
+%\begin{itemize}
+%    \item $k_v\in \mathbb{R^{*}}$ and $k_{uv}\in \mathbb{R^{+*}}$ are kinetic parameters
+%    \item the function $s^{\alpha_{uv}}$ gives the effect of a regulator $u$ and its target $v$.
+%    This function is usually a sigmoid depending on the sign $\alpha_{uv}$ and on the quantitative threshold $\theta_{uv}\in \mathbb{R}^{+*}$ the interaction.
+%\end{itemize}
+
+Here, considering the the following reasons, we make several changes.
+\begin{enumerate}
+    \item The change rate done by external regulations is not always proportional to the concentration of corresponding external variables. 
+    Consider an elementary biochemical reaction $m\mathrm  {A}+n\mathrm  {B}\rightarrow \mathrm  {C}$, according to rate law, the synthesis rate of C is $r_{\mathrm  {C}}\;=\;k[{\mathrm  {A}}]^{m}[{\mathrm  {B}}]^{n}$.
+    \item In the community of model inference, self-regulations are often considered difficult to be detected because nearly every transition could be explained as a self-regulation.
+    For example, in DREAM8\footnote{\url{https://www.synapse.org/\#!Synapse:syn1720047/wiki/55342}}, self-regulations are \textit{a priori} ignored.  
+    \item The influence is done immediately, without delay.
+    Considering the discretization on time, $\delta$ takes only natural numbers in this thesis.
+\end{enumerate}
+
+To integrate these hypotheses, the ODEs are modified to:
+
+%$$\dv{x_v}{t}=\sum_{u\in v.pred}{k_{uv}s^{\alpha_{uv}}(x_u,\theta_{uv})}$$
+%$$\dv{x_v(t)}{t}=\sum_{u\in v.pred}{x_u(t)k_{uv}}$$
+\begin{equation}\label{eq:ode}
+    \dv{x_v(t)}{t}=\sum_{u\in v.pred}{x_u^{n}(t-\delta)k_{uv}}
+\end{equation}
+
+
+where $\delta\in \mathbb{R}^{*}$ is the delay of the regulation, $n\in \mathbb{R}^{+}$ is the order of regulation (corresponding to the order of reaction).
+Also, self-regulations are not taken into account, i.e. $k_v$ and $\lambda_v$ are set to 0.
+
+The definition of RN requires every regulation take effect immediately.
+To cooperate with the new ODEs, it is adapted to the version with delay.
+
 \begin{definition}[Regulatory network with delay]
-A biological regulatory graph is a labeled directed graph $G=(V,E)$ where 
+A regulatory network with delay is a labeled directed graph $G=(V,E)$ where 
 \begin{itemize}
     \item each vertex $v$ of $V$, called variable, is provided with a boundary $b_v\in \mathbb{N}$ less or equal to the out-degree of v in G.
-    \item each arc $u\in v$ of $E$ is labelled with a couple ($t_{uv}$, $\alpha_{uv}$) where $t_{uv}$ is an integer between 1 and $b_v$, called qualitative threshold and where $\alpha_{uv}\in \{+,-\}$ is the sign of the regulation.
+    \item each arc $u\in v$ of $E$ is labelled with a triplet ($t_{uv}, \alpha_{uv}, \delta$) where $t_{uv}$ is an integer between 1 and $b_v$, called qualitative threshold, where $\alpha_{uv}\in \{+,-\}$ is the sign of the regulation and $\delta\in \mathbb{N^+}$ is the delay of the regulation.
 \end{itemize}
 \end{definition}
 
-
-With the new formalization, we can describe the inference problem in a broader way.
-
+With the new formalization, we can now begin with the inference problem.
 
 
 \subsection{Partial Correlation}
-Spearman: Pearson on ranking
 
 In huge biological networks, it is not possible to calculate hypotheses by hand nor to traverse all the possible addable transitions, as stated formerly, the verification of $\mathcal{O}(3^{|Global States|})$ states is a huge task (for any component, each of other components has 3 possibilities, promotion, inhibition and no regulation).
  
@@ -203,6 +235,12 @@ They try to find relations between different components from the observation of 
 One additional profit of statistical approaches is that original time series data are discretized before being used, which cause a loss of information.
 This loss could lead to an imprecise model.
 However, some statistical approaches could use directly the continuous time series data as input which avoid this difficulty.
+
+According to Equation \ref{eq:ode}, if we consider the case $n=1$, the change rate of certain variable is the linear sum of other variables.
+The linear links are detectable via an approach using Pearson correlation coefficients.
+
+For the case $n\neq 1$, we can apply an approach using Spearman correlation coefficients.
+
 
 \subsubsection{Overall Process}
 We proposed a method applying partial correlation to detect the relevance of each pair of components.
