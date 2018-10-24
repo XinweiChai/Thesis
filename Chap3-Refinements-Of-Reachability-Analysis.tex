@@ -5,8 +5,8 @@ We noticed that even though there exist already exact model checkers and static 
 Exact model checkers face always the state space explosion problem when analyzing big models (of about 50 variables);
 Static analyzer PINT, designed for Process Hitting/Automata Network is however, theoretically inconclusive, i.e. not able to provide a global solution.
 
-This chapter is going to formally clarify, modify the definitions of the modelings in order to make them more suited for our own reachability analyzers, then explain how their related static analysis functions.
-Also, to deal with the inconclusiveness problem, we propose at first doing some preprocessings to simplify the topology of the networks, then apply two new approaches (PermReach and ASPReach) based on over-approximation, covering the shortcomings of pure static analysis.
+This chapter is going to formally clarify the definition of SLCG and \textbf{why}, modify the definitions of the modelings in order to make them more suited for our own reachability analyzers, then explain how their related static analysis functions.
+Also, to deal with the inconclusiveness problem, we propose at first doing some preprocessings \textbf{why} to simplify the topology of the networks, then design two new tools (PermReach and ASPReach \textbf{why two}) based on over-approximation, covering some shortcomings of pure static analysis.
 They try to recover the lost information due to abstraction done by static analysis, constructing a more close approximation of the real dynamics in order to gain a better conclusiveness.
 \end{mybox}
 
@@ -26,6 +26,8 @@ Abstract methods often have better time-memory performance but with a loss of in
 They solve usually a simplified version of the original model, i.e. the results from these approaches are not necessarily compatible with all the properties of the original model.
 While studying reachability problems, the system dynamics is abstracted to static causalities between states and transitions.
 
+
+What I am going to do in this chapter and why
 \section{Asynchronous Binary Automata Network}
 In \cite{folschette2015}, Paulev\'e \textit{et al.} have proposed Asynchronous Automata Network (AAN) to model concurrent systems and Local causality graph (LCG) \cite{pauleve2017reduction,folschette2015,pauleve2011} to analyze the reachability of AAN.
 This interpretation drastically reduces the searching state-space thus avoids costly global search \cite{pauleve2012}. 
@@ -37,7 +39,7 @@ LCG can only conclude with the following two constraints:
 \end{itemize}
 We are thus going to refine the reachability analysis to deal with more instances.
 To attack the inconclusiveness problem, we have designed a new discrete modeling framework for concurrent systems \cite{chai2018heuristic}: Asynchronous Binary Automata Network (ABAN).
-In ABAN, we adapted LCG to SLCG (Simplified LCG) to address reachability problem.
+\textbf{WHY} In ABAN, we adapted LCG to SLCG (Simplified LCG) to address reachability problem.
 This approach refers to a static abstraction of the reachability (with an over-approximation of the real dynamics).
 Under ABAN, SLCG is more prone to conclude than LCG under AAN (Section \ref{sec:SLCG}).
 
@@ -47,11 +49,14 @@ An ABAN is a triplet $AB = (\Sigma,L,T)$, where:
 \begin{itemize}
 \item $\Sigma\triangleq\{a,b,\ldots\}$ is the finite set of automata with every component having a Boolean state;
 \item $LS\triangleq \underset{a\in \Sigma}{\cup} \{a_0,a_1\}$ is the set of all local states, $L\triangleq \underset{a\in \Sigma'}{\times} \{a_0,a_1\}$ is the set of joint states where $\Sigma'\subseteq\Sigma$. Particularly, if $\Sigma'=\Sigma$, $L$ is the set of global states. 
-\item $T\triangleq \{A\rightarrow b_i\mid b\in \Sigma \land A\in L\}$ is the set of transitions, where $A$ (called head) is the set of required state(s) for transition $tr=A\to b_i$ , which allows to flip $b_{1-i}$ to $b_i$ (called body). In other words, transition $tr$ is said fireable iff $A\subseteq s$, where $s$ is the current global state.
+\item $T\triangleq \{A\rightarrow b_i\mid b\in \Sigma \land A\in L\}$ is the set of transitions.
+For transition $tr=A\to b_i$, $A$ (called head, noted $head(tr)$) is the set of required state(s), which allows to flip $b_{1-i}$ to $b_i$ (called body, noted $body(tr)$). In other words, transition $tr$ is said fireable iff $A\subseteq s$, where $s$ is the current global state. \textbf{why it is noted like this} $A\rightarrow b_i\Rsh b_j$
 \end{itemize}
 \end{definition}
 
-A local states represent the state of one automaton, e.g. $a_1$, while a global state represents the joint state of all automata, e.g. $\langle a_0, b_1,c_0 \rangle$ where $L=\{a,b,c\}$.
+A local state represents the state of one automaton, \textit{e.g.} $a_1$.
+A joint state represents the state of a set of automata, \textit{e.g.} $\langle a_i, b_j\rangle$.
+When we take all the automata in the system as the set of automata, the corresponding joint state is in fact the state of the whole system, which is the global state, \textit{e.g.} $\langle a_0, b_1,c_0 \rangle$ where $L=\Sigma =\{a,b,c\}$.
 
 \begin{definition}[Dynamics]
     From current global state $s$, the global state after firing transition $tr=A\to b_j$ is denoted $s \cdot tr = s \setminus \{b_i\} \cup \{b_j\}, b_i \in s$.
@@ -59,10 +64,13 @@ A local states represent the state of one automaton, e.g. $a_1$, while a global 
 \end{definition}
 
 To describe the evolution in an ABAN, we use the notion of trajectory.
+
 \begin{definition}[Trajectory]
 Given an ABAN $AB = (\Sigma,L,T)$ and a global initial state $\alpha\in L$, a trajectory $t$ from $\alpha$ is a sequence of transitions $t=tr_1::\cdots :: tr_i::\cdots ::tr_n$ with $tr_i\in T$ and each $tr_i$ is fireable in $(s \cdot tr_1 \cdot \ldots \cdot tr_{i-1})$.
 From $\alpha$, the global state after firing all transitions of $t$ is $(s \cdot tr_1 \cdot \ldots \cdot tr_n)$, denoted $s \cdot t$.
 \end{definition}
+
+With the definition of trajectory, we can now define the dynamics of an ABAN.
 
 \begin{definition}[State sequence]
 Given an ABAN $AB = (\Sigma,L,T)$ and a global initial state $\alpha\in L$ and trajectory $t$, the state sequence $seq=s_1::\cdots :: s_i::\cdots ::s_n$ with $s_i\in LS$ is formed by the updated local states during the trajectory $t$.
@@ -79,7 +87,7 @@ Given an ABAN $AB = (\Sigma,L,T)$ and a global initial state $\alpha\in L$ and t
 \caption[Example of ABAN]{An example of ABAN}\label{exampleABAN}
 \end{figure}
 
-As to reachability problem, given ABAN, joint reachability $REACH (\alpha,\Omega)$ can be formalized as: joint state $\Omega$ is reachable iff there exists a trajectory $t$ s.t. $\alpha\cdot t=\Omega$.
+As to the reachability problems, given an ABAN, the joint reachability $REACH (\alpha,\Omega)$ can be formalized as: joint state $\Omega$ is reachable iff there exists a trajectory $t$ s.t. $\alpha\cdot t=\Omega$.
 Partial reachability $reach(\alpha,\omega)$ is defined analogously: local state $\omega=a_i$ is reachable iff there exists a trajectory $t$ s.t. $(\alpha\cdot t)[a]=a_i$.
 $REACH (\alpha,\Omega)$ and $reach(\alpha,\omega)$ take Boolean values \textbf{True}, \textbf{False} or \textbf{Inconclusive} if it cannot be decided.
 In Figure \ref{exampleABAN}, $\Omega=\langle a_1,b_1,c_1,d_1,e_0\rangle$ or $\omega=a_1$ is reachable from initial state $\alpha$ \textit{via} trajectory $t$, \textit{i.e.} $reach(\alpha,a_1)=\textbf{True}$ and $REACH(\alpha,\Omega)=\textbf{True}$. 
@@ -101,14 +109,16 @@ However LCG does not guarantee to obtain a result, i.e. some inconclusive instan
 In this thesis, we make use of the LCG by removing some elements needed only in multivalued networks, naming it SLCG (Simplified LCG), then we try to analyze it more deeply to solve inconclusive cases of binary valued systems.
 In fact, Didier \textit{et al.} have shown a technique to transform a multivalued network to Boolean network \cite{didier2011mapping}, which provides us the applicability to multivalued networks.
 
-\begin{definition}[SLCG]\label{defSLCG}
-Given an ABAN $AB = (\Sigma,L,T)$, an initial state $\alpha$ and a target state $\omega$, LCG $l= (V_{\mathrm{state}},V_{\mathrm{solution}},E)$ is the smallest recursive structure with $E \subseteq (V_{\mathrm{state}}\times V_{\mathrm{solution}})\cap (V_{\mathrm{solution}}\times V_{\mathrm{state}})$ which satisfies:
+\begin{definition}[Over-approximate SLCG]\label{defSLCG}
+Given an ABAN $AB = (\Sigma,L,T)$, a global initial state $\alpha$ and a target local state $\omega$, LCG $l= (V_{\mathrm{state}},V_{\mathrm{solution}},E)$ is the smallest recursive structure with $E \subseteq (V_{\mathrm{state}}\times V_{\mathrm{solution}})\cap (V_{\mathrm{solution}}\times V_{\mathrm{state}})$ which satisfies:
 \begin{eqnarray*}
     \omega&\in& V_{\mathrm{state}} \\
-    a_i\in V_{\mathrm{state}} &\Leftrightarrow& \{ (a_i, sol_{a_i})| a_i\in \alpha\}\subseteq E \\
-    sol_{a_i}\in V_{\mathrm{solution}}&\Leftrightarrow& \{ (sol_{a_i},\mathbf{V}_a (sol_{a_i})\}\subseteq E
+    a_i\in V_{\mathrm{state}} &\Leftrightarrow& \{ (a_i, sol_{a_i}\mid head(sol_{a_i})=a_i)\}\subseteq E \\
+    sol_{a_i}\in V_{\mathrm{solution}}&\Leftrightarrow& \{ (sol_{a_i},\mathbf{V}(sol_{a_i}))| \mathbf{V}(sol_{a_i})=\varnothing \text{ \rm if } a_i\in \alpha,\\
+    &&\text{ \rm else }\mathbf{V}(sol_{a_i})\in body(sol_{a_i}) \}\subseteq E
 \end{eqnarray*}
-where $V_{\mathrm{state}}\subseteq LS$ is the set of local states, $V_{\mathrm{solution}}\subseteq T$ is the set of solutions and $\mathbf{V}_a$ is the set of required local states of $sol_{a_i}$.
+where $V_{\mathrm{state}}\subseteq LS$ is a set of local states, $V_{\mathrm{solution}}\subseteq T$ is the a of solutions and $\mathbf{V}(sol_{a_i})$ is the set of required local states of $sol_{a_i}$.
+\textbf{definition of and or gate}
 \end{definition}
 
 \begin{remark}
@@ -216,8 +226,11 @@ Similarly, if there is an outside incoming edge $a\to \circ \to x$, $a$ must be 
         \label{cycle1}
     \end{figure}
     
-    In Figure \ref{cycle1}, the pseudo-reachability of $a$ is 
-    $$reach'(l,a)=reach'(l,x)=reach'(l,y)=reach'(l,z)=reach'(l,x)\lor reach'(l,w)$$
+    In Figure \ref{cycle1}, the pseudo-reachability of $a$ in SLCG $l$ is 
+    \begin{eqnarray*}
+       reach'(l,a)&=&reach'(l,x)=reach'(l,y)=reach'(l,z)    \\
+         &=&reach'(l,x)\lor reach'(l,w)
+    \end{eqnarray*}
     To reach $x$, we need to reach $z$, but $z$ cannot depend on $x$ as $x$ is already to be reached. 
     Self-dependence appears: $x$ is reachable if $x$ is reachable.
     Thus edge $z\to \circ \to x$ is deleted (dashed line).
@@ -240,7 +253,8 @@ Unfortunately, not all cycles are removable via Theorem \ref{th:break_cycle}. Ex
 \end{example}
 
 \begin{theorem}\label{th:break_cycle2}
-Given a cycle, if it contains no \textbf{OR gate}% towards outside of cycle
+ Given a cycle, if it contains no \textbf{OR gate}% towards outside of cycle 
+ \textbf{need definition}
 , all the local states in the cycles are unreachable.
 \end{theorem}
 
@@ -278,8 +292,8 @@ The reachability of a joint state can be then formulated as sequential reachabil
 \begin{definition}[Sequential reachability]
 Let $s=\{ls_1,\ldots,ls_n\}$ be a joint state, $p_1,\ldots ,p_n$ be a permutation of $1,\ldots ,n$ and $seq=ls_{p_1}::\ldots::ls_{p_n}$ be a sequence.
 The sequential reachability of $seq$ is denoted %$reach(\alpha,seq)=reach(\alpha,ls_{p_1})::\ldots::reach(\alpha,ls_{p_n})$.
-$REACH(\alpha,seq)=reach(s_{p_1},ls_{p_1})::\ldots::reach(s_{p_n},ls_{p_n})$, where $s_{p_1}=\alpha$, $s_{p_i}=s_{p_i-1}\cdot t_{p_i-1}$, $t_{p_i-1}$ is the obtained trajectory by the SLCG.
-From initial state $\alpha$, $REACH(\alpha,seq)=\mathbf{True}$ if $s$ is reached in the order $seq$.
+$REACH(\alpha,seq)=reach(s_{p_1},ls_{p_1})::\ldots::reach(s_{p_n},ls_{p_n})$, where $s_{p_1}=\alpha$, $s_{p_i}=s_{p_i-1}\cdot t_{p_i-1}$, $t_{p_i-1}$ is the obtained trajectory from the SLCG.
+From an initial state $\alpha$, $REACH(\alpha,seq) = \mathbf{True}$ if $s$ is reached in the order $seq$.
 \end{definition}
 
 \begin{example}\label{example:order}
@@ -329,7 +343,7 @@ $reach(\alpha,a_1)$=\textbf{True} but \textbf{Inconclusive} is given by PermReac
 }\label{FigConflictInForks}
 \end{figure}
 \subsection{Reachability via Answer Set Programming (ASPReach)}
-We use ASP  (Answer Set Programming) \cite{baral2003knowledge} to analyze the newly obtained LCG with only \textbf{AND gates}.
+We use ASP  (Answer Set Programming) \cite{baral2003knowledge} to analyze the newly obtained SLCG with only \textbf{AND gates}.
 ASP is a prolog-like declarative programming paradigm.
 It uses description and constraints of the problem (called rule) instead of imperative orders.
 ASP solver tackles problems by generating all the possibilities respecting the constraints. 
@@ -377,7 +391,7 @@ In this section, we present our analyzer \textbf{ASPReach}: an algorithm for che
 However, exhaustive search leads to heavy computation and huge need of memory.
 The algorithm proposed below tries to overcome those shortcomings by combining static analysis and stochastic search into the following hybrid approach.
 
-
+\textbf{Some explanation}
 \paragraph{{\bf ASPReach}:}
 
 \begin{itemize}
@@ -593,10 +607,10 @@ If we find a state sequence consistent with all the order constraints, we can ob
 Still, ASPReach is not complete.
 A counter-example is shown in Figure \ref{fig:lcgInconc}, when there are multiple branches of one \textbf{OR gate} leading to unreachability, the result can be inconclusive.
 There is a tricky way to deal with this issue when $\mathbf{|OR gates|}$ is not big: we set a limit $n$, if $\mathbf{|OR gates|}<n$, we shift the heuristics on the assignment of \textbf{OR gates} to the enumeration of all possible assignments.
-This ``hacking'' can deal with some inconclusiveness.
-In the benchmarks in the next section, inconclusive instances appear neither in biological examples nor in random generated tests.
+This ``hack'' can deal with some inconclusiveness.
+In the benchmarks in the next section, inconclusive instances appear neither in biological examples nor in random generated tests. \textbf{to be detailed}
 
-We also show some algorithmic properties of ASPReach:
+We also show some algorithmic properties of ASPReach \textbf{explanation}:
 
 \begin{theorem}[The termination and correctness of ASPReach]
 

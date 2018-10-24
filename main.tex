@@ -16,6 +16,7 @@
 \usepackage[framemethod=tikz]{mdframed}
 \usepackage{physics}
 
+
 \definecolor{mycolor}{rgb}{0.122, 0.435, 0.698}
 
 \newmdenv[innerlinewidth=0.5pt, roundcorner=4pt,linecolor=mycolor,innerleftmargin=6pt, innerrightmargin=6pt,innertopmargin=6pt,innerbottommargin=6pt]{mybox}
@@ -61,6 +62,8 @@
 \newcommand{\omesi}{^\omega_\alpha}
 \newcommand{\vv}{\mathrm{v}^{val}}
 
+\theoremstyle{definition}
+
 \newtheorem{definition}{Definition}[chapter]
 \newtheorem{theorem}{Theorem}[chapter]
 \newtheorem{example}{Example}[chapter]
@@ -84,11 +87,12 @@
 \chapter*{List of symbols}
 \begin{tabular}{l|l}
     $a_i$  & automaton $a$ is taking value $i$ \\
-    $x::y$ &  $x$ happens just before $y$\\
+    $x::y$ & event $x$ happens just before $y$\\
     $a.next$&the successor of $a$\\
     $a.pred$ & the predecessor of $a$\\
     $A\to b_j$ & condition $A$ allows variable $b$ to reach its level $j$\\
-    $\mathbb{N}$ & the set of all natural numbers
+    $\mathbb{N}$ & the set of all natural numbers\\
+    $\bar{x}$ & the mean of variable $x$
 \end{tabular}
 
 %\begin{itemize}
@@ -115,7 +119,7 @@
 \input{Chap6-Conclusion-And-Future-Work.tex}
 
 \bibliographystyle{plain}
-\bibliography{bib.bib}
+\bibliography{bib}
 
 \appendix
 \input{Chap7-Appendix.tex}

@@ -297,9 +297,9 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 %\caption{ASPReach}%\label{algOverall}
 %\end{algorithm}
 \chapter{Proofs}\label{sec:proof}
-\begin{theorem}[ASPReach termination and correctness]
+\begin{theorem}[Termination and correctness of ASPReach]
     
-    Let $l=(V_{\mathrm{state}}, V_{\mathrm{solution}}, E)$ be an LCG with initial state $\alpha$ and target local state $\omega$ and $k > 0$ be an integer.
+    Let $l=(V_{\mathrm{state}}, V_{\mathrm{solution}}, E)$ be an SLCG with initial state $\alpha$ and target local state $\omega$ and $k > 0$ be an integer.
     The call \textit{ASPReach(l,k)} terminates.\\
     $ASPReach(l,k)$=$(\mathbf{False},\varnothing)$ only if $\nexists t$ a trajectory in $l$ from $\alpha$ to $\omega$.\\
     $ASPReach(l,k)$=$(\mathbf{True},t)$ only if $\exists t$ a trajectory in $l$ from $\alpha$ to $\omega$.
