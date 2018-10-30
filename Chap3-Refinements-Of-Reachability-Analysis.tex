@@ -1,11 +1,11 @@
-\chapter{Refined Reachability Analysis}
+\chapter{Refined Reachability Analysis \textit{via} Heuristics}
 \begin{mybox}
 Several modeling frameworks and model checking techniques are introduced in Chapter \ref{chap:stateOfTheArt}.
 We noticed that even though there exist already exact model checkers and static analyzers for reachability problems, they are not sufficient.
 Exact model checkers face always the state space explosion problem when analyzing big models (of about 50 variables);
 Static analyzer PINT, designed for Process Hitting/Automata Network is however, theoretically inconclusive, i.e. not able to provide a global solution.
 
-This chapter is going to formally clarify the definition of SLCG and \textbf{why}, modify the definitions of the modelings in order to make them more suited for our own reachability analyzers, then explain how their related static analysis functions.
+This chapter is going to formally clarify the definition of Simplified LCG (SLCG) and \textbf{why}, modify the definitions of the modelings in order to make them more suited for our own reachability analyzers, then explain how their related static analysis functions.
 Also, to deal with the inconclusiveness problem, we propose at first doing some preprocessings \textbf{why} to simplify the topology of the networks, then design two new tools (PermReach and ASPReach \textbf{why two}) based on over-approximation, covering some shortcomings of pure static analysis.
 They try to recover the lost information due to abstraction done by static analysis, constructing a more close approximation of the real dynamics in order to gain a better conclusiveness.
 \end{mybox}
@@ -110,7 +110,7 @@ In this thesis, we make use of the LCG by removing some elements needed only in 
 In fact, Didier \textit{et al.} have shown a technique to transform a multivalued network to Boolean network \cite{didier2011mapping}, which provides us the applicability to multivalued networks.
 
 \begin{definition}[Over-approximate SLCG]\label{defSLCG}
-Given an ABAN $AB = (\Sigma,L,T)$, a global initial state $\alpha$ and a target local state $\omega$, LCG $l= (V_{\mathrm{state}},V_{\mathrm{solution}},E)$ is the smallest recursive structure with $E \subseteq (V_{\mathrm{state}}\times V_{\mathrm{solution}})\cap (V_{\mathrm{solution}}\times V_{\mathrm{state}})$ which satisfies:
+Given an ABAN $AB = (\Sigma,L,T)$, a global initial state $\alpha$ and a target local state $\omega$, SLCG $l= (V_{\mathrm{state}},V_{\mathrm{solution}},E)$ is the smallest recursive structure with $E \subseteq (V_{\mathrm{state}}\times V_{\mathrm{solution}})\cap (V_{\mathrm{solution}}\times V_{\mathrm{state}})$ which satisfies:
 \begin{eqnarray*}
     \omega&\in& V_{\mathrm{state}} \\
     a_i\in V_{\mathrm{state}} &\Leftrightarrow& \{ (a_i, sol_{a_i}\mid head(sol_{a_i})=a_i)\}\subseteq E \\
@@ -173,7 +173,7 @@ where $\mathrm{firable}(sol)=\bigwedge_{(sol,s)\in E} reach'(\alpha,s)$.
 However, pseudo-reachability is named ``pseudo'' because it is only an over-approximation of the reachability, i.e. it verifies a necessary condition of the reachability.
 \begin{example}\label{example:unreach}
     In Figure \ref{fig:limitation}, $reach'(l,c_1)=reach'(l,a_1)\land reach'(l,b_1)=reach'(l,a_0)\land reach'(l,b_0)=\textbf{True}$. Both $a_1$ and $b_1$ are reachable, but they can not be reached simultaneously.
-    In such LCG, there are two branches, $a_1\to b_0$ and $b_1\to a_0$, the automata $a$ and $b$ involve themselves in different branches, the reachability of $a_1$ impedes the reachability of $b_1$ and \textit{vice versa}.
+    In such SLCG, there are two branches, $a_1\to b_0$ and $b_1\to a_0$, the automata $a$ and $b$ involve themselves in different branches, the reachability of $a_1$ impedes the reachability of $b_1$ and \textit{vice versa}.
 \end{example}
 
 \begin{figure}[ht]
@@ -259,7 +259,7 @@ Unfortunately, not all cycles are removable via Theorem \ref{th:break_cycle}. Ex
 \end{theorem}
 
 \begin{proof}
-Suppose an arbitrary cycle $C=a_i\to \cdots b_j\to\cdots \to a_i$, with $\to$ an edge in the LCG.
+Suppose an arbitrary cycle $C=a_i\to \cdots b_j\to\cdots \to a_i$, with $\to$ an edge in the SLCG.
 Note that $reach'(\alpha,a_i)\implies reach'(\alpha,b_j)\implies reach'(\alpha,b_j.next)\implies \cdots\implies reach'(\alpha,a_i)$.
 According to the definition of $reach'$, $reach'(\alpha,a)=\mathbf{True}$ only if $\exists c_k\in C$ and $c_k\in \alpha$.
 If there exists such $c_k$, $C$ should not exist as the reasoning stops at $c_k$ and does not form a cycle, contradiction.
@@ -269,7 +269,7 @@ $reach'(\alpha,a_i)=reach'(\alpha,b_j)=\cdots =\mathbf{False}$.
 \subsection{Decomposition of SLCG}
 As every \textbf{OR gate} has multiple choices, to avoid combinatorial explosion, we use a simple heuristic: 
 choose randomly one assignment for each trial.
-Then we can construct a new LCG without \textbf{OR gate}, every state node has exactly one successor solution node, see Figure \ref{fig:heuristics}.
+Then we can construct a new SLCG without \textbf{OR gate}, every state node has exactly one successor solution node, see Figure \ref{fig:heuristics}.
 
 \begin{figure}[ht]
     \centering
@@ -375,8 +375,8 @@ Such cardinality means that under the condition that the body is satisfied, the 
 After deleting \textbf{OR gates}, to encode the reachability problem in ASP, we first describe the facts:
 
 Predicate \texttt{init(a,i)} shows the automaton $a$ is at initial state $i$. %\texttt{comp(n,a,i)} shows the joint state $a_i$ needed for transition No.$n$. \texttt{transition(n,b,j)} shows the transition No.$n$ allows the automaton $b$ change to state $j$.
-Predicate \texttt{node(a,i,n)} shows the node $a_i$ in the LCG is numbered $n$, while \texttt{parent(n1,n2)} expresses node No.$n_1$ is the predecessor of No.$n_2$.
-The LCG in Figure \ref{fig:limitation} is encoded as follows:
+Predicate \texttt{node(a,i,n)} shows the node $a_i$ in the SLCG is numbered $n$, while \texttt{parent(n1,n2)} expresses node No.$n_1$ is the predecessor of No.$n_2$.
+The SLCG in Figure \ref{fig:limitation} is encoded as follows:
 \begin{Verbatim}[commandchars=\\\{\}]
 init(a,0). init(b,0). init(c,0).
 
@@ -399,14 +399,14 @@ The algorithm proposed below tries to overcome those shortcomings by combining s
     \item Output: $reach(\omega)\in\{\mathbf{False},\mathbf{True},\mathbf{Inconclusive}\}$
 \end{itemize}
 \begin{enumerate}
-    \item Construct the LCG $l=LCG(AB,\alpha,\omega)$
+    \item Construct the SLCG $l=SLCG(AB,\alpha,\omega)$
     \item Try to remove all cycles and prune useless edges from $l$
     \item Try to prove unreachability of $\omega$ in $l$ using pseudo-reachability $reach'(l,\omega)$ and return $\mathbf{False}$ if $reach'(l,\omega)=\textbf{False}$
     \item Try at most $k$ times
     \begin{itemize}
     \item $l'\gets l$
     %\item  Transform randomly each OR gate $O$ of $l'$ into simple gate
-    \item Simplify each \textbf{OR gate} such that $l'$ is a LCG with only \textbf{AND gates}
+    \item Simplify each \textbf{OR gate} such that $l'$ is an SLCG with only \textbf{AND gates}
     \item If there remain cycles:
         \begin{itemize}
             \item Back to step (iv)

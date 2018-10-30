@@ -143,7 +143,7 @@ However, to guarantee all the possible orders, we exige $a_i$ and $a_{1-i}$ are 
 The corresponding formula is $\mathbf{V}(sol_{a_i})=\varnothing \text{ \rm if } a_i\in \alpha\land a_{1-i}\not\in V_{\mathrm{state}}$.
 
 Let us take the ABAN $AB=(\Sigma, L, T)$ in Figure \ref{ExUnder} as example with $\Sigma= \{a,b,c,d\}$, $T=\{\acm{b_1,c_1}{a_0}{a_1}, \acm{b_1}{d_0}{d_1}, \acm{d_0}{b_0}{b_1}\}$, initial state $\langle a_0,b_0,c_0,d_0\rangle$.
-With candidate regulations $R=\{(d,c,-),(c,d,-)\}$, Figure \ref{Under1}, Figure \ref{Under2} and Figure \ref{Under3} show the procedures of under-approximation: after two additions of actions and an update, the LCG becomes stable and $a_2$ is reachable.
+With candidate regulations $R=\{(d,c,-),(c,d,-)\}$, Figure \ref{Under1}, Figure \ref{Under2} and Figure \ref{Under3} show the procedures of under-approximation: after two additions of actions and an update, the SLCG becomes stable and $a_2$ is reachable.
 $T'=\{\acm{b_1,c_1}{a_0}{a_1}, \acm{b_1}{d_0}{d_1}, \acm{d_0}{b_0}{b_1},\acm{d_1}{c_0}{c_1}, \acm{c_1}{d_1}{d_0}\}$, $CS=\{\acm{d_1}{c_0}{c_1}, \acm{c_1}{d_1}{d_0}\}$.
 
 \begin{figure}[ht]
@@ -157,7 +157,7 @@ In Figure \ref{Under1}, \fbox{$c_1$} unreachable then the joint state $\langle b
 \begin{figure}[ht]
 \centering
 \input{figures/completionUnderLCG1.tex}
-\caption[Operations on LCG(1)]{Step 1, under-approximation LCG of Figure \ref{ExUnder} studying the reachability of $a_1$ (small circles stand for solutions and squares stand for processes). }\label{Under1}
+\caption[Operations on SLCG(1)]{Step 1, under-approximation S of Figure \ref{ExUnder} studying the reachability of $a_1$ (small circles stand for solutions and squares stand for processes). }\label{Under1}
 \end{figure}
 
 In Figure \ref{Under2}, according to candidate regulation ${(d,c,-)}\in R$, \ac{d_1}{c_0}{c_1} is added, but the reachability of under-approximation requires all the possible occurrences are realizable, e.g. transition $d_1\Rsh^*d_0$ must be firable.
@@ -165,7 +165,7 @@ In Figure \ref{Under2}, according to candidate regulation ${(d,c,-)}\in R$, \ac{
 \begin{figure}[ht]
 \centering
 \input{figures/completionUnderLCG2.tex}
-\caption[Operations on LCG(2)]{Step 2 of completion by under-approximation (filled small circles stand for new possible solutions after completion).}\label{Under2}
+\caption[Operations on SLCG(2)]{Step 2 of completion by under-approximation (filled small circles stand for new possible solutions after completion).}\label{Under2}
 \end{figure}
 
 In Figure \ref{Under3}, the completed under-approximate SLCG shows $a_1$ is now reachable after adding $\acm{c_1}{d_1}{d_0}$ according to ${(c,d,-)}\in R$.
@@ -173,7 +173,7 @@ In Figure \ref{Under3}, the completed under-approximate SLCG shows $a_1$ is now 
 \begin{figure}[ht]
 \centering
 \input{figures/completionUnderLCG3.tex}
-\caption[Operations on LCG(3)]{Step 3 of completion by under-approximation (filled small circles stand for new possible solutions after completion).}\label{Under3}
+\caption[Operations on SLCG(3)]{Step 3 of completion by under-approximation (filled small circles stand for new possible solutions after completion).}\label{Under3}
 \end{figure}
 
 Algorithm \ref{algComUnder} shows the whole process.
@@ -652,11 +652,11 @@ thus to make the condition of a rule more difficult to be satisfied (in a more s
 \end{definition} 
 
 From definition \ref{def:revisable}, it follows that the revision of logic program $P$ w.r.t. a set of reachability/unreachability properties $S$ can be found (or proved to be non-existent) by brute force enumeration of all possible ordering of $S$ and trying all possible iterative revisions of $P$.
-In the next section we propose an algorithm exploiting the LCG structure to restrict the search to valid ordering of the properties.
+In the next section we propose an algorithm exploiting the SLCG structure to restrict the search to valid ordering of the properties.
 \subsection{Revision}
 \label{sec:algorithm}
 
-    In this section we propose an algorithm \textbf{M2RIT} (Model Revision via Reachability and Interpretation Transitions) exploiting the previous formalization to fit a logic program to reachability properties.
+    In this section we propose an algorithm \textbf{M2RIT} (\textbf{M}odel \textbf{R}evision \textit{via} \textbf{R}eachability and \textbf{I}nterpretation \textbf{T}ransitions) exploiting the previous formalization to fit a logic program to reachability properties.
     Given a set of transition $E$ of an asynchronous system $S$, a logic program $P$ is learned via the adaptation of \textbf{asynchronous LFIT} of section \ref{sec:alfit}.
     When $E$ is partial, the learned program $P$ does not have the exact dynamics of $S$.
     Given a set of reachability properties $Re$ and a set of unreachability properties $Un$ of $S$, we propose an algorithm to revise $P$ so that the dynamics of $P$ satisfy $S$.
@@ -665,7 +665,7 @@ In the next section we propose an algorithm exploiting the LCG structure to rest
     Furthermore, our aim is to find what could be considered a metric of minimal revision of $P$:
     a revision $P'$ s.t. $\nexists P'', (P''\setminus P \cap P'')\subseteq (P' \setminus P \cap P')$
    
-    Specialization/generalization operations aim to revise the rule nearest to the target state in the LCG. If it is not possible, they try to revise the successor, if there is no possible solution, return $\varnothing$ to show the input logic program is not revisable. Specialization operation is limited by the observation. If $P$ after specialization can not explain all the transitions, the specialization is not admissible. %When specializing one rule, we check if all appeared transitions are explained, if not, check if there are other rules can explain it, otherwise we can not specialize it.
+    Specialization/generalization operations aim to revise the rule nearest to the target state in the SLCG. If it is not possible, they try to revise the successor, if there is no possible solution, return $\varnothing$ to show the input logic program is not revisable. Specialization operation is limited by the observation. If $P$ after specialization can not explain all the transitions, the specialization is not admissible. %When specializing one rule, we check if all appeared transitions are explained, if not, check if there are other rules can explain it, otherwise we can not specialize it.
     Generalization is similar but without the constraint of the observation, as the observation is partial, $P$ may describe some state transitions never observed.
    
     \noindent
@@ -714,13 +714,13 @@ In the next section we propose an algorithm exploiting the LCG structure to rest
         \item \textbf{Output}: revised logic program $P$ or $\varnothing$ if not revisable
     \end{itemize}
     \begin{enumerate}
-        \item Construct the cycle-free LCGs for the elements in $Re$ and $Un$ and compute unsatisfied sets $Re'\subseteq Re$ and $Un'\subseteq Un$ which are to be revised
+        \item Construct the cycle-free SLCGs for the elements in $Re$ and $Un$ and compute unsatisfied sets $Re'\subseteq Re$ and $Un'\subseteq Un$ which are to be revised
         \item \textbf{If} $Re'=\varnothing$ and $Un'=\varnothing$, \textbf{return} $P$
-        \item Let $L=\{l_i,\ldots\}$ with $i\in Re' \cup Un'$, $l_i=\{j,\ldots\}$, with $j=(\alpha,\omega)$, $\omega \in LCG(i)$ and $ j\in Re\cup Un$ \label{step:dependency}
+        \item Let $L=\{l_i,\ldots\}$ with $i\in Re' \cup Un'$, $l_i=\{j,\ldots\}$, with $j=(\alpha,\omega)$, $\omega \in SLCG(i)$ and $ j\in Re\cup Un$ \label{step:dependency}
         \item Pick one of $l_i\in L$ of the smallest cardinality: $\nexists l_i'$, $|l_i'| < |l_i|$ \label{step:cardinality}
         \item \textbf{If} $l_i\cap (Re'\cup Un')\neq\varnothing$, \label{step:check}
         \begin{enumerate}
-            \item Reconstruct the LCG for $i$
+            \item Reconstruct the SLCG for $i$
             \item \textbf{If} $l_i$ becomes consistent because of former revision, $L\gets L\setminus \{l_i\}$ and back to step 4
         \end{enumerate}
         \item \textbf{If} $i\in Un'$, specialize $P$ to make $i$ unreachable, \textbf{if} not revisable, \textbf{return} $\varnothing$ \label{step:specialize}
@@ -734,16 +734,16 @@ In the next section we propose an algorithm exploiting the LCG structure to rest
     \end{minipage}
     
       
-    The main algorithm starts with constructing the LCGs to verify $Re$ and $Un$ in order to ensure the reachability/unreachability properties to be satisfied.
+    The main algorithm starts with constructing the SLCGs to verify $Re$ and $Un$ in order to ensure the reachability/unreachability properties to be satisfied.
     Then, for the unsatisfied properties, the program $P$ has to be revised.
-    LCG can share the elements s.t. revising one can modify the others.
-    By starting with the LCGs with least dependencies with others, i.e. the ones with the smallest cardinality of $l_i$, it increases the chance of partially satisfying other unsatisfied properties (step \ref{step:dependency} and \ref{step:cardinality}). 
+    SLCG can share the elements s.t. revising one can modify the others.
+    By starting with the SLCGs with least dependencies with others, i.e. the ones with the smallest cardinality of $l_i$, it increases the chance of partially satisfying other unsatisfied properties (step \ref{step:dependency} and \ref{step:cardinality}). 
     Then all possible revision of $P$ are generated using least specialization or generalization according to $l_i\in Re$ or $l_i \in Un$ (step \ref{step:specialize} and \ref{step:generalize}). 
     Each revision of $P$ is checked against $Re$ and $Un$ to verify that all properties satisfied by $P$ are still satisfied. 
     If new ones are satisfied, $L$ is updated accordingly (step \ref{step:check}).
     We update $P$ until there is no unsatisfied properties (step \ref{step:update} and \ref{step:recheck}).
-    %As the LCGs are free of cycles, the algorithm always terminates.
-    %we revise first the elements whose LCG contain least other elements in order to modify less $P$.
+    %As the SLCGs are free of cycles, the algorithm always terminates.
+    %we revise first the elements whose SLCG contain least other elements in order to modify less $P$.
     Finally, if a revision of $P$ consistent with all given properties is found the algorithm terminates and outputs it.
     
 \section{R\'esum\'e}
@@ -752,8 +752,9 @@ The first approach allows one to construct a good model among a large number of 
 The drawback of the first approach is to obtain the candidates.
 To cover this disadvantage, the statistic approach \textit{via} correlation coefficients provides us with candidate regulations to be verified by the first approach.
 The statistic approach can use all the continuous time-series data to construct a model from nothing but hard to take into account additional constraints.
+The first two approaches are combined as \textbf{CRAC} (\textbf{C}ompletion \textit{via} \textbf{R}eachability \textbf{A}nd \textbf{C}orrelations)
 
-Considering the disadvantages of the combination of the former two approaches, the third approach M2RIT does not need candidate transitions and can adjust the result by reachability constraints.
+Considering the disadvantages of the combination of CRAC, the third approach \textbf{M2RIT} (Model Revision \textit{via} Reacchability and Interpretation Transitions) does not need candidate transitions and can adjust the result by reachability constraints.
 It revises the logic program learned by LFIT w.r.t. the knowledge on reachability properties.
 When talking about reachability, we should fix at first update scheme of the dynamic system.
 We use asynchronicity as the update scheme as it implies non-determinism which is meaningful to the modeling of nuanced uncertain parts in biology.

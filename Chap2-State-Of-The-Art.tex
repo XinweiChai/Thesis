@@ -22,9 +22,10 @@ A regulatory network is a labeled digraph $G=(V,E)$ where
 Boolean Network (BN) is a traditional framework studied for decades \cite{kauffman1969}.
 A BN $G(V,F)$ consists of a set of nodes $V=\{v_1,\cdots,v_n\}$ and a set of Boolean functions $F=(f_1,\cdots,f_n)$ where $f_i(v_1,\cdots,v_n)$ decides the value of node $v_i$ of the next time point.
 In some applications, the nodes are classified into incoming nodes, outgoing nodes and inner nodes to represent an input-output system \cite{akutsu2007control}.
-\begin{figure}
+
+\begin{figure}[ht]
     \centering
-    \includegraphics[width=0.7\textwidth]{figures/BooleanNetwork.png}
+    \includegraphics[width=0.7\textwidth]{BooleanNetwork.png}
     \caption[Boolean Network]{4 ways of representing a Boolean Network: A. regulatory network, B. Boolean functions, C. transition interpretations, D. State transition graph}
     \label{fig:booleannetwork}
 \end{figure}
@@ -108,7 +109,7 @@ In this thesis we focus on reachability (\textbf{EF} in Temporal Logic) as most 
 At first, Model Checking was done by the search in the state transition graphs, which are encoded in adjacent lists \cite{clarke1981design}.
 This representation however requires a memory growing exponentially with the number of components.
 To avoid such explicit representation, state transition graphs were replaced by Boolean formulas.
-OBDD (Ordinary Binary Decision Diagram) based Model Checkers were developed, having reached $10_{120}$ states, e.g.
+OBDD (Ordinary Binary Decision Diagram) based Model Checkers were developed, having reached $10^{120}$ states, e.g.
 SMV \cite{mcmillan1993symbolic}, NuSMV \cite{cimatti2000nusmv}, and VIS \cite{brayton1996vis}.
 However, the performance is still not enough to analyze problems in systems biology (time-memory out), which is illustrated in Chapter \ref{chap:test}.  
 
