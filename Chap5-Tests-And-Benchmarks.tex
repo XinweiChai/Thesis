@@ -1,18 +1,24 @@
 \chapter{Tests and Benchmarks}\label{chap:test}
+\begin{mybox}
 After the presentation of the main theoretical contents, this chapter is going to show some results of the implementation:
 
 \begin{itemize}
-    \item Comparison of several reachability analyzers: exhaustive reachability analyzers, Pint, PermReach, ASPReach
-    \item CRAC and M2RIT
+    \item Comparison of several reachability analyzers (Chapter \ref{chap:refinement}): exhaustive reachability analyzers, Pint, PermReach, ASPReach on their scalability (biggest tractable model size), efficiency (runtime) and precision (global conclusiveness)
+    \item Running examples of CRAC and M2RIT (Chapter \ref{chap:modelInference})
 \end{itemize}
+\end{mybox}
 
+We have shown the theoretical effectiveness and correctness of PermReach and ASPReach in Chapter \ref{chap:refinement}. 
+To ensure their capacity, we use small models to verify the correctness, i.e. PermReach and ASPReach obtain the same result as other tools, then we apply all the analyzers on a series of models with growing sizes to obtain the limit of the capacity of each analyzer.
+
+As for CRAC and M2RIT, CRAC uses reachability properties and \textit{continuous} time-series data while M2RIT uses reachability properties and \textit{discretized} time-series data.
 
 
 \section{Comparison of Reachability Analyzers}
-In this section we evaluate our approach through various experiments.
-All tests were run on a Intel Core i7-3770 CPU, \@3.4GHz with 8Gb of RAM computer.
+In this section, we evaluate the reachability analyzers through various experiments.
+All tests were run on a Intel Core i7-3770 CPU, \@3.4GHz with 8Gb RAM computer.
 
-To validate our approach, we first tested a small model, $\lambda$-phage model \cite{thieffry1995dynamical} to compare with an alternative reachability analyzer Pint \cite{pauleve2012} implementing solely analysis using SLCG \cite{pauleve2017reduction,folschette2015,pauleve2011}.
+To validate our approach, we first carried tests on a small model, $\lambda$-phage model \cite{thieffry1995dynamical} to compare with an alternative reachability analyzer Pint \cite{pauleve2012} implementing solely analysis using SLCG \cite{pauleve2017reduction,folschette2015,pauleve2011}.
 In this model with 4 automata and 12 transitions (without taking consideration of the self-regulations),
 our result shows complete conclusiveness while Pint cannot (Figure \ref{fig:LCG_lambdaPhage}). %able to figure out the reachability of $cro_1$ when $cl_1$ and $cll_1$ are in the initial state (Figure \ref{fig:LCG_lambdaPhage}).
 PermReach \cite{chai2018heuristic} is not able either to handle some of the special cases where multiple states of one automaton appear in different branches (Figure \ref{fig:countexPerm}).
