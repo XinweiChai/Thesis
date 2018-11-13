@@ -12,6 +12,7 @@ $f(a)=(b\land d)\lor(b\land e)\lor(c\land d)\lor(c\land e)$, and $\lnot f(a)=(\l
 The equivalent ABAN is then constructed: 5 automata $\mathbf{\Sigma}=\{a,b,c,d,e\}$, with transitions: $\mathbf{T}=\{\acm{b_1,d_1}{a_0}{a_1},\ \acm{b_1,e_1}{a_0}{a_1},\ \acm{c_1,d_1}{a_0}{a_1},\ \acm{c_1,e_1}{a_0}{a_1},\ \acm{b_0,c_0}{a_1}{a_0},\ \acm{d_0,e_0}{a_1}{a_0}\}$.
 \end{example}
 \chapter{Algorithms}
+
 \begin{algorithm}[ht]
 \begin{algorithmic}
 \State Input: an ABAN $AB=(\mathbf{\Sigma},\mathbf{L},\mathbf{T})$, an initial state $\alpha$, a target state $\omega$
@@ -153,7 +154,7 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 %\end{algorithm}
 
 \begin{algorithm}
-  \caption{PermReach}
+  \caption{PermReach}\label{alg:perm}
   \begin{algorithmic}[1]
    \State Input: an SLCG $l=(V_{\mathrm{state}},V_{\mathrm{solution}}, E)$, initial state $\alpha$, target state $\omega$, an integer $k$
 \State Output: reachability $r$
@@ -230,6 +231,54 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 \EndFor %\label{main_loop_end}
 \State \Return{$\mathbf{Inconclusive}$}
   \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[htb]
+\begin{algorithmic}[1]
+\State Input: SLCG $l=(V_{\mathrm{state}},V_{\mathrm{solution}}, E)$, an integer $k$
+\State Output: reachability $r$ and a trajectory $t$
+\State Compute SCCs, classify them into $\mathrm{SCC1}(l)$ with at most 1 incoming edge and $\mathrm{SCC2}(l)$ otherwise
+\State \textcolor{gray}{// 1) Break all cycles and prune useless branches}\label{delete_cycle_begin}
+\For{each $(V'_{\mathrm{state}} \subseteq V_{\mathrm{state}},V'_{\mathrm{solution}} \subseteq V_{\mathrm{solution}}) \in \mathrm{SCC1}(l)$}
+    \For{each $v \in V'_{\mathrm{state}}$}
+    \If {$\exists(v,v')\in E, v' \in (V_{\mathrm{solution}} \setminus V'_{\mathrm{solution}})$}
+        \State $E\gets E\backslash \{(v,v'')|v''\in V'_{\mathrm{solution}},(v,v'')\in E\}$
+    \EndIf
+\EndFor
+\EndFor \label{delete_cycle_end}
+\State{\textcolor{gray}{// 2) remove useless nodes/edges}} \label{prune_begin}
+\State pruned = \textbf{True}
+\While{pruned}
+    \State pruned = \textbf{False}
+    \For {$v \in V_{\mathrm{state}}$}
+        \If{$\not\exists(v,v')\in E$}
+            \State $V_{\mathrm{state}} \gets V_{\mathrm{state}}\backslash \{v\}$; $E\gets E\backslash \{ (v'',v)\in E\}$
+            \State $E\gets E\backslash \{ (v'',sol)\in E | sol \in \{sol = (A \rightarrow a) \in V_{\mathrm{solution}} | v \in A\}\}$
+            \State $V_{\mathrm{solution}} \gets V_{\mathrm{solution}}\backslash \{sol = (A \rightarrow a) \in V_{\mathrm{solution}} | v \in A\}$
+            \State pruned = \textbf{True}
+        \EndIf
+    \EndFor \label{prune_end}
+\EndWhile
+\State \textcolor{gray}{// 3) Check pseudo-reachability} \label{pseudo_reach_begin}
+\If {$pseudoReach(l)=\textbf{False}$}
+    \State \Return $(\mathbf{False},\varnothing)$
+\EndIf \label{pseudo_reach_end}
+
+\State \textcolor{gray}{// 4) main search loop} \label{main_loop_begin}
+\For{each $i$ in $1\ldots k$}
+    \State $l'=(V'_{\mathrm{state}}, V'_{\mathrm{solution}},E')\gets(V_{\mathrm{state}}, V_{\mathrm{solution}},E)$ 
+    \For{$v \in V'_{state}$} \textcolor{gray}{// Treat each OR gates}
+        \State pick a random element $(v,v') \in E'$
+        \State $E'\gets E' \backslash  \{(v,v'') \in E'| v''\neq v'\}$ with $\nexists i\in \mathrm{SCC2}(l)$ and $i\in E'$
+    \EndFor
+    \State $(r,t)\gets\mathrm{ASPsolve}(l')$
+    \If{$r=\textbf{True}$}
+        \Return{$(\mathbf{True},t)$}
+    \EndIf
+\EndFor \label{main_loop_end}
+\State \Return{$(\mathbf{Inconclusive},\varnothing)$}
+\end{algorithmic}
+\caption{ASPReach}\label{algOverall}
 \end{algorithm}
 
 \begin{algorithm}[ht]

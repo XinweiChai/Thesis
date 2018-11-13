@@ -2,31 +2,52 @@
 \begin{mybox}
 In this chapter, we are going to present mainly three basic contents
 \begin{itemize}
-    \item Several modeling frameworks, some which are the ancestors of the new modelings and some of which will be used in this thesis
+    \item Several modeling frameworks, some of which are the ancestors of the new modelings to be used in this thesis and some of which will be used in comparison
     \item The notion of model-checking and some existed model checkers 
     \item Different update schemes of modeling frameworks
 \end{itemize}
 \end{mybox}
 
-There are plenty of modeling frameworks suiting different needs.
+In computational biology, there are plenty of modeling frameworks suiting different needs.
+Model is a useful tool to represent the abstraction of the real system, as the real system is usually mechanically complicated and not completed known.
+From the point of view of data type, models are classified into continuous ones, discrete ones and their combination, hybrid models, where the last one is not the focus of this thesis.
+Continuous models suit perfectly real world data, as the data (no matter time-series data or static data) are obtained by measurement and can be used as input without preconditioning.
+Models based on differential equations \cite{glass1973logical,snoussi1989qualitative,thomas1990biological} describes mainly the system dynamics, i.e. biological regulations.
+Models based on Bayesian probability and Markov chain \cite{huelsenbeck2001mrbayes,larget1999markov} studies static topics, i.e. phylogenetics.
+However, there lies usually difficulties in the evolution of continuous models:
 
+\begin{itemize}
+    \item System mechanics is unclear
+    \item System parameters are precise 
+    \item Solving differential equations numerically is expensive 
+\end{itemize}
+
+Compared to continuous models, discrete models for example Boolean Networks \cite{kauffman1969} Thomas Models \cite{thomas1978}, Petri nets \cite{pinney2003petri}, Process Hittings \cite{pauleve2011} could more or less avoid these disadvantages.
+Discrete models have a common update pattern: $state\ 1\xrightarrow{condition}state\ 2$, where the states correspond to intervals in the continuous models. 
+The states here can be one qualitative level or a combination of qualitative levels, compensating the imprecision or incompleteness of the original system.
+As to the computation, discrete transition models cost less than continuous dynamical models.
+There hybrid models \cite{wang2015sreach,lincoln2004symbolic,singhania2011hybrid} usually behave like continuous model, as they need the same level of parameters.
 \section{Modeling Frameworks}
 Original biological problems are usually difficult to study directly due to the uncertainty and the big scale of biological systems. 
 Modeling is a process of abstracting the real system into a more concise and more easily automatized system.
-To solve a certain problem, an appropriate modeling framework is crucial because different models have different bias from reality and have also different advantages in computation, e.g. fix point, reachability etc.
+To solve a certain problem, an appropriate modeling framework is crucial because different models have different bias from reality and have also different advantages in computation, e.g. fixed point, reachability etc.
 Here I introduce several most frequent modeling frameworks and compare their advantages and disadvantages.
 
 \subsection{Regulatory Network}\label{sec:regNetwork}
 Regulatory Network (RN) has characteristics of a static network, representing the interactions between components.
 It is applied in static analysis, gene expression \cite{shinozaki2003regulatory}, \textit{etc}.
 
-\begin{definition}[Regulatory network]\label{def:RN}
+\begin{definition}[Regulatory network (RN)]\label{def:RN}
 A regulatory network is a labeled digraph $G=(V,E)$ where 
 \begin{itemize}
     \item each vertex $v$ of $V$, called variable, is provided with a boundary $b_v\in \mathbb{N}$ less or equal to the out-degree of v in G.
     \item each arc $u\in v$ of $E$ is labelled with a couple ($t_{uv}$, $\alpha_{uv}$) where $t_{uv}$ is an integer between 1 and $b_v$, called qualitative threshold and where $\alpha_{uv}\in \{+,-\}$ is the sign of the regulation.
 \end{itemize}
 \end{definition}
+
+RN is a special instance among discrete models.
+It does not require a threshold setting for each variable.
+As a result, RN is usually used to study static problems, e.g. model completion, finding fixed points \cite{yamamoto2014completing}.
 
 \subsection{Boolean Network}
 Boolean Network (BN) is a traditional framework studied for decades \cite{kauffman1969}.
@@ -107,50 +128,6 @@ In AAN, the definition of $H$ becomes
     \item $H=\{A\to b_j\Rsh b_k\mid b\in \Sigma \land (b_j,b_k)\in L_b\times L_b\land b_j\neq b_k\land \forall a \in \Sigma,\ |a\cap L_a|\leq 1 \land A\cap L_b=\varnothing\}$ is the finite set of actions, which defines the regulations and dynamics of the AAN: $A, b_j, b_k$ are denoted $hitter(h)$, $target(h)$ and $bounce(h)$ respectively of the action $h=A\to b_j\Rsh b_k$.
 \end{itemize}
 
-
-
-\section{Model Checking}
-Model Checking is an automatic verification technique for large state transition systems and was independently developed by Clarke and Emerson \cite{clarke1981design} and by Queille and Sifakis \cite{queille1982specification} in the early 1980s. It was originally developed for reasoning about finite-state concurrent systems.
-Typically, a model checker has three basic components: a modeling formalism adopted to encode a state machine representing the system to be verified, a specification language based on Temporal Logic, and a verification algorithm \cite{clarke20142} which employs an exhaustive searching of the entire state space to determine whether the specification holds or not.
-
-In this thesis we focus on reachability (\textbf{EF} in Temporal Logic) as most temporal properties can be reduced to reachability problems due to the expresiveness of hybrid modeling frameworks.
-
-\subsection{Exact Model Checkers}
-At first, Model Checking was done by the search in the state transition graphs, which are encoded in adjacent lists \cite{clarke1981design}.
-This representation however requires a memory growing exponentially with the number of components.
-To avoid such explicit representation, state transition graphs were replaced by Boolean formulas.
-OBDD (Ordinary Binary Decision Diagram) based Model Checkers were developed, having reached $10^{120}$ states, e.g.
-SMV \cite{mcmillan1993symbolic}, NuSMV \cite{cimatti2000nusmv}, and VIS \cite{brayton1996vis}.
-However, the performance is still not enough to analyze problems in systems biology (time-memory out), which is illustrated in Chapter \ref{chap:test}.  
-
-\subsection{Static Analyzers}
-Model Checkers are widely applied to hardware and software.
-Especially when applied to software, algorithmic verification techniques have
-to deal with software’s infinite state space, requiring abstraction techniques to make problems tractable.
-SPIN \cite{holzmann1997model} and Goanna \cite{fehnker2006goanna} are designed as source code analyzers, by verifying a set of over-approximative conditions, they managed to check the safety/liveness properties of a program or whether certain program behaves as expected. 
-However, the static code analyzers only determines run-time properties of programs by examining the code structure, which may produce false-positive and false-negative results \cite{vorobyov2010comparing}.
-
-Inspired by these ideas, Pint \cite{Pint} takes the initiative to apply pure static analysis, combine over-approximation and under-approximation to squeeze the state space try to solve the original reachability problem of a PH or an AAN.
-Similarly, due to the approximations, the result of Pint is not necessarily conclusive \cite{folschette2015}.
-
-\begin{figure}
-    \centering
-    \input{figures/vennDiagram.tex}
-    \caption[Static analysis]{Schema of real dynamics and over-approximation and under-approximation}
-    \label{fig:vennDiagram}
-\end{figure}
-
-\subsection{Reachability Problem}
-In the domain of model checking, reachability has been of great interest for over 30 years \cite{clarke2008birth,clarke20142}. 
-Various modeling frameworks and semantics in bioinformatics have been studied: Boolean network \cite{akutsu2007control}, Petri nets \cite{mayr1984,esparza1998}, timed-automata \cite{Daws1998,wozna2003}. 
-These approaches rely on global search and thus face state explosion problem as the state space grows exponentially with the number of variables. 
-In \cite{peterson1977petri}, it has been shown that the reachability problem of Petri net is exponential time-hard and exponential space-hard, and this conclusion does not change even under some specific conditions \cite{esparza1998}. 
-For 1-safe Petri nets, the complexity of reachability analysis is generally PSPACE-complete \cite{cheng1995complexity}.
-Li \textit{et al.} \cite{li2012reachability,li2014stability} investigated theoretically the stability, the controllability and the reachability of Switched Boolean Networks, but their method remains computationally expensive;
-Saadatpour \textit{et al.} \cite{saadatpour2010attractor} researched only the reachability of fixed points.
-
-To tackle the complexity issue, symbolic model checking \cite{burch1992symbolic} based on OBDDs and SAT-solvers (satisfiability) \cite{abdulla2000symbolic} have been studied over years, but still fail to analyze big biological systems with more than $1000$ variables. 
-Bounded Model Checking (BMC) \cite{clarke2001bounded} is an efficient approach but generally not complete as its searching depth is limited to a given integer $k$.
 \section{Semantics of Modelings}
 For different modeling frameworks, even if the components and transitions are defined, the dynamics of the system is not unique. 
 Different update schemes lead to different dynamics.
@@ -226,4 +203,61 @@ The benchmark part of \cite{ribeiro2018learning} shows the complexity of general
     \label{tab:semantics}
 \end{table}
 
-\section{Resum\'e}
+\section{Model Checking}
+Model Checking is an automatic verification technique for large state transition systems and was independently developed by Clarke and Emerson \cite{clarke1981design} and by Queille and Sifakis \cite{queille1982specification} in the early 1980s. It was originally developed for reasoning about finite-state concurrent systems.
+Typically, a model checker has three basic components: a modeling formalism adopted to encode a state machine representing the system to be verified, a specification language based on Temporal Logic, and a verification algorithm \cite{clarke20142} which employs an exhaustive searching of the entire state space to determine whether the specification holds or not.
+
+In this thesis we focus on reachability (\textbf{EF} in Temporal Logic) as most temporal properties can be reduced to reachability problems due to the expresiveness of hybrid modeling frameworks.
+
+\subsection{Exact Model Checkers}
+At first, Model Checking was done by the search in the state transition graphs, which are encoded in adjacent lists \cite{clarke1981design}.
+This representation however requires a memory growing exponentially with the number of components.
+To avoid such explicit representation, state transition graphs were replaced by Boolean formulas.
+OBDD (Ordinary Binary Decision Diagram) based Model Checkers were developed, having reached $10^{120}$ states, e.g.
+SMV \cite{mcmillan1993symbolic}, NuSMV \cite{cimatti2000nusmv}, and VIS \cite{brayton1996vis}.
+However, the performance is still not enough to analyze problems in systems biology (time-memory out), which is illustrated in Chapter \ref{chap:test}.  
+
+\subsection{Static Analyzers}
+Model Checkers are widely applied to hardware and software.
+Especially when applied to software, algorithmic verification techniques have
+to deal with software’s infinite state space, requiring abstraction techniques to make problems tractable.
+SPIN \cite{holzmann1997model} and Goanna \cite{fehnker2006goanna} are designed as source code analyzers, by verifying a set of over-approximative conditions, they managed to check the safety/liveness properties of a program or whether certain program behaves as expected. 
+However, the static code analyzers only determines run-time properties of programs by examining the code structure, which may produce false-positive and false-negative results \cite{vorobyov2010comparing}.
+
+Inspired by these ideas, Pint \cite{Pint} takes the initiative to apply pure static analysis, combine over-approximation and under-approximation to squeeze the state space try to solve the original reachability problem of a PH or an AAN.
+Similarly, due to the approximations, the result of Pint is not necessarily conclusive \cite{folschette2015}.
+
+\begin{figure}
+    \centering
+    \input{figures/vennDiagram.tex}
+    \caption[Static analysis]{Schema of real dynamics and over-approximation and under-approximation}
+    \label{fig:vennDiagram}
+\end{figure}
+
+\subsection{Reachability Problem}
+In the domain of model checking, reachability has been of great interest for over 30 years \cite{clarke2008birth,clarke20142}. 
+Various modeling frameworks and semantics in bioinformatics have been studied: Boolean network \cite{akutsu2007control}, Petri nets \cite{mayr1984,esparza1998}, timed-automata \cite{Daws1998,wozna2003}. 
+These approaches rely on global search and thus face state explosion problem as the state space grows exponentially with the number of variables. 
+In \cite{peterson1977petri}, it has been shown that the reachability problem of Petri net is exponential time-hard and exponential space-hard, and this conclusion does not change even under some specific conditions \cite{esparza1998}. 
+For 1-safe Petri nets, the complexity of reachability analysis is generally PSPACE-complete \cite{cheng1995complexity}.
+Li \textit{et al.} \cite{li2012reachability,li2014stability} investigated theoretically the stability, the controllability and the reachability of Switched Boolean Networks, but their method remains computationally expensive;
+Saadatpour \textit{et al.} \cite{saadatpour2010attractor} researched only the reachability of fixed points.
+
+To tackle the complexity issue, symbolic model checking \cite{burch1992symbolic} based on OBDDs and SAT-solvers (satisfiability) \cite{abdulla2000symbolic} have been studied over years, but still fail to analyze big biological systems with more than $1000$ variables. 
+Bounded Model Checking (BMC) \cite{clarke2001bounded} is an efficient approach but generally not complete as its searching depth is limited to a given integer $k$.
+
+
+\section{R\'esum\'e}
+In this chapter, we presented mainly three main basic contents of the state of the art:
+
+\begin{itemize}
+    \item Modeling frameworks
+    \item Update schemes of models
+    \item Model checking and model checkers
+\end{itemize}
+
+Modeling frameworks allow one to encode real biological regulatory systems into computable models according to his need (completion, static analysis, dynamic analysis, simulation \textit{etc.}).
+In the next chapter, we will focus on a finer reachability analysis.
+To achieve this goal, we will propose a new modeling framework based on existing ones presented in this chapter.
+Also, to better position our new modeling framework and define its dynamics, we introduced different update schemes of models.
+At last, to validate and evaluate our work (in Chapter \ref{chap:test}), we introduced here several representative model checkers to be used for comparison.

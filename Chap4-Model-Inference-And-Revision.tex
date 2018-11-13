@@ -3,7 +3,7 @@
 In the previous chapter, we introduced several approaches of refined reachability analysis, which are more suitable for practical use (more efficient and more conclusive).
 Nevertheless, these approaches can never take effect no matter how powerful they are, if the original model does not reflect the reality.
 
-To model a biological computational system, one may consider two possible aspects: a first-step model built by biologists (variables, some confirmed transitions, some \textit{a priori} properties etc.) and the observation of the experiments (time-series data, steady states, oscillations, etc.).
+To model a biological computational system, one may consider two possible aspects: a first-step model built by biologists (variables, some confirmed transitions, some \textit{a priori} properties etc.) and the observations from experiments (time-series data, steady states, oscillations, etc.).
 
 This chapter is dedicated to the introduction of three different approaches of model inference/revision:
 
@@ -27,10 +27,10 @@ DREAM4\footnote{\url{https://www.synapse.org/\#!Synapse:syn2825304/wiki/71129}},
 DREAM8\footnote{\url{https://www.synapse.org/\#!Synapse:syn1720047/wiki/55342}},
 DREAM11\footnote{\url{https://www.synapse.org/\#!Synapse:syn6131484/wiki/402026}}.
 
-Like in biology, the modeling structures in robotics are usually complex and with big size, which is difficult in control, prediction and simulation.
-Constructing an abstracted (often approximated) model is a compromising way of dealing with the complexity.
-However, the abstracted models are theoretically non-equivalent with the original ones because they contain different amount of information.
-As long as the equivalence is impossible, we wish that the abstracted models are in bisimulation with the original ones with respect to certain variables and keep certain important properties.
+Like in biology, the modeling structures in robotics are usually complex and with big scale, which is difficult in control, prediction and simulation.
+Constructing an abstracted (often approximated) model is a compromising way of dealing with the mechanical and computational complexity.
+However, the abstracted models are theoretically non-equivalent to the original ones because they contain different amount of information.
+Even though there always lies an non-equivalence, we wish that the abstracted models are in bisimulation with the original systems with respect to certain variables and keep the same important properties as original systems.
 
 Concretely speaking, we developed three approaches which are to be presented in this chapter:
 
@@ -43,19 +43,22 @@ Concretely speaking, we developed three approaches which are to be presented in 
 Among these three approaches, intuitively approach 1 has the least complexity. 
 Because the most naive method, \textit{i.e.} brute force search is to verify every combination of the candidates if it satisfies the constraints. 
 The models to be verified are of $O(2^n)$, where $n$ is the number of candidate transitions.
-For approach 2, to explain a transition $A\to a_i$, there are at most $m-1$ possibilities for $A$ has one local state, $C_{m-1}^2$ possibilities for $A$ has 2 local states \ldots where $m$ is the number of variables.
+For approach 2, to obtain a transition $A\to a_i$ with $a_i$ fixed, there are at most $m-1$ possibilities for $A$ having one local state, $C_{m-1}^2$ possibilities for $A$ having 2 local states \ldots where $m$ is the number of variables.
 Similarly, approach 3 also has a factorial complexity.
 
-\section{Model Inference \textit{via} Candidate Regulations}
+\section{Model Inference \textit{via} Candidate Regulations}\label{sec:modelInference}
 We begin with the problem which seems to have the smallest complexity.
-The completely exhaustive solution that we just presented is still meaningless in real application.
-Roughly speaking, we aim at finding the transitions among the candidates which meet the unsatisfied constraints and keep satisfied constraints satisfied.
+The brute force search that we just presented is still meaningless in real application.
+Roughly speaking, we aim at finding the transitions among the candidates which meet the unsatisfied constraints and keep already satisfied constraints unchanged.
 
 \subsection{Problem Description}
-Briefly speaking, completion problem is: incomplete model + candidate regulations + constraints $\to$ complete model.
+Briefly speaking, completion problem is:
+
+incomplete model + candidate regulations + constraints $\to$ new model
+
 The complete model contains all the elements in the incomplete model and consistent with all the \textit{a priori} information. 
 
-\begin{definition}[Model completion]
+\begin{definition}[Model completion in ABAN semantics]
     Given an incomplete ABAN $AB=(\Sigma, L, T)$ (where $T$ can be empty), a complete model is an ABAN $AB'=(\Sigma, L, T')$ which satisfies $T'\supseteq T$, $AB'$ consistent with the set of reachability constraints $C$ and the completion set $CS=T'\setminus T$ is consistent with the set of candidate regulations $R$, where
     \begin{itemize}
         \item $R=\{(body,head,sgn)\mid body\in \Sigma,\ head\in \Sigma,\ sgn\in \{0,1\}\}$ 
@@ -63,9 +66,9 @@ The complete model contains all the elements in the incomplete model and consist
     \end{itemize}
 \end{definition}
 
-$R$ shows the possible relations between variables, $body$ may inhibit (0) or promote (1) $head$.
-$C$ shows the \textit{a priori} reachability, $\omega$ is (un)reachable from $\alpha$.
-The definition of consistency is straightforward, but is different for reachability constraints and candidate regulations.
+$R$ is the set of possible relations between variables, $body$ may inhibit (0) or promote (1) $head$.
+$C$ is the set of \textit{a priori} reachability properties, $\omega$ is (un)reachable from $\alpha$.
+The definition of consistency is straightforward, but its meaning changes for reachability constraints and candidate regulations.
 
 \begin{definition}[Consistency]
 \leavevmode
@@ -78,26 +81,26 @@ The definition of consistency is straightforward, but is different for reachabil
 \end{itemize}
     
 \end{definition}
-Theoretically, to obtain a good new ABAN, we have to assure $T$ has no \textit{bad} transitions, because the completion operation is not able to remove bad transitions. 
+Theoretically, to obtain a good new ABAN, we have to assure $T$ has no \textit{bad} transitions, because the completion operation is not able to remove or modify existing transitions. 
 
-Before our research began, Paulev\'e \textit{et al.} had worked on cut-sets for reachability in large scale automata networks \cite{PAK13-CAV}, which is the reverse operation of completion set.
-It can eliminate certain transitions according to unreachability properties.
+Before our research began, Paulev\'e \textit{et al.} had worked on cut-sets for reachability in large scale automata networks \cite{PAK13-CAV}, which is the reverse operation of completion sets.
+Cut set is used to eliminate certain transitions according to unreachability properties.
 By combining these two operations, one can construct/revise a model according to \textit{a priori} information (candidate regulations) and constraints (reachability).
 
-As stated in the previous chapter, exact reachability is a hard task.
-We use two criteria, over-approximation and under-approximation to replace the notion of reachability (shown in Figure \ref{fig:vennDiagram}).
+As stated in the previous chapter, verifying exact reachability is a hard task.
+Here we use two criteria, over-approximation and under-approximation to replace the notion of reachability (shown in Figure \ref{fig:vennDiagram} on page \pageref{fig:vennDiagram}).
 
 %In the context of SLCG, completion is defined as follows: given a state sequence $S$ of observation and a set of possible regulations $H$ (in the form of ABAN) to be verified, find the minimum subset of $H$ such that $S$ is realizable from initial state.
 
 \subsection{Completion by Over-Approximation}
-Over-approximation is the reasoning of pseudo-reachability in Definition \ref{defPseudoReach}. 
+Over-approximation is the reasoning of pseudo-reachability in Definition \ref{defPseudoReach} on page \pageref{defPseudoReach}. 
 It associates local states and transitions with the initial state according to the causalities: if there exists a pathway from the target local state to the initial state, this target state can be reachable.
 Over-approximation does not take into consideration the order of transitions to be fired, which is the cause of inconclusiveness (literally it over-approximates the reachability).
-Thus over-approximation is a necessary condition.
+Thus over-approximation is a necessary condition of the reachability.
 
-Figure \ref{CompOv} gives a first intuition of the idea.
+Figure \ref{CompOv} gives a first impression of the idea.
 The visualization of the set of candidate regulations $R=\{(a,b,+),(c,a,-)\}$ is on the left.
-On the right, the initial ABAN has only three variables $\Sigma=\{a,b,c\}$ and initial state $\langle a_0,b_0,c_0\rangle$, with $T=\{\acm{a_1}{b_0}{b_1}\}$.
+On the right, the initial ABAN has only three variables $\Sigma=\{a,b,c\}$ and initial state $\langle a_0,b_0,c_0\rangle$, with transitions $T=\{\acm{a_1}{b_0}{b_1}\}$.
 $b_1$ is not reachable because of the unreachability of $a_1$.
 As $(c,a,-)\in R$, \ac{c_0}{a_0}{a_1} is added then $a_1$ becomes reachable which makes $b_1$ also reachable.
 $T'=\{\acm{a_1}{b_0}{b_1},\acm{c_0}{a_0}{a_1}\}$, $CS=\{\acm{c_0}{a_0}{a_1}\}$.
@@ -107,16 +110,16 @@ $T'=\{\acm{a_1}{b_0}{b_1},\acm{c_0}{a_0}{a_1}\}$, $CS=\{\acm{c_0}{a_0}{a_1}\}$.
 \input{figures/completionOver.tex}
 \caption[Completion by over-approximation]{Completion by over-approximation. Dashed arrows represent added action.}\label{CompOv}
 \end{figure}
-Algorithm \ref{algComOver} shows the detailed algorithm.
+Algorithm \ref{algComOver} in Appendix shows the detailed algorithm.
 
 \subsection{Completion by Under-Approximation}
 Over-approximation is only a necessary condition of reachability.
-If one wants the guarantee of the reachability even in the price of redundant transitions, he may consider the completion by under-approximation.
+If one wants the guarantee of the reachability even at the price of redundant transitions, he may consider the completion by under-approximation.
 
 Under-approximation is another reasoning of SLCG. 
-It associates \textit{all} the local states with the initial state which may appear instead of the initial state.
-This association covers all the orders of occurrence.
-Likewise, in the SLCG, if there is a pathway from certain local state and the initial state, this state \textit{should} be reachable.
+It associates the local states and the transitions with the initial state and \textit{all the states which may appear}.
+This association covers all the orders of occurrence. \textbf{proof here?}
+Similar with over-approximation, in the SLCG of under-approximation, if there is a pathway from target local state and the initial state, this target state \textit{should} be reachable.
 
 However, all the orders of occurrence do not necessarily appear during the simulation, which suggest that this approach ``under-approximates'' the reachability.
 
@@ -137,14 +140,18 @@ Given ABAN $AB = (\Sigma,L,T)$, a global initial state $\alpha$ and a target loc
 where $V_{\mathrm{state}}\subseteq LS$ is a set of local states, $V_{\mathrm{solution}}\subseteq T$ is the a of solutions and $\mathbf{V}(sol_{a_i})$ is the set of required local states of $sol_{a_i}$. 
 \end{definition}
 
-If we compare under-approximation with Definition \ref{defSLCG}, the difference lies at the condition of $\mathbf{V}(sol_{a_i})$. 
+If we compare the definition of under-approximation with Definition \ref{defSLCG} on page \pageref{defSLCG}, the difference lies at the condition of $\mathbf{V}(sol_{a_i})$. 
 The reasoning of over-approximation stops when certain automaton $a$ reaches the initial state. 
 However, to guarantee all the possible orders, we exige $a_i$ and $a_{1-i}$ are reachable from each other if they are both present in the SLCG.
 The corresponding formula is $\mathbf{V}(sol_{a_i})=\varnothing \text{ \rm if } a_i\in \alpha\land a_{1-i}\not\in V_{\mathrm{state}}$.
 
-Let us take the ABAN $AB=(\Sigma, L, T)$ in Figure \ref{ExUnder} as example with $\Sigma= \{a,b,c,d\}$, $T=\{\acm{b_1,c_1}{a_0}{a_1}, \acm{b_1}{d_0}{d_1}, \acm{d_0}{b_0}{b_1}\}$, initial state $\langle a_0,b_0,c_0,d_0\rangle$.
-With candidate regulations $R=\{(d,c,-),(c,d,-)\}$, Figure \ref{Under1}, Figure \ref{Under2} and Figure \ref{Under3} show the procedures of under-approximation: after two additions of actions and an update, the SLCG becomes stable and $a_2$ is reachable.
+Let us take the ABAN $AB=(\Sigma, L, T)$ in Figure \ref{ExUnder} as example with $\Sigma= \{a,b,c,d\}$, $T=\{\acm{b_1,c_1}{a_0}{a_1}, \acm{b_1}{d_0}{d_1}, \acm{d_0}{b_0}{b_1}\}$, the initial state $\langle a_0,b_0,c_0,d_0\rangle$.
+With candidate regulations $R=\{(d,c,-),(c,d,-)\}$, Figure \ref{Under1}, Figure \ref{Under2} and Figure \ref{Under3} show the procedures of completion by under-approximation: after two additions of actions and one update, the SLCG becomes stable and $a_1$ becomes reachable.
 $T'=\{\acm{b_1,c_1}{a_0}{a_1}, \acm{b_1}{d_0}{d_1}, \acm{d_0}{b_0}{b_1},\acm{d_1}{c_0}{c_1}, \acm{c_1}{d_1}{d_0}\}$, $CS=\{\acm{d_1}{c_0}{c_1}, \acm{c_1}{d_1}{d_0}\}$.
+
+The visualization of under-approximate SLCGs has a slight difference with the one of over-approximate SLCGs.
+$a_0\Rsh a_1$ means $a_1$ wants to be reached \textit{via} $a_0$.
+This notation seems redundant but it is useful when we need to continue the reasoning even we reach the initial state, e.g. in Figure \ref{Under2}, $d_0$ is in the initial state, but the reasoning continues because $d_1$ appears in another branch.
 
 \begin{figure}[ht]
 \centering
@@ -152,7 +159,7 @@ $T'=\{\acm{b_1,c_1}{a_0}{a_1}, \acm{b_1}{d_0}{d_1}, \acm{d_0}{b_0}{b_1},\acm{d_1
 \caption[Completion by under-approximation]{Example of completion by under-approximation. Dashed arrows represent added transitions.}\label{ExUnder}
 \end{figure}
 
-In Figure \ref{Under1}, \fbox{$c_1$} unreachable then the joint state $\langle b_1, c_1\rangle$ is not reachable, $a_2$ is not reachable.
+In Figure \ref{Under1}, \fbox{$c_1$} is unreachable then the joint state $\langle b_1, c_1\rangle$ is not reachable, $a_1$ is not reachable.
 
 \begin{figure}[ht]
 \centering
@@ -160,7 +167,7 @@ In Figure \ref{Under1}, \fbox{$c_1$} unreachable then the joint state $\langle b
 \caption[Operations on SLCG(1)]{Step 1, under-approximation S of Figure \ref{ExUnder} studying the reachability of $a_1$ (small circles stand for solutions and squares stand for processes). }\label{Under1}
 \end{figure}
 
-In Figure \ref{Under2}, according to candidate regulation ${(d,c,-)}\in R$, \ac{d_1}{c_0}{c_1} is added, but the reachability of under-approximation requires all the possible occurrences are realizable, e.g. transition $d_1\Rsh^*d_0$ must be firable.
+In Figure \ref{Under2}, according to candidate regulation ${(d,c,-)}\in R$, transition \ac{d_1}{c_0}{c_1} is added, but the reachability of under-approximation requires all the possible occurrences are realizable, e.g. we need a transition with body $d_0$.
 
 \begin{figure}[ht]
 \centering
@@ -176,20 +183,20 @@ In Figure \ref{Under3}, the completed under-approximate SLCG shows $a_1$ is now 
 \caption[Operations on SLCG(3)]{Step 3 of completion by under-approximation (filled small circles stand for new possible solutions after completion).}\label{Under3}
 \end{figure}
 
-Algorithm \ref{algComUnder} shows the whole process.
+Algorithm \ref{algComUnder} in Appendix shows the whole process.
 
-Also, if one wants to study the candidate transitions with multiple variables in the head, he can also replace regulations with transitions, using the same process to complete the ABAN. 
+Also, if one wants to study the candidate transitions with multiple variables in the head, he can also replace regulations with transitions, using the same process to complete the ABAN. \textbf{(maybe to be detailed in Appendix?)} 
 
 \section{Model Inference via Statistics}
-As we already have the completion approaches, to make it applicable, we need to obtain candidate regulations.
-Here we introduce an approach to generate hypotheses to be verified from time series data.
+As we already have the completion methods, to make it applicable, we need to obtain candidate regulations.
+Here we introduce a method to generate hypotheses to be verified from time series data.
 
-In the previous contents, only the systems with delay 1 are discussed (BN, ABAN, etc.), i.e. the influence done by variables will take place at the next time point (immediately).
+In the previous contents, only the systems with delay of 1 time unit are discussed (BN, ABAN, etc.), i.e. the influence done by variables will take place at the next time point (immediately).
 However, in biological context, some reactions have a long duration, and some even need a whole observation period to take place.
 For this reason, we require approaches to reveal transitions of different delays: for an observation of period $T$, possible delays lie in $[1,T-1]$.
 
 \subsection{Preliminaries}
-In Definition \ref{def:RN}, the definition of regulatory network (RN) is originally related to a set of approximated ordinary differential equations (ODEs) \cite{khalis2009smbionet}:
+In Definition \ref{def:RN} on page \pageref{def:RN}, the definition of regulatory network (RN) is originally related to a set of approximated ordinary differential equations (ODEs) \cite{khalis2009smbionet}:
 %$$\dv{x_v}{t}=k_v+\sum_{u\in v.pred}{x_uk_{uv}s^{\alpha_{uv}}(x_u,\theta_{uv})}-\lambda_v x_v$$
 $$\dv{x_v}{t}=k_v-\lambda_v x_v +\sum_{u\in v.pred}{x_uk_{uv}}$$
 
@@ -201,10 +208,10 @@ where $x_v$ is the concentration of variable $v$, $k_v, \lambda_v\in \mathbb{R}$
 %    This function is usually a sigmoid depending on the sign $\alpha_{uv}$ and on the quantitative threshold $\theta_{uv}\in \mathbb{R}^{+*}$ the interaction.
 %\end{itemize}
 
-Here, considering the the following reasons, we make several changes.
+Here, considering the the following reasons, we make several modifications.
 \begin{enumerate}
     \item The change rate done by external regulations is not always proportional to the concentration of corresponding external variables. 
-    Consider an elementary biochemical reaction $m\mathrm  {A}+n\mathrm  {B}\rightarrow \mathrm  {C}$, according to rate law, the synthesis rate of C is $r_{\mathrm  {C}}\;=\;k[{\mathrm  {A}}]^{m}[{\mathrm  {B}}]^{n}$ where $k$ is a fixed positive number.
+    Consider an elementary biochemical reaction $m\mathrm  {A}+n\mathrm  {B}\rightarrow \mathrm  {C}$, according to the rate law, the synthesis rate of C is $r_{\mathrm  {C}}\;=\;k[{\mathrm  {A}}]^{m}[{\mathrm  {B}}]^{n}$ where $k$ is a fixed positive real number.
     \item In the community of model inference, self-regulations are often considered difficult to be detected because nearly every transition could be explained as a self-regulation.
     For example, in DREAM8\footnote{\url{https://www.synapse.org/\#!Synapse:syn1720047/wiki/55342}}, self-regulations are \textit{a priori} ignored.  
     \item The influence is done immediately, without delay.
@@ -234,12 +241,12 @@ A regulatory network with delay is a labeled directed graph $G=(V,E)$ where
 \end{itemize}
 \end{definition}
 
-With the new formalization, we can now begin with the inference problem.
+With the new formalization, we can now address the inference problem.
 
 
 \subsection{Partial Correlation}
 
-In huge biological networks, it is not possible to compute hypotheses by hand nor to traverse all the possible addable transitions, as stated formerly, the verification of $\mathcal{O}(3^{|Global States|})$ states is a huge task (for any component, each of other components has 3 possibilities, promotion, inhibition and no regulation).
+In huge biological networks, it is not possible to compute hypotheses by hand nor to traverse all the possible addable transitions, as stated formerly, the verification of $\mathcal{O}(3^{|Global States|})$ states is a huge task: if the influenced variable is fixed, every other variable has 3 possible influence, promotion, inhibition and no regulation.
  
 To deal with the great complexity of verification, \textit{a priori} knowledge is needed. 
 Some unsatisfied states can be eliminated without global verification.  
@@ -250,12 +257,12 @@ One additional profit of statistical approaches is that original time series dat
 This loss could lead to an imprecise model.
 However, some statistical approaches could use directly the continuous time series data as input which avoid this difficulty.
 
-According to Equation \ref{eq:ode}, for different $n$,
+According to Equation \ref{eq:ode} on page \pageref{eq:ode}, for different $n$,
 \begin{enumerate}
     \item $n=1$, the change rate of certain variable is the linear sum of other variables.
     The linear correlation between the change rate of one variable and the value of other variables is detectable via an approach using Pearson correlation coefficients (PCC).
     \item $n\neq 1$, the correlations between variables are no longer linear but still monotonous.
-    Analogously the monotonous correlation is detectable by Spearman correlation coefficients (SCC), which is the application of Pearson correlation coefficients on the rank of variables.
+    Analogously the \textit{monotonous} correlation is detectable by Spearman correlation coefficients (SCC), which is the application of Pearson correlation coefficients on the rank of variables.
 \end{enumerate}
 
 \begin{definition}[Pearson correlation coefficient]
@@ -272,12 +279,15 @@ The definition of Spearman correlation coefficient is related to that of Pearson
     $${\displaystyle rs_{x,y}=r_{\operatorname {rg} _{x},\operatorname {rg} _{y}}={\frac {\operatorname {cov} (\operatorname {rg} _{x},\operatorname {rg} _{y})}{\sigma _{\operatorname {rg} _{x}}\sigma _{\operatorname {rg} _{y}}}}}$$
     Where $rg_x$ is the rank variable of $x$.
 \end{definition}
-An example of rank variable:
-$x=\{3,10,1,7,6\}$, $rg_x=\{4,1,5,2,3\}$.
 
-If two variables are correlated and form an independent system, their correlation can be perfectly detected by PCC or SCC.
-However, variables are usually simultaneously influenced by more than one variables, which is the biological case.
-For example, for three variables $a,b,c$, if $a$ is activated by $b$ and inhibited by $c$, the PCC or SCC of $r_{\dv{a}{t},b}$ is biased by $c$. 
+\begin{example}
+Variable $x=\{3,10,1,7,6\}$, the rank variable of $x$ is $rg_x=\{4,1,5,2,3\}$.
+\end{example}
+
+
+If two variables are highly correlated and form an independent system, their correlation can be perfectly detected by PCC or SCC.
+However, variables are usually simultaneously influenced by more than one variables, which is the biological reality.
+For example, for three variables $a,b,c$, if $a$ is activated by $b$ and inhibited by $c$, the PCC or SCC of $r_{\ddv{a}{t},b}$ is biased by $c$. 
 To get rid of certain variables, one can apply partial Pearson correlation coefficients \cite{baba2004partial} or partial Spearman correlation coefficients \cite{borror2001practical}.
 
 Partial correlation coefficients are denoted $pr$.
@@ -299,7 +309,7 @@ The partial Spearman correlation coefficient is defined likewise.
 The possible value of all the mentioned correlation coefficients are in the interval $[-1,1]$.
 The closer to $1$ the absolute value of the coefficient is, the more correlated the variables are.
 Particularly, 1 suggests total positive linear correlation and -1 suggests total negative linear correlation. 
-e.g. if we find the PSCC of $\dv{a}{t}$ and $b$ is -0.9 (high enough), we can add $b\xrightarrow{-}a$ to the set of candidate regulations.
+e.g. if we find the PSCC of $\ddv{a}{t}$ and $b$ is -0.9 (high enough), we can add $b\xrightarrow{-}a$ to the set of candidate regulations.
 
 \subsubsection{Overall Process}
 
@@ -312,11 +322,11 @@ With the former definitions, we propose a method applying partial correlation to
 Figure \ref{plan} shows the procedure of regulation generation: before discretizing original data, Pearson or Spearman correlation coefficient \cite{samaga2009logic,hauke2011comparison} are computed for identifying the relevance between original data and change rates of components (in linear or monotonic way respectively). If cooperation between components exists, former coefficients need replacing by partial ones \cite{de2004discovery} for more precise result.
 Resulting coefficients above the threshold (One can set a threshold of correlation, e.g. 0.7) suggest there probably exist regulations between components.
 
-Furthermore, to complete Biological Regulatory Networks in form of Automata Network, more accurate regulations are inferred through variable reconstruction, which splits a variable into several new variable according to its qualitative levels.
+Furthermore, to complete Biological Regulatory Networks in the form of ABAN, more accurate regulations are inferred through variable reconstruction, which splits a variable into several new variable according to its qualitative levels.
 For example, variable $a$ has two discrete levels $a_0$ $a_1$, then the correlation coefficients as well as the partial coefficients are computed in the domain of $a_0$ and of $a_1$ separately.
 As a result, the correlation between $a_0$ and other components and that of $a_1$ are computed, with which candidate transitions are deduced.
 
-As all the subroutines depicted in Figure \ref{plan} are implemented, starting from original data, regulations in form of Thomas' model or ABAN are resulted step by step. In the next, the data treatments Figure \ref{plan} will be introduced with examples.
+As all the subroutines depicted in Figure \ref{plan} are defined, starting from original data, regulations in form of Thomas' model or ABAN are resulted step by step. In the next, the data treatments Figure \ref{plan} will be introduced with examples.
 
 \subsubsection*{Data Regrouping}
 To gain a better understanding of correlations between observation data and change rate, certain observed data of one component are replaced by corresponding change rate. By calculating the correlation coefficients of such matrix, regulation on this component is characterized.
@@ -363,7 +373,10 @@ In this way, regulations of $b,c,d$ on $a$ are then evaluated by PSCC or PCCC.
 Also matrices representing different delays can be formed analogously.
 
 \subsection{Variable Reconstruction}
-By applying previous steps, regulations in the form of $a\xrightarrow{+/-}b$ are deduced, but the result is not in the precise form of ABAN. To obtain a result in such form, variable reconstruction is necessary.
+By following previous steps, regulations in the form of $a\xrightarrow{+/-}b$ are deduced, but the result is not in the precise form of ABAN. 
+As is stated on page \ref{par:advantage}, ABAN has a finer description.
+We need to study the regulations in different qualitative levels of each variable.
+To obtain a result in ABAN form, variable reconstruction is necessary.
 
 \begin{definition}[Variable Reconstruction]
     Let $x(t)$ be a variable in time series data with $l$ levels from $0$ to $l-1$, the corresponding intervals are $[0,x_0],[x_0,x_1],\cdots,[x_{l-2},x_{l-1}]$, with $x_i$ the thresholds. 
@@ -372,7 +385,7 @@ By applying previous steps, regulations in the form of $a\xrightarrow{+/-}b$ are
 \end{definition}
 
 \begin{example}
-In Figure \ref{varRec}, with the Boolean discretization, variable $a(t)=0.8\sin t+1(t\in [0,7])$ is split into 2 variables $a_0'(t)=0.8\sin t+1(t\in (\pi,2\pi))$ (dark gray) and $a_1'(t)=0.8\sin t+1(t\in [0,\pi]\cup[2\pi,7])$ (light gray) with different domains according to the qualitative threshold.
+In Figure \ref{varRec}, with the Boolean discretization, variable $a(t)=0.8\sin t+1\ (t\in [0,7])$ is split into 2 variables $a_0'(t)=0.8\sin t+1\ (t\in (\pi,2\pi))$ (dark gray) and $a_1'(t)=0.8\sin t+1(t\in [0,\pi]\cup[2\pi,7])$ (light gray) with different domains according to the qualitative threshold.
 \end{example}
 
 \begin{figure}[ht]
@@ -381,7 +394,7 @@ In Figure \ref{varRec}, with the Boolean discretization, variable $a(t)=0.8\sin 
 \end{figure}
 
 
-For a system with 2 Boolean variables $a,b$ split into $a_0,a_1,b_0,b_1$, the PCCC matrix is done as follows:
+For the system with 2 Boolean variables $a,b$ split into $a_0,a_1,b_0,b_1$, the PCCC matrix is created as follows:
 
 %Global state after discretization: $L=\{a_0,a_1\}\times \{b_0,b_1\}\ $
 
@@ -414,10 +427,13 @@ r_{b'_0a_0} & r_{b'_0a_1}& {\rm N/A}&{\rm N/A}\\
 r_{b'_1a_0} & r_{b'_1a_1}& {\rm N/A}&{\rm N/A}\\
 \end{array}\right]$$
 
-Here, even though the size of matrix has doubled (or n times large, depending on discrete levels), as the domains of $a_0,a_1,b_0,b_1$ are not continuous and variables with same origins have no common domain, hence $r_{a_0a_1}$, $r_{a_1a_0}$, $r_{b_0b_1}$, $r_{b_1b_0}$ are meaningless. Also, there are probably some $r_{a_ib_j}$ equal to zero making resulted matrix sparse, which gives possibilities of optimization.
+Here, even though the size of matrix has doubled (it can also be $n$ times large, depending on discrete levels $n$), as the domains of $a_0,a_1,b_0,b_1$ are not continuous and the variables with same origins (like $a_0$ and $a_1$) have no common domain, hence $r_{a_0a_1}$, $r_{a_1a_0}$, $r_{b_0b_1}$, $r_{b_1b_0}$ are meaningless. 
+Also, even some variables of from different origins may have no common domain, that will lead to $r_{a_ib_j}=0$, making resulted matrix more sparse, which gives possibilities of optimization.
+
 \subsection{Toy Example}
-To better illustrate the whole procedure of generating candidate regulations, a toy example of $4$ genes $a$, $b$, $c$ and $d$ is given below.
-To gain a better understanding of the dynamics of the system of 4 genes, we want to output regulation hypothesis for the use of completion algorithms in the previous section.
+
+To better illustrate the whole process of generating candidate regulations, a toy example of $4$ variables $a$, $b$, $c$ and $d$ is given below.
+To prepare the inputs for the model inference in Section \ref{sec:modelInference} on page \pageref{sec:modelInference}, we want to output regulation hypothesis.
 
 Input: time series data in Table \ref{TyTable1}, equi-temporal measurement of 8 time units.
 
@@ -503,7 +519,7 @@ In fact, there is no method that can guarantee it reveal the reality, as what mo
 Causality, or the reason behind the observation is very hard to retrieve.
 
 \section{Model Revision \textit{via} Reachability Properties and Time-Series Data}
-When modeling a real system, one usually require to assess the consistency between a given modeling network and the concrete system by checking whether the observed configurations are indeed reachable in the Boolean network.
+When modeling a real system, instead of causality, one usually require to assess the \textit{consistency} between a given modeling network and the concrete system by checking whether the observed configurations are indeed reachable in the Boolean network.
 Whenever it is not the case, it typically means that the designed Boolean functions do not model the given system correctly and thus should be revised before further model analysis.
 
 Inoue \cite{inoue2011logic} has shown that Boolean networks can be represented by logic programs.
