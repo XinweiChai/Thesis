@@ -20,17 +20,17 @@ The equivalent ABAN is then constructed: 5 automata $\mathbf{\Sigma}=\{a,b,c,d,e
 \State Initialization: 
 $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution}}\gets \varnothing$, $E\gets \varnothing$
 \While{$Ls\neq \varnothing$}
-    \State $Ls=Ls\backslash V_{\mathrm{state}}$
+    \State $Ls=Ls\setminus V_{\mathrm{state}}$
 	\For{$a_i\in Ls$}
-		\State $Ls\gets Ls\backslash \{a_i\}$
+		\State $Ls\gets Ls\setminus \{a_i\}$
 		\If{$a_i\in \alpha$}
 			%\State $a_i{\rm .next}=sol_{a_i}$
 			%\State $V_{\mathrm{solution}}\gets V_{\mathrm{solution}}\cup \{(a_i,\varnothing)\} $
 			\State $E\gets E\cup \{(a_i,\varnothing)\} $
             %\State $sol_{a_i}{\rm .next}=\varnothing$
     	\Else
-    	    \State{\textcolor{gray}{// Choose the transitions reaching $a_i$, i.e. with body $a_{1-i}$}}
-    		\For{$sol=A\to a_{1-i}\in \mathbf{T}$}
+    	    \State{\textcolor{gray}{// Choose the transitions reaching $a_i$}}
+    		\For{$sol=A\to a_i\in \mathbf{T}$}
     		    \State $V_{\mathrm{solution}}\gets V_{\mathrm{solution}}\cup \{sol\}$
     		    \State $E\gets E\cup \{(a_i,sol)\} $
     			%\State $a_i{\rm .next}\gets a_i{\rm .next}\cup sol$
@@ -48,7 +48,48 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 \EndWhile
 \State\Return{$(V_{\mathrm{state}},V_{\mathrm{solution}},E)$}
 \end{algorithmic}
-\caption{Construction of SLCG}\label{AlgConstructLCG}
+\caption{Construction of SLCG (over-approximation)}\label{AlgConstructLCG}
+\end{algorithm}
+
+\begin{algorithm}[ht]
+\begin{algorithmic}
+\State Input: an ABAN $AB=(\mathbf{\Sigma},\mathbf{L},\mathbf{T})$, an initial state $\alpha$, a target state $\omega$
+\State Output: SLCG $l=(V_{\mathrm{state}},V_{\mathrm{solution}}, E)$
+\State Initialization: 
+$Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution}}\gets \varnothing$, $E\gets \varnothing$, $rev\gets \varnothing$
+\While{$Ls\neq \varnothing$}
+    \State $Ls=Ls\setminus V_{\mathrm{state}}$
+	\For{$a_i\in Ls$}
+		\State $Ls\gets Ls\setminus \{a_i\}$
+		\If{$a_i\in \alpha$}
+			\State $E\gets E\cup \{(a_i,\varnothing)\}$
+			\State $rev\gets rev\cup a_i$
+    	\Else
+    	    \State{\textcolor{gray}{// Check if local initial state $a_{1-i}$ needs to be revised}}
+    	    \If{$a_{1-i}\in rev$}
+    	        \State $Ls\gets Ls\cup \{a_{1-i}\}$
+    	        \State $\alpha\gets\alpha\setminus\{a_{1-i}\}$
+    	    \EndIf
+    	    \State{\textcolor{gray}{// Choose the transitions reaching $a_i$}}
+    		\For{$sol=A\to a_i\in \mathbf{T}$}
+    		    \State $V_{\mathrm{solution}}\gets V_{\mathrm{solution}}\cup \{sol\}$
+    		    \State $E\gets E\cup \{(a_i,sol)\} $
+    			%\State $a_i{\rm .next}\gets a_i{\rm .next}\cup sol$
+    			\State $V_{\mathrm{state}}\gets V_{\mathrm{state}}\cup {A}$
+    			\For{$b_j\in A$}
+    				%\State $sol{\rm .next}\gets b_j$
+    				\State $E\gets E\cup \{(sol,b_j)\} $
+    			\EndFor
+    			\State $Ls\gets Ls\cup A$
+                \State $V_{\mathrm{state}}\gets V_{\mathrm{state}}\cup Ls$
+    		\EndFor
+    		\State$V_{\mathrm{solution}}\gets V_{\mathrm{solution}}\cup a_i{\rm .next}$           
+    	\EndIf
+	\EndFor
+\EndWhile
+\State\Return{$(V_{\mathrm{state}},V_{\mathrm{solution}},E)$}
+\end{algorithmic}
+\caption{Construction of SLCG (under-approximation)}\label{AlgConstructLCGUnder}
 \end{algorithm}
 
 \begin{algorithm}[ht]
@@ -93,7 +134,7 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 %    \If{$scc$ has less than one incoming edge}
 %        \For{each $v \in V'_{\mathrm{state}}$}
 %            \If {$\exists(v,v')\in E, v' \in (V_{\mathrm{solution}} \setminus V'_{\mathrm{solution}})$}
-%                \State $E\gets E\backslash \{(v,v'')|v''\in V'_{\mathrm{solution}},(v,v'')\in E\}$
+%                \State $E\gets E\setminus \{(v,v'')|v''\in V'_{\mathrm{solution}},(v,v'')\in E\}$
 %            \EndIf
 %        \EndFor
 %    \EndIf
@@ -104,9 +145,9 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 %    \State pruned = false
 %    \For {$v \in V_{\mathrm{state}}$}
 %        \If{$\not\exists(v,v')\in E$}
-%            \State $V_{\mathrm{state}} \gets V_{\mathrm{state}}\backslash \{v\}$; $E\gets E\backslash \{ (v'',v)\in E\}$
-%            \State $E\gets E\backslash \{ (v'',sol)\in E | sol \in \{sol = (A \rightarrow a) \in V_{\mathrm{solution}} | v \in A\}\}$
-%            \State $V_{\mathrm{solution}} \gets V_{\mathrm{solution}}\backslash \{sol = (A \rightarrow a) \in V_{\mathrm{solution}} | v \in A\}$
+%            \State $V_{\mathrm{state}} \gets V_{\mathrm{state}}\setminus \{v\}$; $E\gets E\setminus \{ (v'',v)\in E\}$
+%            \State $E\gets E\setminus \{ (v'',sol)\in E | sol \in \{sol = (A \rightarrow a) \in V_{\mathrm{solution}} | v \in A\}\}$
+%            \State $V_{\mathrm{solution}} \gets V_{\mathrm{solution}}\setminus \{sol = (A \rightarrow a) \in V_{\mathrm{solution}} | v \in A\}$
 %            \State pruned = true
 %        \EndIf
 %    \EndFor \label{prune_end}
@@ -121,7 +162,7 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 %    \State $l'=(V'_{\mathrm{state}}, V'_{\mathrm{solution}},E')\gets(V_{\mathrm{state}}, V_{\mathrm{solution}},E)$
 %    \For{$v \in V'_{state}$} \textcolor{gray}{// Treat each OR gates}
 %        \State pick a random element $(v,v') \in E'$
-%        \State $E'\gets E' \backslash  \{(v,v'') \in E'| v''\neq v'\}$
+%        \State $E'\gets E' \setminus  \{(v,v'') \in E'| v''\neq v'\}$
 %    \EndFor
 %    \If{$l'$ contains cycles}
 %        \State \textbf{Continue}
@@ -138,7 +179,7 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 %        \EndFor
 %        \If{$re=\textbf{True}$}
 %            \State update $\alpha$ by firing transitions in $simp$
-%            \State $V'_{\mathrm{solution}}\gets V'_{\mathrm{solution}} \backslash simp$
+%            \State $V'_{\mathrm{solution}}\gets V'_{\mathrm{solution}} \setminus simp$
 %        \Else
 %            \State \textbf{break}
 %        \EndIf
@@ -163,7 +204,7 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
     \If{$scc$ has less than one incoming edge}
         \For{each $v \in V'_{\mathrm{state}}$}
             \If {$\exists(v,v')\in E, v' \in (V_{\mathrm{solution}} \setminus V'_{\mathrm{solution}})$}
-                \State $E\gets E\backslash \{(v,v'')|v''\in V'_{\mathrm{solution}},(v,v'')\in E\}$
+                \State $E\gets E\setminus \{(v,v'')|v''\in V'_{\mathrm{solution}},(v,v'')\in E\}$
             \EndIf
         \EndFor
     \EndIf
@@ -174,9 +215,9 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
     \State pruned = false
     \For {$v \in V_{\mathrm{state}}$}
         \If{$\not\exists(v,v')\in E$}
-            \State $V_{\mathrm{state}} \gets V_{\mathrm{state}}\backslash \{v\}$; $E\gets E\backslash \{ (v'',v)\in E\}$
-            \State $E\gets E\backslash \{ (v'',sol)\in E | sol \in \{sol = (A \rightarrow a) \in V_{\mathrm{solution}} | v \in A\}\}$
-            \State $V_{\mathrm{solution}} \gets V_{\mathrm{solution}}\backslash \{sol = (A \rightarrow a) \in V_{\mathrm{solution}} | v \in A\}$
+            \State $V_{\mathrm{state}} \gets V_{\mathrm{state}}\setminus \{v\}$; $E\gets E\setminus \{ (v'',v)\in E\}$
+            \State $E\gets E\setminus \{ (v'',sol)\in E | sol \in \{sol = (A \rightarrow a) \in V_{\mathrm{solution}} | v \in A\}\}$
+            \State $V_{\mathrm{solution}} \gets V_{\mathrm{solution}}\setminus \{sol = (A \rightarrow a) \in V_{\mathrm{solution}} | v \in A\}$
             \State pruned = true
         \EndIf
     \EndFor %\label{prune_end}
@@ -202,7 +243,7 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
     \State $l'=(V'_{\mathrm{state}}, V'_{\mathrm{solution}},E')\gets(V_{\mathrm{state}}, V_{\mathrm{solution}},E)$
     \For{$v \in V'_{state}$} \textcolor{gray}{// Treat each OR gates}
         \State pick a random element $(v,v') \in E'$
-        \State $E'\gets E' \backslash  \{(v,v'') \in E'| v''\neq v'\}$
+        \State $E'\gets E' \setminus  \{(v,v'') \in E'| v''\neq v'\}$
     \EndFor
     \If{$l'$ contains cycles}
         \State \textbf{Continue}
@@ -219,7 +260,7 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
         \EndFor
         \If{$re=\textbf{True}$}
             \State update $\alpha$ by firing transitions in $simp$
-            \State $V'_{\mathrm{solution}}\gets V'_{\mathrm{solution}} \backslash simp$
+            \State $V'_{\mathrm{solution}}\gets V'_{\mathrm{solution}} \setminus simp$
         \Else
             \State \textbf{break}
         \EndIf
@@ -242,7 +283,7 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 \For{each $(V'_{\mathrm{state}} \subseteq V_{\mathrm{state}},V'_{\mathrm{solution}} \subseteq V_{\mathrm{solution}}) \in \mathrm{SCC1}(l)$}
     \For{each $v \in V'_{\mathrm{state}}$}
     \If {$\exists(v,v')\in E, v' \in (V_{\mathrm{solution}} \setminus V'_{\mathrm{solution}})$}
-        \State $E\gets E\backslash \{(v,v'')|v''\in V'_{\mathrm{solution}},(v,v'')\in E\}$
+        \State $E\gets E\setminus \{(v,v'')|v''\in V'_{\mathrm{solution}},(v,v'')\in E\}$
     \EndIf
 \EndFor
 \EndFor \label{delete_cycle_end}
@@ -252,7 +293,7 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
     \State pruned = \textbf{False}
     \For {$v \in V_{\mathrm{state}}$}
         \If{$\not\exists(v,v')\in E$}
-            \State $V_{\mathrm{state}} \gets V_{\mathrm{state}}\backslash \{v\}$; $E\gets E\backslash \{ (v'',v)\in E\}$
+            \State $V_{\mathrm{state}} \gets V_{\mathrm{state}}\setminus \{v\}$; $E\gets E\backslash \{ (v'',v)\in E\}$
             \State $E\gets E\backslash \{ (v'',sol)\in E | sol \in \{sol = (A \rightarrow a) \in V_{\mathrm{solution}} | v \in A\}\}$
             \State $V_{\mathrm{solution}} \gets V_{\mathrm{solution}}\backslash \{sol = (A \rightarrow a) \in V_{\mathrm{solution}} | v \in A\}$
             \State pruned = \textbf{True}
@@ -284,8 +325,29 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 \begin{algorithm}[ht]
 \caption{Completion by over-approximation}\label{algComOver}
 \begin{algorithmic}
-\State Input:
-\State Output:
+\State Input: an incomplete ABAN $AB$, set of candidate regulations $R$, targeted reachability $(\alpha,\omega)$
+\State Output: a completed ABAN $AB'=(\Sigma, L,T)$ or $\varnothing$ if there is no solution
+\State Initialization: $rev\gets\varnothing$
+\State Construct over-approximate SLCG $l=SLCG(\alpha,\omega)=(V_{\mathrm{state}},V_{\mathrm{solution}}, E)$ by Algorithm \ref{AlgConstructLCG}
+\If{$reach'(\alpha,\omega)=\mathbf{True}$}
+    \Return{$AB$}
+\EndIf
+\Do
+    \For{$a\in V_{\mathrm{state}}$}
+        \If{$a.next=\varnothing$}
+            \State $rev\gets rev\cup \{a\}$
+        \EndIf
+    \EndFor
+    \For{$a_i\in rev$}
+        \For{$(body,head,sgn)\in R$}
+            \If{$head=a_i$}
+                \State $rev\gets rev\setminus \{a_i\}$
+            \EndIf
+        \EndFor
+    \EndFor
+\doWhile{$rev\neq\varnothing$}
+
+%\State Find $a\in V_{\mathrm{state}}$ s.t. $\nexists (a,sol_a)\in E$ with $sol_a\in T$
 
 \end{algorithmic}
 \end{algorithm}
@@ -293,8 +355,10 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 \begin{algorithm}[ht]
 \caption{Completion by under-approximation}\label{algComUnder}
 \begin{algorithmic}
-\State Input:
-\State Output:
+\State Input: incomplete ABAN $AB$, set of candidate regulations $R$, targeted reachability $(\alpha,\omega)$
+\State Output: a completed ABAN $AB'$ or $\varnothing$ if there is no solution
+\State Initialization
+\State Construct under-approximate SLCG $l=SLCG(\alpha,\omega)$ by Algorithm \ref{AlgConstructLCGUnder}
 
 \end{algorithmic}
 \end{algorithm}
