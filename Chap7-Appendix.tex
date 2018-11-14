@@ -325,41 +325,86 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 \begin{algorithm}[ht]
 \caption{Completion by over-approximation}\label{algComOver}
 \begin{algorithmic}
-\State Input: an incomplete ABAN $AB$, set of candidate regulations $R$, targeted reachability $(\alpha,\omega)$
-\State Output: a completed ABAN $AB'=(\Sigma, L,T)$ or $\varnothing$ if there is no solution
-\State Initialization: $rev\gets\varnothing$
-\State Construct over-approximate SLCG $l=SLCG(\alpha,\omega)=(V_{\mathrm{state}},V_{\mathrm{solution}}, E)$ by Algorithm \ref{AlgConstructLCG}
-\If{$reach'(\alpha,\omega)=\mathbf{True}$}
-    \Return{$AB$}
+\State Input: an incomplete ABAN $AB=(\Sigma, L,T)$, set of candidate regulations $R$, targeted reachability $(\alpha,\omega)$
+\State Output: Completed set $CS$ %or $\varnothing$ if there is no solution
+\State Initialization: $rev\gets\{(\{\omega\},\{\omega\},\varnothing)\}$, $CS\gets \varnothing$
+\State Construct SLCG $l=SLCG(\alpha,\omega)=(V_{\mathrm{state}},V_{\mathrm{solution}}, E)$ by Algorithm \ref{AlgConstructLCG}
+\If {$reach(\alpha,\omega)$}
+    \Return{$(\mathbf{True},\varnothing)$}
 \EndIf
-\Do
-    \For{$a\in V_{\mathrm{state}}$}
-        \If{$a.next=\varnothing$}
-            \State $rev\gets rev\cup \{a\}$
+\While {$rev\neq \varnothing$}
+    \For {$i=(ls,fr,tr)\in rev$}
+        \State $rev\gets rev \setminus\{i\}$
+        \If{$fr=\varnothing$}
+            \State $CS\gets CS\cup \{ls\}$
+            \State \textbf{Continue}
         \EndIf
-    \EndFor
-    \For{$a_i\in rev$}
-        \For{$(body,head,sgn)\in R$}
-            \If{$head=a_i$}
-                \State $rev\gets rev\setminus \{a_i\}$
+        \For{$j\in fr$}
+            \For{$k\in j.next$}
+                \If{$head(k)\not\subseteq ls$}
+                    \State $rev\gets rev\cup \{(ls\cup head(k), fr\cup head(k)\setminus \{j\},tr)\}$
+                \EndIf
+            \EndFor
+        \EndFor
+        \State $cand\gets\varnothing$
+        \For {$j=(b,h,sgn)\in R$}
+            \If {$\exists h_x\in fr\land\acm{b_{x \oplus sgn}}{h_{1-x}}{h_x}\notin T$}
+                \State $cand \gets cand\cup\{\acm{b_{x \oplus sgn}}{h_{1-x}}{h_x}\}$
+                \State 
+                    $\begin{aligned}
+                        rev\gets rev\cup &\{(ls\cup \{b_{x \oplus sgn}\}, fr\cup \{b_{x \oplus sgn}\}\setminus \{h_x\},\\
+                        &tr\cup\{\acm{b_{x \oplus sgn}}{h_{1-x}}{h_x}\})\}
+                    \end{aligned}$
             \EndIf
         \EndFor
     \EndFor
-\doWhile{$rev\neq\varnothing$}
-
-%\State Find $a\in V_{\mathrm{state}}$ s.t. $\nexists (a,sol_a)\in E$ with $sol_a\in T$
-
+\EndWhile
+\If{$CS=\varnothing$}
+    \Return{$(\mathbf{False},\varnothing)$}
+\EndIf
+\Return{$(\mathbf{True},CS)$}
 \end{algorithmic}
 \end{algorithm}
+
+Remark: every element in $rev$ is defined as $(ls, fr, tr)$, where
 
 \begin{algorithm}[ht]
 \caption{Completion by under-approximation}\label{algComUnder}
 \begin{algorithmic}
-\State Input: incomplete ABAN $AB$, set of candidate regulations $R$, targeted reachability $(\alpha,\omega)$
-\State Output: a completed ABAN $AB'$ or $\varnothing$ if there is no solution
-\State Initialization
-\State Construct under-approximate SLCG $l=SLCG(\alpha,\omega)$ by Algorithm \ref{AlgConstructLCGUnder}
-
+\State Output: Completed set $CS$ %or $\varnothing$ if there is no solution
+\State Initialization: $rev\gets\{(\{\omega\},\{\omega\},\varnothing)\}$, $CS\gets \varnothing$, $CS_{iter}\gets \varnothing$
+\Do
+\State SLCG $l=SLCG(\alpha,\omega)=(V_{\mathrm{state}},V_{\mathrm{solution}}, E)$ by Algorithm \ref{AlgConstructLCGUnder}
+\While {$rev\neq \varnothing$}
+    \For {$i=(ls,fr,tr)\in rev$}
+        \State $rev\gets rev \setminus\{i\}$
+        \If{$fr=\varnothing$}
+            \State $CS_{iter}\gets CS_{iter}\cup \{ls\}$
+            \State \textbf{Continue}
+        \EndIf
+        \For{$j\in fr$}
+            \For{$k\in j.next$}
+                \If{$head(k)\not\subseteq ls$}
+                    \State $rev\gets rev\cup \{(ls\cup head(k), fr\cup head(k)\setminus \{j\},tr)\}$
+                \EndIf
+            \EndFor
+        \EndFor
+        \State $cand\gets\varnothing$
+        \For {$j=(b,h,sgn)\in R$}
+            \If {$\exists h_x\in fr\land\acm{b_{x \oplus sgn}}{h_{1-x}}{h_x}\notin T$}
+                \State $cand \gets cand\cup\{\acm{b_{x \oplus sgn}}{h_{1-x}}{h_x}\}$
+                \State 
+                    $\begin{aligned}
+                        rev\gets rev\cup &\{(ls\cup \{b_{x \oplus sgn}\}, fr\cup \{b_{x \oplus sgn}\}\setminus \{h_x\},\\
+                        &tr\cup\{\acm{b_{x \oplus sgn}}{h_{1-x}}{h_x}\})\}
+                    \end{aligned}$
+            \EndIf
+        \EndFor
+    \EndFor
+\EndWhile
+\State $CS\gets CS\cup CS_{iter}$
+\doWhile {$CS_{iter}\neq \varnothing$}
+\State \Return{$CS$}
 \end{algorithmic}
 \end{algorithm}
 %\begin{algorithm}[htb]
