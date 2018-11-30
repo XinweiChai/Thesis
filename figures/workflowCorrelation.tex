@@ -8,7 +8,7 @@
     \node [block, below = of ranking] (dataReg) {Data regrouping \& Spearman coefficient};
      \node [block, right = of dataReg] (partialCoeff) {Partial coefficient};
      \node [block, right = of partialCoeff] (regulations) {Regulations $x\xrightarrow{+/-}y$};
-     \node [block, below = of varReconstruction] (actions) {Actions \ac{x_i}{y_j}{y_k}};
+     \node [block, below = of varReconstruction] (actions) {Transitions \ac{x_i}{y_j}{y_k}};
      \coordinate [left = of ranking,node distance=0.5cm](abstract);
     % Draw edges
     \path [line] (originalData) -- (dataDiscretization);

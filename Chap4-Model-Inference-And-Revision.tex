@@ -32,6 +32,8 @@ Constructing an abstracted (often approximated) model is a compromising way of d
 However, the abstracted models are theoretically non-equivalent to the original ones because they contain different amount of information.
 Even though there always lies an non-equivalence, we wish that the abstracted models are in bisimulation with the original systems with respect to certain variables and keep the same important properties as original systems.
 
+\textbf{More related work on model inference and model revision}
+
 Concretely speaking, we developed three approaches which are to be presented in this chapter:
 
 \begin{enumerate}
@@ -53,6 +55,7 @@ Roughly speaking, we aim at finding the transitions among the candidates which m
 
 \subsection{Problem Description}
 Briefly speaking, completion problem is:
+\textbf{To enrich}
 
 incomplete model + candidate regulations + constraints $\to$ new model
 
@@ -439,9 +442,9 @@ Input: time series data in Table \ref{TyTable1}, equi-temporal measurement of 8 
 
 Output: regulation hypotheses for completion of over/under-approximation.
 
-\begin{table}[!ht]
+\begin{table}[ht]
 \centering
-\begin{tabular}{*{10}{l}}
+\begin{tabular}{l|*{9}{l}}
 $t$&0&1&2&3&4&5&6&7&8\\
 \hline
 $a$&2.01&2.51&1.97&1.17&0.94&0.70&0.31&0.06&0.06\\
@@ -454,9 +457,9 @@ $d$&1.62&1.22&1.07&0.57&0.27&0.28&0.24&0.27&0.31
 
 
 
-\begin{table}[!ht]
+\begin{table}[ht]
 \centering
-\begin{tabular}{c*{8}{S}}
+\begin{tabular}{c|c*{7}{S}}
 $t$&0&1&2&3&4&5&6&7\\
 \hline
 $a$&0.5&-0.54&-0.8&-0.23&-0.24&-0.39&-0.25&0.0\\
@@ -672,7 +675,7 @@ In the next section we propose an algorithm exploiting the SLCG structure to res
 \subsection{Revision}
 \label{sec:algorithm}
 
-    In this section we propose an algorithm \textbf{M2RIT} (\textbf{M}odel \textbf{R}evision \textit{via} \textbf{R}eachability and \textbf{I}nterpretation \textbf{T}ransitions) exploiting the previous formalization to fit a logic program to reachability properties.
+    In this section, we are going to present our algorithm \textbf{M2RIT} (\textbf{M}odel \textbf{R}evision \textit{via} \textbf{R}eachability and \textbf{I}nterpretation \textbf{T}ransitions) exploiting the previous formalization to fit a logic program to reachability properties.
     Given a set of transition $E$ of an asynchronous system $S$, a logic program $P$ is learned via the adaptation of \textbf{asynchronous LFIT} of section \ref{sec:alfit}.
     When $E$ is partial, the learned program $P$ does not have the exact dynamics of $S$.
     Given a set of reachability properties $Re$ and a set of unreachability properties $Un$ of $S$, we propose an algorithm to revise $P$ so that the dynamics of $P$ satisfy $S$.

@@ -1,15 +1,18 @@
 \chapter{Tests and Benchmarks}\label{chap:test}
 \begin{mybox}
-After the presentation of the main theoretical contents, this chapter is going to show some results of the implementation:
+After the presentation of the main theoretical contents, we are going to show in this chapter some results of the implementation:
 
 \begin{itemize}
-    \item Comparison of several reachability analyzers (Chapter \ref{chap:refinement}): exhaustive reachability analyzers, Pint, PermReach, ASPReach on their scalability (biggest tractable model size), efficiency (runtime) and precision (global conclusiveness)
-    \item Running examples of CRAC and M2RIT (Chapter \ref{chap:modelInference})
+    \item Comparison of several reachability analyzers in Chapter \ref{chap:refinement}: exhaustive reachability analyzers (containing the one using solely ASP solver), Pint, PermReach, ASPReach on their scalability (biggest tractable model size), efficiency (runtime) and precision (global conclusiveness)
+    \item Running examples of CRAC and M2RIT in Chapter \ref{chap:modelInference}
 \end{itemize}
 \end{mybox}
 
-We have shown the theoretical effectiveness and correctness of PermReach and ASPReach in Chapter \ref{chap:refinement}. 
-To ensure their capacity, we use small models to verify the correctness, i.e. PermReach and ASPReach obtain the same result as other tools, then we apply all the analyzers on a series of models with growing sizes to obtain the limit of the capacity of each analyzer.
+In Chapter \ref{chap:refinement}, we have illustrated the concepts of new modeling framework ABAN and several related definitions which describe the reachability problem under this framework.
+Afterwards, we have shown the theoretical effectiveness and correctness of our reachability analyzers PermReach and ASPReach. 
+To ensure their capacity, we use small models to verify the correctness, i.e. PermReach and ASPReach obtain the same result as other model checkers.
+Then we apply all the analyzers on a series of models with increasing sizes to obtain the limit of the capacity of each analyzer.
+These tests shows our analyzers can be applied to models with more than 1000 automata while traditional ones fail at models with 50 automata.
 
 As for CRAC and M2RIT, CRAC uses reachability properties and \textit{continuous} time-series data while M2RIT uses reachability properties and \textit{discretized} time-series data.
 
@@ -19,12 +22,14 @@ In this section, we evaluate the reachability analyzers through various experime
 All tests were run on a Intel Core i7-3770 CPU, \@3.4GHz with 8Gb RAM computer.
 
 To validate our approach, we first carried tests on a small model, $\lambda$-phage model \cite{thieffry1995dynamical} to compare with an alternative reachability analyzer Pint \cite{pauleve2012} implementing solely analysis using SLCG \cite{pauleve2017reduction,folschette2015,pauleve2011}.
+$\lambda$-phage is originally a multivalued model.
+We compressed its multivalued variables to transform it into a Boolean model.
 In this model with 4 automata and 12 transitions (without taking consideration of the self-regulations),
 our result shows complete conclusiveness while Pint cannot (Figure \ref{fig:LCG_lambdaPhage}). %able to figure out the reachability of $cro_1$ when $cl_1$ and $cll_1$ are in the initial state (Figure \ref{fig:LCG_lambdaPhage}).
-PermReach \cite{chai2018heuristic} is not able either to handle some of the special cases where multiple states of one automaton appear in different branches (Figure \ref{fig:countexPerm}).
+PermReach \cite{chai2018heuristic} is not either able to handle some of the special cases where multiple states of one automaton appear in different branches (Figure \ref{fig:countexPerm}).
 Theses cases are solvable by ASPReach.
 The whole approach is implemented in Python3\footnote{Code and testing data available at \url{https://github.com/XinweiChai/LCG-in-ASP}}.
-The call of ASP is done by package \textit{pyasp}\footnote{\url{https://pypi.python.org/pypi/pyasp}}. 
+The call of ASP in Python is done by package \textit{pyasp}\footnote{\url{https://pypi.python.org/pypi/pyasp}}. 
 %In big examples TCR and EGFR, it outputs the sequence from initial state towards final state.
 %More importantly, it gives decidable reachability for any input. 
 
@@ -45,16 +50,20 @@ To evaluate the scalability in \textit{in silico} networks, we take T-cell Recep
 
 These models are originally Boolean networks.
 According to the approach in Appendix \ref{appendix:trans}, BNs are transformed into ABANs. 
-Here, we ran the same test as in \cite{folschette2015}. In the TCR model, we take 3 automata as input (\texttt{cd4 cd28 tcrlig}), varying exhaustively their initial states combinations ($2^3$), take the reachability of states of 5 automata (\texttt{sre ap1 nfkb nfat sigmab}) as output. 
+Here, we ran the same test as in \cite{folschette2015}. In the TCR model, we take 3 automata as input (\texttt{cd4 cd28 tcrlig}), vary exhaustively their initial states combinations ($2^3$) and finally take the reachability of states of 5 automata (\texttt{sre ap1 nfkb nfat sigmab}) as output. 
 Similarly we carried a bigger test on EGFR model with 13 automata %\footnote{\texttt{erbb1 erbb2 erbb3 erbb4 bir btc egf epr nrg1a nrg1b nrg2b nrg4 tgfa}}
 as input and 12 automata %\footnote{\texttt{elk1 creb ap1 hsp27 actin\_reorg cmyc pro\_apoptotic p70s6\_2 pkc stat1 stat3 stat5}}
 as output.
-We first tested the performance of traditional model checkers, Mole\footnote{\url{http://www.lsv.fr/~schwoon/tools/mole}} and NuSMV\footnote{\url{http://nusmv.fbk.eu}}, in which Mole turns out to be memory-out for 6 in 12 outputs, and all memory-out for NuSMV in model EGFR. 
-Due to the big state space, traditional model checkers are not applicable.
+We first tested the performance of traditional model checkers and pure ASP approach which have the biggest theoretical complexities. 
+Mole\footnote{\url{http://www.lsv.fr/~schwoon/tools/mole}} and NuSMV\footnote{\url{http://nusmv.fbk.eu}}, in which Mole turns out to be memory-out for 6 in 12 outputs, and all memory-out for NuSMV in model EGFR. 
+
+Ben-Abdallah \textit{et al.} \cite{abdallah2015exhaustive} have implemented reachability analyzer using pure ASP solver, showing it has similar runtime.
+Thanks to the efficiency of Clingo\footnote{\url{http://potassco.sourceforge.net/}}, pure ASP solver begins to fail at 80 automata but this computational capacity is still not enough.
+
+Due to the big state space, traditional model checkers and pure ASP solver are not applicable but they can be used to check the correctness of the results.
 In the TCR tests, our approach gives exactly the same result as Pint did. 
 As for EGFR tests, ASPReach returned no inconclusive output.
 
-\textbf{Add the result of pure ASP}
 \begin{table}[ht]
     \begin{tabular}{|c|c|c|c|}
     \hline
@@ -145,14 +154,16 @@ Column “Pint” gives the related results on ANs, while column “PermReach”
 }\label{tab:results}
 \end{table}
 
-As seen in Table \ref{tab:results}, our approach can be more conclusive than Pint for ABANs.
+As seen in Table \ref{tab:results} on page \pageref{tab:results}, our approach can be more conclusive than Pint for ABANs.
 In the configuration of heuristics, we set a threshold for \textbf{OR gates}.
 If there are less than 10 \textbf{OR gates} after preprocessing, the computation will be shifted from heuristic to the enumeration of all combinations of \textbf{OR gates}.
 %It is acceptable for such a model, i.e. at most $2^{10}$ paths to check. 
 Here is the case for these three benchmarks. The experiments show the ability of ASPReach is already more conclusive than Pint in ``simple'' cases.
 
-Besides the tests done by others, we also carry tests on some randomly generated ABANs to check the generality and the time-performance of PermReach. 
-Given the number of transitions, for every transition $tr$, the head $a_h$ is randomly chosen from $\mathbf{LS}$, the first element of the body $A_1$ is chosen from $\mathbf{LS}_1=\mathbf{LS}\setminus \{a_h,a_{1-h}\}$.
+Besides the tests in the literature, we have also carried tests on some randomly generated ABANs to check the generality and the time-performance of PermReach. 
+The ABAN is generated as follows:
+
+Given the number of transitions, for every transition $tr$ to be generated, its head $a_h$ is randomly chosen from $\mathbf{LS}$, the first element of the body $A_1$ is chosen from $\mathbf{LS}_1=\mathbf{LS}\setminus \{a_h,a_{1-h}\}$.
 For $i>1$, if $A_{i-1}=b_x$ exists, we generate $A_i$ with an 80\% probability, choosing from $\mathbf{LS}_i=\mathbf{LS}_{i-1}\setminus \{b_x,b_{1-x}\}$. 
  
 One test is on the different numbers of automata with the same density (average number of transitions per automaton) of ABAN. Fixing the density to 3, we vary the number of automata from $10,20,\ldots,100,200,\ldots,1000$.
@@ -183,3 +194,8 @@ The runtime peak is at density 8, a possible explanation is that even the topolo
 Random ABANs, generate time series data, hide randomly a part of transitions, calculate the percentage of retrieval
 
 \section{R\'esum\'e}
+
+In this chapter, we compared the performance of the tools using different approaches.
+Different results approved the properties of different methodologies shown in the previous chapters.
+
+The implementation of PermReach and that of ASPReach they are 

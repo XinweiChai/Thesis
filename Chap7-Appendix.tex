@@ -1,16 +1,24 @@
-\chapter{Translation between Models}
+\chapter{Representation of Different Models}
 \section{Transformation from BNs to ABANs}\label{appendix:trans}
 
 Given Boolean functions $v_i(t+1)=f_i(\mathbf{V}_i)$, with $\mathbf{V}_i$ the set of participating variables among $v_1(t),\cdots,v_n(t)$.
 Boolean functions could be transformed to equivalent CNF (conjunctive normal form) and DNF (disjunctive normal form) if the length of Boolean functions is limited to $O(1)$ \cite{miltersen2005converting} which is often the case.
+
 \begin{proposition}[Transformation from BN to ABAN]
 Given a BN $G_B=(V,F)$, with its functions in CNF form $v^i(t+1)=A_1\land\ldots A_j \ldots\land A_n$ and DNF form $v^i(t+1)=A'_1\lor\ldots A_k\ldots\lor A'_m$, an equivalent ABAN $AB$ has transitions $A_j\to v^i_1$ and $\lnot A_k\to v^i_0$ where $A_j$ are disjunctions and $A'_K$ are conjunctions.
 \end{proposition}
+
 \begin{example}
 Let $G_B=(V,F)$ a BN with $V=\{a,b,c,d,e\}$, and has only one Boolean function, $F=\{f(a)= (b\lor c)\land(d\lor e)\}$, we have 
 $f(a)=(b\land d)\lor(b\land e)\lor(c\land d)\lor(c\land e)$, and $\lnot f(a)=(\lnot b\land \lnot c)\lor(\lnot d\land \lnot e)$. 
 The equivalent ABAN is then constructed: 5 automata $\mathbf{\Sigma}=\{a,b,c,d,e\}$, with transitions: $\mathbf{T}=\{\acm{b_1,d_1}{a_0}{a_1},\ \acm{b_1,e_1}{a_0}{a_1},\ \acm{c_1,d_1}{a_0}{a_1},\ \acm{c_1,e_1}{a_0}{a_1},\ \acm{b_0,c_0}{a_1}{a_0},\ \acm{d_0,e_0}{a_1}{a_0}\}$.
 \end{example}
+
+\section{Multivalued Logic Program}
+PermReach and ASPReach can also be applied to multivalued Logic Programs.
+
+\textbf{To be continued}
+
 \chapter{Algorithms}
 
 \begin{algorithm}[ht]
@@ -246,7 +254,7 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
         \State $E'\gets E' \setminus  \{(v,v'') \in E'| v''\neq v'\}$
     \EndFor
     \If{$l'$ contains cycles}
-        \State \textbf{Continue}
+        \State \textbf{continue}
     \EndIf
     %\State $(r,t)\gets\mathrm{ASPsolve}(l')$
     \State Obtain simple \textbf{AND gates} $simp$ from $l'$
@@ -337,7 +345,7 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
         \State $rev\gets rev \setminus\{i\}$
         \If{$fr=\varnothing$}
             \State $CS\gets CS\cup \{ls\}$
-            \State \textbf{Continue}
+            \State \textbf{continue}
         \EndIf
         \For{$j\in fr$}
             \For{$k\in j.next$}
@@ -365,8 +373,7 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 \Return{$(\mathbf{True},CS)$}
 \end{algorithmic}
 \end{algorithm}
-
-Remark: every element in $rev$ is defined as $(ls, fr, tr)$, where
+%Remark: every element in $rev$ is defined as $(ls, fr, tr)$, where
 
 \begin{algorithm}[ht]
 \caption{Completion by under-approximation}\label{algComUnder}
@@ -380,7 +387,7 @@ Remark: every element in $rev$ is defined as $(ls, fr, tr)$, where
         \State $rev\gets rev \setminus\{i\}$
         \If{$fr=\varnothing$}
             \State $CS_{iter}\gets CS_{iter}\cup \{ls\}$
-            \State \textbf{Continue}
+            \State \textbf{continue}
         \EndIf
         \For{$j\in fr$}
             \For{$k\in j.next$}
@@ -455,8 +462,7 @@ Remark: every element in $rev$ is defined as $(ls, fr, tr)$, where
 %\caption{ASPReach}%\label{algOverall}
 %\end{algorithm}
 \chapter{Proofs}\label{sec:proof}
-\begin{theorem}[Termination and correctness of ASPReach]
-    
+\begin{theorem}[Termination and correctness of ASPReach] ~
     Let $l=(V_{\mathrm{state}}, V_{\mathrm{solution}}, E)$ be an SLCG with initial state $\alpha$ and target local state $\omega$ and $k > 0$ be an integer.
     The call \textit{ASPReach(l,k)} terminates.\\
     $ASPReach(l,k)$=$(\mathbf{False},\varnothing)$ only if $\nexists t$ a trajectory in $l$ from $\alpha$ to $\omega$.\\
@@ -520,3 +526,34 @@ Remark: every element in $rev$ is defined as $(ls, fr, tr)$, where
         Conclusion 2: The complexity of $ASPReach(l,k)$ is bounded by $O(k \times 2^{v})$
     \end{proof}
 \end{theorem}
+
+\begin{theorem}[Future states of synchronous semantics]
+    There are at most $C_n^m$ possible future states for a system of synchronous update scheme, where $n$ is the number of fireable transitions and $m$ is the number of different variables in all the heads of fireable transitions. 
+    \begin{proof}
+        \textbf{To do}
+    \end{proof}
+\end{theorem}
+
+
+
+\chapter{Pure ASP reachability analyzer}
+\section{ASP implementation}
+\section{Result}
+\cite{abdallah2015exhaustive}
+\begin{table}[ht]
+    \centering
+    \footnotesize
+    \begin{tabular}{c|c|c|c|c|c|c}
+        Model-target & \#automata & ASP-Th & Pint & libddd & GINsim & ASPi-PH\\
+        \hline
+        ERBB-whole & 20& 0m2.44s& out& 1m55.38s& 2m31.64s& 0m11.84s\\
+        \hline
+        ERBB-sub& 20& 0m2.61s& 0m0.03s& 1m54.96s& -& 0m5.02s\\
+        \hline
+        TCR-whole& 40& - &Inconc& out& out& 4m27.93s\\
+        \hline
+        TCR-sub& 40 &- &0m0.02s& out& -& 1m35.08s
+    \end{tabular}
+    \caption[Performance of pure ASP method]{Compared performances of Rocca et al. method \cite{rocca2014asp} denoted by ASP-Th, Pint, libddd, GINsim and our new iterative method ASP-PH}
+    \label{tab:pureAsp}
+\end{table}

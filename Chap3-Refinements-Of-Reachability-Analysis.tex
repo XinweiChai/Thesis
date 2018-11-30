@@ -143,7 +143,7 @@ Given ABAN $AB=(\Sigma, L, T)$ and a joint reachability problem $REACH(\alpha,\O
 \begin{proof}
 If $REACH(\alpha,\Omega)=\mathbf{True}$, there must exists a trajectory $t$ satisfying $\alpha\cdot t=\Omega$.
 $t$ is consistent with $AB'$ with initial state $\alpha'$ as $AB'$ contains all the elements in $AB$ and $\alpha\subset\alpha'$.
-After firing all the transitions in $t$, the global state becomes $\Omega\cup\{x_0\}$, transition $\Omega\to x_1$ is firable and $x_1$ is reachable from $\alpha'$ \textit{via} $t'=t::\Omega\to x_1$, thus $reach(\alpha', x_1)=\mathbf{True}$. 
+After firing all the transitions in $t$, the global state becomes $\Omega\cup\{x_0\}$, transition $\Omega\to x_1$ is fireable and $x_1$ is reachable from $\alpha'$ \textit{via} $t'=t::\Omega\to x_1$, thus $reach(\alpha', x_1)=\mathbf{True}$. 
 
 If $REACH(\alpha,\Omega)=\mathbf{False}$, there does not exist a trajectory $t$ satisfying $\alpha\cdot t=\Omega$.
 In $AB'$, this conclusion remains true as the only added transition $\Omega\to x_1$ is useless in the reachability of $\Omega$.
@@ -187,8 +187,8 @@ Given an ABAN $AB = (\Sigma,L,T)$, a global initial state $\alpha$ and a target 
 where $V_{\mathrm{state}}\subseteq LS$ is a set of local states, $V_{\mathrm{solution}}\subseteq T$ is the a of solutions and $\mathbf{V}(sol_{a_i})$ is the set of required local states of $sol_{a_i}$.
 \end{definition}
 
-It is worth noticing that every state node in $V_{\mathrm{state}}$ forms an \textbf{OR gate} as a local state $a$ is reachable if there exists one firable transition with body $a$.
-Similarly, every solution node in $V_{\mathrm{solution}}$ forms an \textbf{AND gate} as a transition is firable only if all the local states in its head are reachable.
+It is worth noticing that every state node in $V_{\mathrm{state}}$ forms an \textbf{OR gate} as a local state $a$ is reachable if there exists one fireable transition with body $a$.
+Similarly, every solution node in $V_{\mathrm{solution}}$ forms an \textbf{AND gate} as a transition is fireable only if all the local states in its head are reachable.
 
 \begin{remark}
 Original LCGs consist of three kinds of nodes: \textbf{state nodes} corresponding to the local states of automata {\rm($V_{\mathrm{state}}$)}, \textbf{objective nodes} corresponding to the state transition paths within one automata {\rm($V_{\mathrm{objective}}$)}, \textbf{solution nodes} corresponding to the transitions to be used for each state transition path {\rm($V_{\mathrm{solution}}$)}.
@@ -218,7 +218,7 @@ Finally, we update the structure until $Ls\subseteq \alpha$ or there is no trans
 
 Intuitively, when the recursive construction is complete, SLCG is in fact a digraph with state nodes $V_{\mathrm{state}}$ and solution nodes $V_{\mathrm{solution}}$. 
 $E$ consists of the edges between local state nodes and solution nodes. 
-To access certain local states, at least one of its successor solutions (corresponding transitions from solution nodes) needs to be fired; to make one solution node firable, all of its successor local states need to be satisfied. 
+To access certain local states, at least one of its successor solutions (corresponding transitions from solution nodes) needs to be fired; to make one solution node fireable, all of its successor local states need to be satisfied. 
 A recursive reasoning of reachability tries to explore a pathway.
 It begins with a state node representing target local state, goes through $a_i\to sol_{a_i}\to b_j \cdots$ and ends with the initial state (possibly reachable) or a local state without successor solution node (unreachable). 
 
@@ -236,11 +236,11 @@ Given an SLCG $l=(V_{\mathrm{state}},V_{\mathrm{solution}},E)$ with global initi
     \begin{cases}
         \mathrm{\bf True} & {\rm if\ } v\in \alpha\\
         \mathrm{\bf False} & {\rm if\ } v\not\in \alpha\ {\rm and} \not\exists(s,sol) \in E\\
-        \bigvee_{(s,sol) \in E} \mathrm{firable}(sol) & otherwise
+        \bigvee_{(s,sol) \in E} \mathrm{fireable}(sol) & otherwise
         %\bigvee_{(s,sol) \in E}  (\bigwedge_{(sol,s)\in E} reach'(\alpha,s)) & {\rm otherwise}
     \end{cases}
 \end{equation}
-where $\mathrm{firable}(sol)=\bigwedge_{(sol,s)\in E} reach'(\alpha,s)$. 
+where $\mathrm{fireable}(sol)=\bigwedge_{(sol,s)\in E} reach'(\alpha,s)$. 
 
 \end{definition}
 
@@ -399,7 +399,7 @@ If such joint state is reachable, the corresponding transition can be fired.
 However in the Example \ref{example:order}, $c_1$ can be reached only in \textit{certain order}. This order cannot be retrieved by SLCG, as SLCG works statically.  
 The following contents are contributed to retrieve an admissible order to reach a joint state.
 
-%In Figure \ref{fig:unreach}, $s=\{b_1,c_1\}$ is a joint state, when $s$ is reached, transition \ac{b_1,c_1}{a_0}{a_1} is firable.
+%In Figure \ref{fig:unreach}, $s=\{b_1,c_1\}$ is a joint state, when $s$ is reached, transition \ac{b_1,c_1}{a_0}{a_1} is fireable.
 The reachability of a joint state can be formulated as sequential reachability:
 \begin{definition}[Sequential reachability]
 Let $s=\{ls_1,\ldots,ls_n\}$ be a joint state, $p_1,\ldots ,p_n$ be a permutation of $1,\ldots ,n$ and $seq=ls_{p_1}::\ldots::ls_{p_n}$ be a sequence.
@@ -463,7 +463,7 @@ It uses the description and the constraints of the problem (called rule) instead
 ASP solvers tackle problems by generating all the possibilities respecting the constraints. 
 This search in all the possibilities allows us to filter automatically all the admissible orders no matter the order-sensitive cases exist in \textbf{AND gates} or inside \textbf{AND gates}.
 
-\subsubsection{Introduction to ASP}
+\subsubsection{Introduction to ASP}\label{sec:introAsp}
 We use Clingo \cite{gebser2016theory} which is a combination of grounder Gringo and solver Clasp. 
 Given an input program with first-order variables, a grounder computes an equivalent ground (variable-free) program for an ASP program, while a solver selects admissible solutions (answer sets) in the ground.
 

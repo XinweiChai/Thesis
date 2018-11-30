@@ -15,6 +15,7 @@
 \usepackage{kbordermatrix}
 \usepackage{siunitx}
 \usepackage[framemethod=tikz]{mdframed}
+\usepackage{multicol}
 %\usepackage{physics}
 
 
@@ -61,6 +62,8 @@
 \makeatother
 \newcommand{\acm}[3]{\{#1\}\rightarrow#3}
 \newcommand{\ac}[3]{$\{#1\}\rightarrow#3$}
+\newcommand{\acmph}[3]{#1\rightarrow#2\Rsh#3}
+\newcommand{\acph}[3]{$#1\rightarrow#2\Rsh#3$}
 \newcommand{\omesi}{^\omega_\alpha}
 \newcommand{\vv}{\mathrm{v}^{val}}
 \newcommand{\dv}[2]{\dfrac{{\rm d}#1}{{\rm d}#2}}
@@ -94,11 +97,13 @@ In this thesis, we investigate several modeling frameworks and study several mod
     $\land$ & logic AND\\
     $\lor$ & logic OR\\
     $\oplus$ & logic XOR\\
+    $|A|$ & the cardinality of set $A$\\
+    $C_n^k$& the $k$-combination in the set of $n$ elements, $C_n^k=\frac {n!}{k!(n-k)!}$\\
     $a_i$  & automaton $a$ is taking value $i$ \\
     $x::y$ & event $x$ happens just before $y$\\
     $a.next$&the successor of $a$\\
     $a.pred$ & the predecessor of $a$\\
-    $A\to b_j$ & condition $A$ allows variable $b$ to reach its level $j$\\
+    $A\to b_j$ & condition $A$ allows automaton $b$ to reach qualitative level $j$\\
     $\mathbb{N}$ & the set of all natural numbers\\
     $\bar{x}$ & the mean of variable $x$
 \end{tabular}
