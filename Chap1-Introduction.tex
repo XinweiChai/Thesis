@@ -40,20 +40,29 @@ Tractability with big data is also important.
 To model the real system, we need components to represent genes, RNA messengers, proteins, metabolites, \textit{etc}.
 At this stage, we can carry out a first-step abstraction.
 The synthesis of proteins is under the instruction of RNA messengers which are synthesized according to genes.
-This correspondence allows us to compress three entities into one.
+This linear relation allows us to compress three entities into one.
 Their inner behaviors (\textit{e.g.} protein phosphorylation, activation/inhibition of genes) can be reflected by additional values or parameters.
 
 \section{Previous Work of the Team}
 Process Hitting \cite{pauleve2012}, Asynchronous Automata Network \cite{folschette2015}, Learning from Interpretation Transitions \cite{ribeiro2015learning}
 
 \section{Contributions}
-The main contributions of the thesis are the following:
+The main contributions of the thesis are the followings:
 \begin{itemize}
     \item Reachability analyzers
     \item Model revisers
 \end{itemize}
 
+\textbf{Timeline?}
 
 A story to tell, how I developed all this work
 \section{Organization of the Manuscript}
-The summary of each section
+Chapter \ref{chap:stateOfTheArt} introduces the state of the art on several modeling frameworks, model checkers and different dynamics of modelings.
+
+Chapter \ref{chap:refinement} presents our reachability analyzers based on static analysis...
+
+Chapter \ref{chap:modelInference} presents our model revisers following two methodologies...
+
+Chapter \ref{chap:test} shows some comparative and exploratory tests and their results on the approaches presented in Chapter \ref{chap:refinement} and Chapter \ref{chap:modelInference}.
+
+Chapter \ref{chap:conclusion} concludes the whole thesis.
