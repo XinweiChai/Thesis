@@ -1,15 +1,59 @@
 \chapter{Introduction}
 \section{Context and Motivations}
-\textbf{An interesting story} showing my contribution is not only in biology.
-\section{Big Picture}
+In the studies of concurrent systems, modeling is an inevitable topic.
+The modeling frameworks discussed in this thesis are all designed for biological use but they can be potentially useful in other domains, \textit{e.g.} robotics, human engineering.
 
-\begin{figure}[ht]
-    \centering
-    \input{schema.tex}
-    \caption{Big picture}
-\end{figure}
+Models helps one to access, analyze and control the real system. 
+It is a tool to help people to understand the interaction of the components in real systems and the integral behavior of the systems.
+
+A good model is a model which
+
+\begin{itemize}
+    \item is consistent with the corresponding real system
+    
+    The model reproduces certain important behaviors.
+    In the ideal situation, the model bisimulates the real system.
+    \item is observable
+    
+    To allow one to verify the behaviors, the state (historical, current and future) and the mechanics of the model has to be observable.
+    
+    \item allows one to access the I/O of the model
+    
+    With full control of the I/O, we can carry some unfeasible tests in real system.
+    %\item allows one to access the state (historical, current and future) of the model
+    \item has related analyzers of various properties
+    
+    Some properties are not verifiable via finite enumeration.
+    \item can be translated from/to other models 
+\end{itemize}
+
+Normally, the above metrics are self-constrained:
+The finer the model is, the bigger the computational complexity is (simulation, verification, \textit{etc.}).
+In this thesis, we will focus on modelings, their related analyzers of system properties and model revision based on these properties.
+
+\subsection{Models in Computational Biology}
+Bioinformaticians are interested in highly abstracted models because they need abstract representation and/or flexibility to make model compatible with unknown biological knowledge.
+
+Tractability with big data is also important.
+``Big'' can refer to two meanings: one is that biological systems can be huge, with enormous components and interactions in between; another is that the number and the size of data sets can be huge.
+
+To model the real system, we need components to represent genes, RNA messengers, proteins, metabolites, \textit{etc}.
+At this stage, we can carry out a first-step abstraction.
+The synthesis of proteins is under the instruction of RNA messengers which are synthesized according to genes.
+This correspondence allows us to compress three entities into one.
+Their inner behaviors (\textit{e.g.} protein phosphorylation, activation/inhibition of genes) can be reflected by additional values or parameters.
+
+\section{Previous Work of the Team}
+Process Hitting \cite{pauleve2012}, Asynchronous Automata Network \cite{folschette2015}, Learning from Interpretation Transitions \cite{ribeiro2015learning}
 
 \section{Contributions}
+The main contributions of the thesis are the following:
+\begin{itemize}
+    \item Reachability analyzers
+    \item Model revisers
+\end{itemize}
+
+
 A story to tell, how I developed all this work
-\section{Organization of the Thesis}
-1
+\section{Organization of the Manuscript}
+The summary of each section

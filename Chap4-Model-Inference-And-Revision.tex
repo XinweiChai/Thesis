@@ -34,7 +34,24 @@ Even though there always lies an non-equivalence, we wish that the abstracted mo
 
 \textbf{More related work on model inference and model revision}
 
-Concretely speaking, we developed three approaches which are to be presented in this chapter:
+Figure \ref{fig:bigPicture} shows the methodology of this chapter.
+There are two parallel pathways: 
+\begin{itemize}
+    \item One starts with biological \textit{a priori} knowledge.
+    The knowledge comes from biological literature, certain empirical conclusion can be translated to temporal properties (especially reachability).
+    \item The other one starts with partial observation.
+    It is said partial because the real system is not completely observable, only a part of parameters can be taken as I/O. 
+    Learning approaches will build a model consistent with partial observation but not necessarily consistent with the real system.
+    Model checkers can verify the temporal properties and we can come up with some modifications to make the model consistent with \textit{a priori} knowledge.
+\end{itemize}
+
+\begin{figure}[ht]
+    \centering
+    \input{schema.tex}
+    \caption{Big picture of model inference}\label{fig:bigPicture}
+\end{figure}
+
+Concretely speaking, we developed two approaches M2RIT and CRAC following the big picture \textbf{(To modify)}:
 
 \begin{enumerate}
     \item Constructing models from incomplete model and candidate regulations plus dynamic constraints
@@ -765,6 +782,14 @@ In the next section we propose an algorithm exploiting the SLCG structure to res
     %we revise first the elements whose SLCG contain least other elements in order to modify less $P$.
     Finally, if a revision of $P$ consistent with all given properties is found the algorithm terminates and outputs it.
     
+\subsection{Toy Example}    
+\textbf{Some explanation}
+    \begin{figure}[ht]
+        \centering
+        \input{figures/toyExampleM2RIT.tex}
+        \caption{Toy example of M2RIT (Explanation of legends)}
+        \label{fig:toyExampleM2RIT}
+    \end{figure}
 \section{R\'esum\'e}
 In this chapter we presented three approaches to infer/revise models based on different \textit{a priori} knowledge.
 The first approach allows one to construct a good model among a large number of candidate transitions.

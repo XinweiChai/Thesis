@@ -354,8 +354,8 @@ To sum up, Table \ref{tab:semantics} shows the difference of those three update 
 
 For synchronous update scheme, $m$ is the number of different variables in all the heads of rule.
 The formal definition $m$ is as follows:
-let $V$ be the set of variables, $R$ the set of rules and current state $S=\langle var_0^{val_0},\cdots, var_n^{val_n}\rangle$. 
-$V'=\{v\in V\mid \exists r\in R, body(r)\subseteq S, v= head(r)\}$, then $m=|V'|$.
+let $R$ be the set of rules and current state be $S=\langle var_0^{val_0},\cdots, var_n^{val_n}\rangle$. 
+$V=\{head(r)\mid \exists r\in R, body(r)\subseteq S\}$, then $m=|V|$.
 
 For synchronous cases we can consider the possible future states is of $O(1)$ as it is little probable that many rules are in conflict even though one can create an extreme counterexample making the number of possible future states reach its theoretical limit $C_n^m$ (the proof is given in Appendix \ref{sec:proof}).
 The possible future states is polynomial for asynchronous cases.
