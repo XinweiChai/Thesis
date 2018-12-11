@@ -32,7 +32,8 @@ Constructing an abstracted (often approximated) model is a compromising way of d
 However, the abstracted models are theoretically non-equivalent to the original ones because they contain different amount of information.
 Even though there always lies an non-equivalence, we wish that the abstracted models are in bisimulation with the original systems with respect to certain variables and keep the same important properties as original systems.
 
-\textbf{More related work on model inference and model revision}
+As is mentioned in Section \ref{sec:contribution} of Chapter \ref{chap:intro}, as far as we know, there has been no work combining model inference and model revision.
+Some related works: Opgen-Rhein \textit{et als.} have \cite{opgen2007correlation} studied the undirectional inference \textit{via} correlation, Rodrigues \textit{et als.} \cite{rodrigues2011active} have studied the learning of action models and Bonneau \textit{et als.} \cite{bonneau2006inferelator} have studied the learning from continuous time-series data.
 
 Figure \ref{fig:bigPicture} shows the methodology of this chapter.
 There are two parallel pathways: 
@@ -51,43 +52,63 @@ There are two parallel pathways:
     \caption{Big picture of model inference}\label{fig:bigPicture}
 \end{figure}
 
-Concretely speaking, we developed two approaches M2RIT and CRAC following the big picture \textbf{(To modify)}:
+We developed two learning approaches following the Big Picture in Figure \ref{fig:bigPicture}.
 
-\begin{enumerate}
-    \item Constructing models from incomplete model and candidate regulations plus dynamic constraints
-    \item Inferring models from continuous observation data
-    \item Least revising existing models via \textit{a priori} knowledge (mainly reachability information)
-\end{enumerate}
+\begin{itemize}
+    \item CRAC (Completion \textit{via} Reachability And Correlations)
+    
+    CRAC is decomposed into two steps:
+    \begin{enumerate}
+        \item Infer candidate regulations from continuous time-series data
+        \item Select transitions consistent with candidate regulations and add them into/delete them from an existing incomplete model (can be empty) to make it satisfy \textit{a priori} reachability information
+    \end{enumerate}
+    \item M2RIT (Model Revision \textit{via} Reachability and Interpretation Transitions)
+    
+    M2RIT is also run with two steps:
+    \begin{enumerate}
+        \item Learns a Normal Logic Program from \textit{discretized} time-series data by asynchronous version of LFIT (synchronous version in Section \ref{sec:lfitSyn})
+        \item Modify the obtained NLP as little as possible to make it consistent with \textit{a priori} reachability information while keeping the consistency with the constraints of time-series data, i.e. the NLP has to reproduce the time-series data
+    \end{enumerate}
+\end{itemize}
 
-Among these three approaches, intuitively approach 1 has the least complexity. 
+It is worth noticing that step 2 of CRAC could be an individual model inference algorithm if the set of candidate regulations/transitions is given.
+This step has the least complexity.
 Because the most naive method, \textit{i.e.} brute force search is to verify every combination of the candidates if it satisfies the constraints. 
 The models to be verified are of $O(2^n)$, where $n$ is the number of candidate transitions.
-For approach 2, to obtain a transition $A\to a_i$ with $a_i$ fixed, there are at most $m-1$ possibilities for $A$ having one local state, $C_{m-1}^2$ possibilities for $A$ having 2 local states \ldots where $m$ is the number of variables.
-Similarly, approach 3 also has a factorial complexity.
 
-\section{Model Inference \textit{via} Candidate Regulations}\label{sec:modelInference}
-We begin with the problem which seems to have the smallest complexity.
-The brute force search that we just presented is still meaningless in real application.
-Roughly speaking, we aim at finding the transitions among the candidates which meet the unsatisfied constraints and keep already satisfied constraints unchanged.
+One may ask if we can run CRAC or M2RIT without being provided with time-series data, i.e. run directly step 2 of either method.
+Deleting can be done without additional data, as the number of transitions already \textit{assuring} certain reachability is very limited, which is shown in Section \ref{sec:cutset} or \cite{PAK13-CAV}.
+
+Nevertheless, adding transitions can be a more complex task.
+Suppose we begin with no constraints on the model, to obtain a transition $A\to a_i$ with fixed $a_i$, there are at most $m-1$ possibilities for $A$ having one local state, $C_{m-1}^2$ possibilities for $A$ having 2 local states \ldots where $m$ is the number of model variables.
+This factorial number of possibilities for \textbf{one} transition is not acceptable.
+
+\section{Model Completion \textit{via} Candidate Regulations}\label{sec:modelInference}
+We begin with the part which seems to have the smallest complexity.
+Brute force search that we just presented is still meaningless in real application.
+Roughly speaking, we prefer finding the transitions among the candidates which meet the unsatisfied constraints and keep already satisfied constraints unchanged.
 
 \subsection{Problem Description}
+Given an incomplete model, at first it does not satisfy wanted reachability properties.
+With given set of candidade regulations, we can consider the transitions inferred by these candidates are more likely to be the good ones than the randomly generated ones.
+Then we select the transitions which are prone to make certain unsatisfied reachability property satisfied and add them into the set of model transitions.
+
 Briefly speaking, completion problem is:
-\textbf{To enrich}
 
 incomplete model + candidate regulations + constraints $\to$ new model
 
-The complete model contains all the elements in the incomplete model and consistent with all the \textit{a priori} information. 
+The resulted model is expected to contain all the elements in the incomplete model and be consistent with all the \textit{a priori} information. 
 
 \begin{definition}[Model completion in ABAN semantics]
     Given an incomplete ABAN $AB=(\Sigma, L, T)$ (where $T$ can be empty), a complete model is an ABAN $AB'=(\Sigma, L, T')$ which satisfies $T'\supseteq T$, $AB'$ consistent with the set of reachability constraints $C$ and the completion set $CS=T'\setminus T$ is consistent with the set of candidate regulations $R$, where
     \begin{itemize}
-        \item $R=\{(body,head,sgn)\mid body\in \Sigma,\ head\in \Sigma,\ sgn\in \{0,1\}\}$ 
+        \item $R=\{(body,head,sgn)\mid body\in \Sigma,\ head\in \Sigma,\ sgn\in \{-,+\}\}$ 
         \item $C=\{(\alpha,\omega,r)\mid\alpha \in L,\ \omega\in LS,\ r\in \{\mathbf{True,False}\}\}$
     \end{itemize}
 \end{definition}
 
-$R$ is the set of possible relations between variables, $body$ may inhibit (0) or promote (1) $head$.
-$C$ is the set of \textit{a priori} reachability properties, $\omega$ is (un)reachable from $\alpha$.
+$R$ is the set of possible relations between variables, $body$ may inhibit ($sgn=-$) or promote ($sgn=+$) $head$.
+$C$ is the set of reachability properties to be satisfied, $\omega$ is (un)reachable from $\alpha$.
 The definition of consistency is straightforward, but its meaning changes for reachability constraints and candidate regulations.
 
 \begin{definition}[Consistency]
@@ -96,33 +117,36 @@ The definition of consistency is straightforward, but its meaning changes for re
 \@nobreaktrue
 \makeatother
 \begin{itemize}
-    \item An ABAN $AB$ is said consistent with a with the set of reachability constraints $C$ iff $\forall (\alpha,\omega,r)\in C$ s.t. $reach(\alpha,\omega)=r$
-    \item A completion set $CS$ is said consistent with a with the set of candidate regulations $R$ if $\forall \acm{a_i}{b_{1-j}}{b_j}\in CS, \exists (body,head,sgn)\in R$ s.t. $body=a,\ head=b,\ (i=j)=sgn$. 
+    \item An ABAN $AB$ is said consistent with the set of reachability constraints $C$ iff $\forall (\alpha,\omega,r)\in C$ s.t. $reach(\alpha,\omega)=r$
+    \item A completion set $CS$ is said consistent with the set of candidate regulations $R$ if $\forall \acm{a_i}{b_{1-j}}{b_j}\in CS, \exists (body,head,sgn)\in R$ s.t. $body=a,\ head=b$ and $sgn=+$ if $i=j$, $sgn=-$ if $i\neq j$. 
 \end{itemize}
     
 \end{definition}
-Theoretically, to obtain a good new ABAN, we have to assure $T$ has no \textit{bad} transitions, because the completion operation is not able to remove or modify existing transitions. 
 
-Before our research began, Paulev\'e \textit{et al.} had worked on cut-sets for reachability in large scale automata networks \cite{PAK13-CAV}, which is the reverse operation of completion sets.
-Cut set is used to eliminate certain transitions according to unreachability properties.
+However, completion operation is not able to remove or modify existing trajectories towards the states to be reached as the transitions used in the trajectories are still present.
+To obtain an ABAN meeting all the unreachable constraints in $C$, we have to apply cut sets.
+
+Before our research began, Paulev\'e \textit{et al.} \cite{PAK13-CAV} had worked on cut-sets for reachability in large scale automata networks, which is the reverse operation of completion sets.
+Cut set is used to eliminate certain transitions to make certain local states unreachable.
+
 By combining these two operations, one can construct/revise a model according to \textit{a priori} information (candidate regulations) and constraints (reachability).
 
 As stated in the previous chapter, verifying exact reachability is a hard task.
-Here we use two criteria, over-approximation and under-approximation to replace the notion of reachability (shown in Figure \ref{fig:vennDiagram} on page \pageref{fig:vennDiagram}).
+Here we use two metrics, over-approximation and under-approximation to replace and approach the notion of reachability (as shown in Figure \ref{fig:vennDiagram} on page \pageref{fig:vennDiagram}).
 
 %In the context of SLCG, completion is defined as follows: given a state sequence $S$ of observation and a set of possible regulations $H$ (in the form of ABAN) to be verified, find the minimum subset of $H$ such that $S$ is realizable from initial state.
 
 \subsection{Completion by Over-Approximation}
 Over-approximation is the reasoning of pseudo-reachability in Definition \ref{defPseudoReach} on page \pageref{defPseudoReach}. 
-It associates local states and transitions with the initial state according to the causalities: if there exists a pathway from the target local state to the initial state, this target state can be reachable.
-Over-approximation does not take into consideration the order of transitions to be fired, which is the cause of inconclusiveness (literally it over-approximates the reachability).
+It associates local states and transitions with the initial state according to the causalities: if there exists a reverse pathway from the target local state to the initial state, this target state can be reachable.
+Over-approximationdoes not take into consideration the order of transitions to be fired, which is the cause of inconclusiveness (literally it over-approximates the reachability).
 Thus over-approximation is a necessary condition of the reachability.
 
 Figure \ref{CompOv} gives a first impression of the idea.
 The visualization of the set of candidate regulations $R=\{(a,b,+),(c,a,-)\}$ is on the left.
-On the right, the initial ABAN has only three variables $\Sigma=\{a,b,c\}$ and initial state $\langle a_0,b_0,c_0\rangle$, with transitions $T=\{\acm{a_1}{b_0}{b_1}\}$.
+On the right, the initial ABAN has only three Boolean variables $\Sigma=\{a,b,c\}$ and initial state $\langle a_0,b_0,c_0\rangle$, with transitions $T=\{\acm{a_1}{b_0}{b_1}\}$.
 $b_1$ is not reachable because of the unreachability of $a_1$.
-As $(c,a,-)\in R$, \ac{c_0}{a_0}{a_1} is added then $a_1$ becomes reachable which makes $b_1$ also reachable.
+As $(c,a,-)\in R$, consistent transition \ac{c_0}{a_0}{a_1} is added then $a_1$ becomes reachable which makes $b_1$ also reachable.
 $T'=\{\acm{a_1}{b_0}{b_1},\acm{c_0}{a_0}{a_1}\}$, $CS=\{\acm{c_0}{a_0}{a_1}\}$.
 
 \begin{figure}[ht]
@@ -130,7 +154,7 @@ $T'=\{\acm{a_1}{b_0}{b_1},\acm{c_0}{a_0}{a_1}\}$, $CS=\{\acm{c_0}{a_0}{a_1}\}$.
 \input{figures/completionOver.tex}
 \caption[Completion by over-approximation]{Completion by over-approximation. Dashed arrows represent added action.}\label{CompOv}
 \end{figure}
-Algorithm \ref{algComOver} in Appendix shows the detailed algorithm.
+Algorithm \ref{algComOver} in Appendix shows the detailed algorithm of the completion by over-approximation.
 
 \subsection{Completion by Under-Approximation}
 Over-approximation is only a necessary condition of reachability.
@@ -138,12 +162,12 @@ If one wants the guarantee of the reachability even at the price of redundant tr
 
 Under-approximation is another reasoning of SLCG. 
 It associates the local states and the transitions with the initial state and \textit{all the states which may appear}.
-This association covers all the orders of occurrence. \textbf{proof here?}
-Similar with over-approximation, in the SLCG of under-approximation, if there is a pathway from target local state and the initial state, this target state \textit{should} be reachable.
+This association covers all the orders of occurrence (proof is given in Theorem \ref{th:underapprox} of Appendix).
+Similar to over-approximation, in the SLCG of under-approximation, if there is a pathway between target local state and the initial state, this target state \textit{should} be reachable.
 
 However, all the orders of occurrence do not necessarily appear during the simulation, which suggest that this approach ``under-approximates'' the reachability.
 
-Additionally, the computation of under-approximation is more complicated than over approximation, as the set of associated local states grows during the computation.
+Additionally, the computation of under-approximation is more complicated than that of over-approximation, as the set of associated local states grows during the computation.
 Former added local states need to be regarded as new ``target states''.
 This process is called \textit{update}. 
 Update does not stop until the set of associated local states becomes stable.
@@ -160,18 +184,21 @@ Given ABAN $AB = (\Sigma,L,T)$, a global initial state $\alpha$ and a target loc
 where $V_{\mathrm{state}}\subseteq LS$ is a set of local states, $V_{\mathrm{solution}}\subseteq T$ is the a of solutions and $\mathbf{V}(sol_{a_i})$ is the set of required local states of $sol_{a_i}$. 
 \end{definition}
 
-If we compare the definition of under-approximation with Definition \ref{defSLCG} on page \pageref{defSLCG}, the difference lies at the condition of $\mathbf{V}(sol_{a_i})$. 
+If we compare the definition of under-approximation with Definition \ref{defSLCG} of over-approximation on page \pageref{defSLCG}, the difference lies in the condition of $\mathbf{V}(sol_{a_i})$. 
 The reasoning of over-approximation stops when certain automaton $a$ reaches the initial state. 
-However, to guarantee all the possible orders, we exige $a_i$ and $a_{1-i}$ are reachable from each other if they are both present in the SLCG.
+However, to guarantee all the possible orders, we exige $a_i$ and $a_{1-i}$ are reachable from each other if they are both present in the under-approximate SLCG.
 The corresponding formula is $\mathbf{V}(sol_{a_i})=\varnothing \text{ \rm if } a_i\in \alpha\land a_{1-i}\not\in V_{\mathrm{state}}$.
-
-Let us take the ABAN $AB=(\Sigma, L, T)$ in Figure \ref{ExUnder} as example with $\Sigma= \{a,b,c,d\}$, $T=\{\acm{b_1,c_1}{a_0}{a_1}, \acm{b_1}{d_0}{d_1}, \acm{d_0}{b_0}{b_1}\}$, the initial state $\langle a_0,b_0,c_0,d_0\rangle$.
-With candidate regulations $R=\{(d,c,-),(c,d,-)\}$, Figure \ref{Under1}, Figure \ref{Under2} and Figure \ref{Under3} show the procedures of completion by under-approximation: after two additions of actions and one update, the SLCG becomes stable and $a_1$ becomes reachable.
-$T'=\{\acm{b_1,c_1}{a_0}{a_1}, \acm{b_1}{d_0}{d_1}, \acm{d_0}{b_0}{b_1},\acm{d_1}{c_0}{c_1}, \acm{c_1}{d_1}{d_0}\}$, $CS=\{\acm{d_1}{c_0}{c_1}, \acm{c_1}{d_1}{d_0}\}$.
 
 The visualization of under-approximate SLCGs has a slight difference with the one of over-approximate SLCGs.
 $a_0\Rsh a_1$ means $a_1$ is to be reached \textit{via} $a_0$.
-This notation seems redundant but it is useful when we need to continue the reasoning even we reach the initial state, e.g. in Figure \ref{Under2}, $d_0$ is in the initial state, but the reasoning continues because $d_1$ appears in another branch.
+This notation seems redundant but it is useful when we need to continue the reasoning even if we reach the initial state until the SLCG is saturated.
+Local states in the initial state may have other successors besides $\bigcirc$.
+For example in Figure \ref{Under2}, $d_0$ is in the initial state, but the reasoning continues because $d_1$ appears in another branch.
+
+\begin{example}
+Given ABAN $AB=(\Sigma, L, T)$ in Figure \ref{ExUnder} with $\Sigma= \{a,b,c,d\}$, $T=\{\acm{b_1,c_1}{a_0}{a_1}, \acm{b_1}{d_0}{d_1}, \acm{d_0}{b_0}{b_1}\}$, the initial state $\langle a_0,b_0,c_0,d_0\rangle$.
+With candidate regulations $R=\{(d,c,-),(c,d,-)\}$, Figure \ref{Under1}, Figure \ref{Under2} and Figure \ref{Under3} show the procedures of completion by under-approximation: after two additions of actions and one update, the SLCG becomes stable and $a_1$ becomes reachable.
+$T'=\{\acm{b_1,c_1}{a_0}{a_1}, \acm{b_1}{d_0}{d_1}, \acm{d_0}{b_0}{b_1},\acm{d_1}{c_0}{c_1}, \acm{c_1}{d_1}{d_0}\}$, $CS=\{\acm{d_1}{c_0}{c_1}, \acm{c_1}{d_1}{d_0}\}$.
 
 \begin{figure}[ht]
 \centering
@@ -179,15 +206,19 @@ This notation seems redundant but it is useful when we need to continue the reas
 \caption[Completion by under-approximation]{Example of completion by under-approximation. Dashed arrows represent added transitions.}\label{ExUnder}
 \end{figure}
 
-In Figure \ref{Under1}, \fbox{$c_1$} is unreachable then the joint state $\langle b_1, c_1\rangle$ is not reachable, $a_1$ is not reachable.
+Figure \ref{Under1} shows the under-approximate SLCG of the reachability $a_1$.
+\fbox{$c_1$} is unreachable then the joint state $\langle b_1, c_1\rangle$ is not reachable, $a_1$ is not reachable.
 
 \begin{figure}[ht]
 \centering
 \input{figures/completionUnderLCG1.tex}
-\caption[Operations on SLCG(1)]{Step 1, under-approximation S of Figure \ref{ExUnder} studying the reachability of $a_1$ (small circles stand for solutions and squares stand for processes). }\label{Under1}
+\caption[Operations on SLCG(1)]{Step 1, under-approximation S of Figure \ref{ExUnder} studying the reachability of $a_1$ (small circles stand for solutions and squares stand for required local states). }\label{Under1}
 \end{figure}
 
-In Figure \ref{Under2}, according to candidate regulation ${(d,c,-)}\in R$, transition \ac{d_1}{c_0}{c_1} is added, but the reachability of under-approximation requires all the possible occurrences are realizable, e.g. we need a transition with body $d_0$.
+In Figure \ref{Under2}, according to candidate regulation ${(d,c,-)}\in R$, transition \ac{d_1}{c_0}{c_1} is added.
+Thanks to the existence of \ac{b_1}{d_0}{d_1}, $d_1$ has successor $b_1$.
+However, the reachability of under-approximation requires all the possible occurrences are realizable, i.e. we need a transition with body $d_0$ for $d_0$ and $d_1$ can be reached from each other, because both $d_0$ and $d_1$ are present in the SLCG.
+
 
 \begin{figure}[ht]
 \centering
@@ -195,30 +226,39 @@ In Figure \ref{Under2}, according to candidate regulation ${(d,c,-)}\in R$, tran
 \caption[Operations on SLCG(2)]{Step 2 of completion by under-approximation (filled small circles stand for new possible solutions after completion).}\label{Under2}
 \end{figure}
 
-In Figure \ref{Under3}, the completed under-approximate SLCG shows $a_1$ is now reachable after adding $\acm{c_1}{d_1}{d_0}$ according to ${(c,d,-)}\in R$.
+In Figure \ref{Under3}, the completed under-approximate SLCG shows $a_1$ is now reachable after adding $\acm{c_1}{d_1}{d_0}$ according to ${(c,d,-)}\in R$ as there is no more $\perp$ in the SLCG.
 
 \begin{figure}[ht]
 \centering
 \input{figures/completionUnderLCG3.tex}
 \caption[Operations on SLCG(3)]{Step 3 of completion by under-approximation (filled small circles stand for new possible solutions after completion).}\label{Under3}
 \end{figure}
+\end{example}
 
-Algorithm \ref{algComUnder} in Appendix shows the whole process.
+To sum up the whole process, we begin with a incomplete model and a set of candidate regulations.
 
-Also, if one wants to study the candidate transitions with multiple variables in the head, he can also replace regulations with transitions, using the same process to complete the ABAN. \textbf{(maybe to be detailed in Appendix?)} 
+
+Algorithm \ref{algComUnder} in Appendix shows the detailed procedures of completion by under-approximation.
+
+\begin{remark}
+Neither completion by under-approximation nor completion by over-approximation can output complex transitions (transitions with multiple variables in the head).
+If one wants to assess if certain complex transition can be added to the incomplete model, he can replace regulations in the input with transitions, skip the step of checking the consistency, then use directly the transition to complete the incomplete model.
+\end{remark}
 
 \section{Model Inference via Statistics}
-As we already have the completion methods, to make it applicable, we need to obtain candidate regulations.
-Here we introduce a method to generate hypotheses to be verified from time series data.
+As we already have the completion methods, to make CRAC applicable, we need to obtain candidate regulations $R$.
+Here we introduce a method to generate candidate regulations to be verified from time series data.
 
-In the previous contents, only the systems with delay of 1 time unit are discussed (BN, ABAN, etc.), i.e. the influence done by variables will take place at the next time point (immediately).
+In the previous contents, only the systems consisting of transitions with delay of 1 time unit are discussed (BN, ABAN, etc.), i.e. the influence done by variables will take place at the next time point (immediately).
 However, in biological context, some reactions have a long duration, and some even need a whole observation period to take place.
 For this reason, we require approaches to reveal transitions of different delays: for an observation of period $T$, possible delays lie in $[1,T-1]$.
 
 \subsection{Preliminaries}
-In Definition \ref{def:RN} on page \pageref{def:RN}, the definition of regulatory network (RN) is originally related to a set of approximated ordinary differential equations (ODEs) \cite{khalis2009smbionet}:
+In Definition \ref{def:RN} on page \pageref{def:RN}, the definition of regulatory network (RN) is originally related to a set of approximated ordinary differential equations (ODEs) \cite{khalis2009smbionet} (continuous modeling):
 %$$\dv{x_v}{t}=k_v+\sum_{u\in v.pred}{x_uk_{uv}s^{\alpha_{uv}}(x_u,\theta_{uv})}-\lambda_v x_v$$
-$$\dv{x_v}{t}=k_v-\lambda_v x_v +\sum_{u\in v.pred}{x_uk_{uv}}$$
+\begin{equation}\label{eq:differentialEquation}
+    \dv{x_v}{t}=k_v-\lambda_v x_v +\sum_{u\in v.pred}{x_uk_{uv}}
+\end{equation}
 
 where $x_v$ is the concentration of variable $v$, $k_v, \lambda_v\in \mathbb{R}$ are self-regulation kinetic parameters and $k_{uv}\in \mathbb{R}$ are kinetic parameters of external regulations.
 
@@ -228,30 +268,30 @@ where $x_v$ is the concentration of variable $v$, $k_v, \lambda_v\in \mathbb{R}$
 %    This function is usually a sigmoid depending on the sign $\alpha_{uv}$ and on the quantitative threshold $\theta_{uv}\in \mathbb{R}^{+*}$ the interaction.
 %\end{itemize}
 
-Here, considering the the following reasons, we make several modifications.
+Here, considering the following reasons, we make several modifications to the ODE.
 \begin{enumerate}
     \item The change rate done by external regulations is not always proportional to the concentration of corresponding external variables. 
-    Consider an elementary biochemical reaction $m\mathrm  {A}+n\mathrm  {B}\rightarrow \mathrm  {C}$, according to the rate law, the synthesis rate of C is $r_{\mathrm  {C}}\;=\;k[{\mathrm  {A}}]^{m}[{\mathrm  {B}}]^{n}$ where $k$ is a fixed positive real number.
-    \item In the community of model inference, self-regulations are often considered difficult to be detected because nearly every transition could be explained as a self-regulation.
-    For example, in DREAM8\footnote{\url{https://www.synapse.org/\#!Synapse:syn1720047/wiki/55342}}, self-regulations are \textit{a priori} ignored.  
-    \item The influence is done immediately, without delay.
-    Considering the discretization on time, $\delta$ takes only natural numbers in this thesis.
+    Consider an elementary biochemical reaction $m\mathrm{A}+n\mathrm{B}\rightarrow \mathrm  {C}$, according to the rate law, the synthesis rate of C is $r_{\mathrm{C}}=k[{\mathrm{A}}]^{m}[{\mathrm{B}}]^{n}$ where $k$ is a fixed positive real number and $m,n$ are the parameters characterizing reaction order.
+    \item In the community of model inference, self-regulations are often considered difficult to be detected because nearly every transition could be explained as the result of a self-regulation.
+    For example, in the problem description of DREAM8\footnote{\url{https://www.synapse.org/\#!Synapse:syn1720047/wiki/55342}}, self-regulations are \textit{a priori} ignored.  
+    \item According to the differential equation, the influence takes effect immediately without delay.
+    However, considering the discretization on time, we have to replace the differential mark $\mathrm{d}$ in \ref{eq:differentialEquation} into difference mark $\Delta$ and set a delay $\delta$ which takes only natural numbers to simulate state change.
 \end{enumerate}
 
-To integrate these hypotheses, the ODEs are modified to:
+To integrate these hypotheses, the equations are modified to:
 
 %$$\dv{x_v}{t}=\sum_{u\in v.pred}{k_{uv}s^{\alpha_{uv}}(x_u,\theta_{uv})}$$
 %$$\dv{x_v(t)}{t}=\sum_{u\in v.pred}{x_u(t)k_{uv}}$$
-\begin{equation}\label{eq:ode}
-    \dv{x_v(t)}{t}=\sum_{u\in v.pred}{x_u^{n}(t-\delta)k_{uv}}
+\begin{equation}\label{eq:differenceEquation}
+    \frac{\Delta{x_v(t)}}{\Delta t}=\sum_{u\in v.pred}{x_u^{n}(t-\delta)k_{uv}}
 \end{equation}
 
 
-where $\delta\in \mathbb{R}^{*}$ is the delay of the regulation, $n\in \mathbb{R}^{+}$ is the order of regulation (corresponding to the order of reaction).
+where $\delta\in \mathbb{N}^{*}$ is the delay of the regulation, $n\in \mathbb{R}^{+}$ is the order of regulation (corresponding to the reaction order).
 Also, self-regulations are not taken into account, i.e. $k_v$ and $\lambda_v$ are set to 0.
 
-The definition of RN requires every regulation take effect immediately.
-To cooperate with the new ODEs, it is adapted to the version with delay.
+The definition of RN (Definition \ref{def:RN}) requires every regulation take effect immediately.
+To cooperate with the new equations, it is adapted to the version with delay.
 
 \begin{definition}[Regulatory network with delay]
 A regulatory network with delay is a labeled directed graph $G=(V,E)$ where 
@@ -263,33 +303,36 @@ A regulatory network with delay is a labeled directed graph $G=(V,E)$ where
 
 With the new formalization, we can now address the inference problem.
 
-
 \subsection{Partial Correlation}
 
-In huge biological networks, it is not possible to compute hypotheses by hand nor to traverse all the possible addable transitions, as stated formerly, the verification of $\mathcal{O}(3^{|Global States|})$ states is a huge task: if the influenced variable is fixed, every other variable has 3 possible influence, promotion, inhibition and no regulation.
+In huge biological networks, it is not possible to compute candidate regulations by hand nor to traverse all the possible addable transitions, as stated formerly, the verification of $O(3^{|Global States|})$ states is a huge task: if the influenced variable is fixed, every other variable has 3 possible influence, promotion, inhibition and no regulation.
  
-To deal with the great complexity of verification, \textit{a priori} knowledge is needed. 
+To deal with the high complexity of the verification of $O(3^{|Global States|})$ states, \textit{a priori} knowledge is needed. 
 Some unsatisfied states can be eliminated without global verification.  
 In order to take all the information into account, statistical approaches come into sight.
-They try to find relations between different components from the observation of all the time points.
+We use correlation coefficients to try to match the evolution of variables with Equation \ref{eq:differenceEquation} on page \pageref{eq:differenceEquation}.
+Correlation coefficients characterizes how linear or monotonous the relations between variables are all along the sampling period.
+The possible values of all the mentioned correlation coefficients lie in the interval $[-1,1]$.
+The closer to $1$ the absolute value of the coefficient is, the more correlated the variables are.
+Particularly, $1$ suggests total positive correlation and $-1$ suggests total negative correlation. 
 
-One additional profit of statistical approaches is that original time series data are discretized before being used, which cause a loss of information.
-This loss could lead to an imprecise model.
-However, some statistical approaches could use directly the continuous time series data as input which avoid this difficulty.
-
-According to Equation \ref{eq:ode} on page \pageref{eq:ode}, for different $n$,
+In Equation \ref{eq:differenceEquation}, for different $n$,
 \begin{enumerate}
     \item $n=1$, the change rate of certain variable is the linear sum of other variables.
-    The linear correlation between the change rate of one variable and the value of other variables is detectable via an approach using Pearson correlation coefficients (PCC).
+    The \textit{linear} correlation between the change rate of one variable and the value of other variables is detectable via an approach using Pearson correlation coefficients (PCC).
     \item $n\neq 1$, the correlations between variables are no longer linear but still monotonous.
     Analogously the \textit{monotonous} correlation is detectable by Spearman correlation coefficients (SCC), which is the application of Pearson correlation coefficients on the rank of variables.
 \end{enumerate}
 
+One additional profit of statistical approaches is that original time series data are discretized before being used, which cause a loss of information.
+This loss could lead to an imprecise model.
+However, some statistical approaches could use directly the continuous time series data as input which avoid this drawback.
+
 \begin{definition}[Pearson correlation coefficient]
     Pearson correlation coefficient ($r$) is the covariance of the two variables divided by the product of their standard deviations.
     When applied to a sample (time series data), the formula is converted to:
-    $${\displaystyle r_{x,y}={\frac {\operatorname {cov} (x,y)}{\sigma _{x}\sigma _{y}}}={\frac {\sum _{i=1}^{n}(x_{i}-{\bar {x}})(y_{i}-{\bar {y}})}{{\sqrt {\sum _{i=1}^{n}(x_{i}-{\bar {x}})^{2}}}{\sqrt {\sum _{i=1}^{n}(y_{i}-{\bar {y}})^{2}}}}}}$$
-    Where $x,y$ are variables, $\operatorname {cov} (x,y)$ is the covariance of $x$ and $y$, $\sigma _{x}$ is the standard deviation of $x$, $n$ is the sample size and $x_i,y_i$ are the i-th sample points of $x,y$.
+    $${\displaystyle r_{x,y}={\frac {\operatorname {cov} (x,y)}{\sigma _{x}\sigma _{y}}}={\frac {\sum _{i=1}^{N}(x_{i}-{\bar {x}})(y_{i}-{\bar {y}})}{{\sqrt {\sum _{i=1}^{N}(x_{i}-{\bar {x}})^{2}}}{\sqrt {\sum _{i=1}^{N}(y_{i}-{\bar {y}})^{2}}}}}}$$
+    Where $x,y$ are variables, $\operatorname {cov} (x,y)$ is the covariance of $x$ and $y$, $\sigma _{x}$ is the standard deviation of $x$, $N$ is the sample size and $x_i,y_i$ are the $i$-th sample points of $x,y$.
 \end{definition}
 
 The definition of Spearman correlation coefficient is related to that of Pearson correlation coefficient.
@@ -312,50 +355,52 @@ To get rid of certain variables, one can apply partial Pearson correlation coeff
 
 Partial correlation coefficients are denoted $pr$.
 
-\begin{definition}[Partial Pearson correlation coefficient (PPCC)]
+\begin{definition}[Partial Pearson correlation coefficient (PPCC)]\label{def:PPCC}
     $pr_{xy\cdot \mathbf {z}}$ is the partial Pearson correlation coefficient of $x$ and $y$ ignoring the influence by $\mathbf {z}$.
     $$pr _{xy\cdot \mathbf {z} }={\frac {pr _{xy\cdot \mathbf {z} \setminus \{z_{0}\}}-pr _{xz_{0}\cdot \mathbf {z} \setminus \{z_{0}\}}pr _{z_{0}y\cdot \mathbf {z} \setminus \{z_{0}\}}}{{\sqrt {1-pr _{xz_{0}\cdot \mathbf {z} \setminus \{z_{0}\}}^{2}}}{\sqrt {1-pr _{z_{0}y\cdot \mathbf {z} \setminus \{z_{0}\}}^{2}}}}}$$
     Where $x,y$ are variables, $\mathbf {z}$ is a set of variables, $z_0$ is an arbitrary element in $z$. 
-    Particularly, if $\mathbf {z}$ has only one element $z$, the formula becomes
-    $$pr_{x,y\cdot z}={\frac {r _{x,y}-r _{x,z}r _{z,y}}{{\sqrt {1-r _{x,z}^{2}}}{\sqrt {1-r _{z,y}^{2}}}}}$$
+    Particularly, if $\mathbf {z}$ has only one element $z_0$, the formula becomes
+    $$pr_{x,y\cdot \{z_0\}}={\frac {r _{x,y}-r _{x,z_0}r _{z_0,y}}{{\sqrt {1-r _{x,z_0}^{2}}}{\sqrt {1-r _{z_0,y}^{2}}}}}$$
 
 \end{definition}
 
 The partial Spearman correlation coefficient is defined likewise.
-\begin{definition}[Partial Spearman correlation coefficient (PSCC)]Partial Spearman correlation coefficient is denoted $prs$
-    $$prs_{x,y\cdot z}=pr_{rg_x,rg_y\cdot rg_z}$$%={\frac {r _{rg_x,rg_y}-r _{rg_x,rg_z}r _{rg_z,rg_y}}{{\sqrt {1-r _{rg_x,rg_z}^{2}}}{\sqrt {1-r _{rg_z,rg_y}^{2}}}}}$$
+\begin{definition}[Partial Spearman correlation coefficient (PSCC)]\label{def:PSCC}
+Partial Spearman correlation coefficient is denoted $prs$
+    $$prs_{x,y\cdot \mathbf {z}}=pr_{rg_x,rg_y\cdot rg_\mathbf {z}}$$%={\frac {r _{rg_x,rg_y}-r _{rg_x,rg_z}r _{rg_z,rg_y}}{{\sqrt {1-r _{rg_x,rg_z}^{2}}}{\sqrt {1-r _{rg_z,rg_y}^{2}}}}}$$
 \end{definition}
 
 The possible value of all the mentioned correlation coefficients are in the interval $[-1,1]$.
 The closer to $1$ the absolute value of the coefficient is, the more correlated the variables are.
-Particularly, 1 suggests total positive linear correlation and -1 suggests total negative linear correlation. 
-e.g. if we find the PSCC of $\ddv{a}{t}$ and $b$ is -0.9 (high enough), we can add $b\xrightarrow{-}a$ to the set of candidate regulations.
+Particularly, $1$ suggests total positive linear/monotonous correlation and $-1$ suggests total negative linear/monotonous correlation. 
+e.g. if we find the PSCC of $\ddv{a}{t}$ and $b$ is $-0.9$ (high enough), we can add $b\xrightarrow{-}a$ to the set of candidate regulations.
 
 \subsubsection{Overall Process}
 
-With the former definitions, we propose a method applying partial correlation to detect the relevance of each pair of components.
+With the former definitions, we propose a method applying partial correlation to detect the relevance of each pair of variables.
 
 \begin{figure}[ht]
 \input{figures/workflowCorrelation.tex}
-\caption[Workflow of model inference via partial correlation]{Workflow of the whole procedure of hypotheses generation (dashed arrows stand for optional processes)}\label{plan}
+\caption[Workflow of model inference via partial correlation]{Workflow of the whole procedure of candidate regulations generation (dashed arrows stand for optional processes)}\label{plan}
 \end{figure}
-Figure \ref{plan} shows the procedure of regulation generation: before discretizing original data, Pearson or Spearman correlation coefficient \cite{samaga2009logic,hauke2011comparison} are computed for identifying the relevance between original data and change rates of components (in linear or monotonic way respectively). If cooperation between components exists, former coefficients need replacing by partial ones \cite{de2004discovery} for more precise result.
-Resulting coefficients above the threshold (One can set a threshold of correlation, e.g. 0.7) suggest there probably exist regulations between components.
+
+Figure \ref{plan} shows the procedure of regulation generation: before discretizing original data, Pearson or Spearman correlation coefficients \cite{samaga2009logic,hauke2011comparison} are computed for identifying the relevance between original data and change rates of variables (in linear or monotonic way respectively). If cooperation between variables exists, former coefficients need replacing by partial ones \cite{de2004discovery} for more precise result.
+Resulting coefficients above the threshold (One can set a threshold of correlation, e.g. 0.7) suggest there probably exist regulations between variables.
 
 Furthermore, to complete Biological Regulatory Networks in the form of ABAN, more accurate regulations are inferred through variable reconstruction, which splits a variable into several new variable according to its qualitative levels.
 For example, variable $a$ has two discrete levels $a_0$ $a_1$, then the correlation coefficients as well as the partial coefficients are computed in the domain of $a_0$ and of $a_1$ separately.
-As a result, the correlation between $a_0$ and other components and that of $a_1$ are computed, with which candidate transitions are deduced.
+As a result, the correlation between $a_0$ and other variables and that of $a_1$ are computed, with which candidate transitions are deduced.
 
-As all the subroutines depicted in Figure \ref{plan} are defined, starting from original data, regulations in form of Thomas' model or ABAN are resulted step by step. In the next, the data treatments Figure \ref{plan} will be introduced with examples.
+As all the subroutines depicted in Figure \ref{plan} are defined, starting from original data, regulations in form of Ren\'e Thomas' model \cite{thomas1978} or ABAN are resulted step by step. In the next section, the data processing in Figure \ref{plan} will be introduced with examples.
 
 \subsubsection*{Data Regrouping}
-To gain a better understanding of correlations between observation data and change rate, certain observed data of one component are replaced by corresponding change rate. By calculating the correlation coefficients of such matrix, regulation on this component is characterized.
+To gain a better understanding of correlations between observation data and change rate, certain observed data of one variable are replaced by corresponding change rate. By calculating the correlation coefficients of such matrix, regulation on this variable is characterized.
 
 \begin{definition}[Regrouping]
-    Let $A$ be a $n\times T$ matrix, representing a time-series data, where $n$ is the number of variables and $T$ the period of the time-series data.
+    Let $A$ be a $n\times T$ matrix, representing time-series data, where $n$ is the number of variables and $T$ is the period of the time-series data.
     $A_{ij}$ is the $i$-th variable at time $j$. 
-    Let $\delta$ be the delay, there are in total $n$ matrices of size $n\times (T-\delta)$ after regrouping.
-    The $k$-th matrix $A^{'k}$ is
+    Let $\delta$ be the delay we want to explore, there are in total $n$ matrices of size $n\times (T-\delta)$ after regrouping.
+    The $k$-th matrix $A^{'k}$ is defined:
     
     \begin{equation}
     \nonumber
@@ -367,45 +412,60 @@ To gain a better understanding of correlations between observation data and chan
 \end{equation}
 \end{definition}
 
-We group the change rate of one variable and the values of the other variables in order to infer the correlations between them.
+We regroup the change rate of one variable and the values of the other variables in order to infer the correlations between them.
 
-Example:
+\begin{example}
+Let us take the time-series data of 4 variables $a,b,c,d$ as an example.
+Matrix $A$ below records the state of the system of discrete time point $t=0,1,2,3$, $A'^1$ is the first regrouped matrix ($k=1$) as the time-series of $a$ is placed on the first row.
+$A'^1$ is used to compute the correlation between the change rate of $a$ and other variables of delay $\delta=1$.
 
-$$\kbordermatrix{\mbox{}&t_0&t_1&t_2&t_3\\
-a&a_{t_0}&a_{t_1}&a_{t_2}&a_{t_3}\\
-b&b_{t_0}&b_{t_1}&b_{t_2}&b_{t_3}\\
-c&c_{t_0}&c_{t_1}&c_{t_2}&c_{t_3}\\
-d&d_{t_0}&d_{t_1}&d_{t_2}&d_{t_3}
-}
-\to\kbordermatrix{\mbox{}&t_0&t_1&t_2\\
-a'&a'_{t_0}&a'_{t_1}&a'_{t_2}\\
-b&b_{t_0}&b_{t_1}&b_{t_2}\\
-c&c_{t_0}&c_{t_1}&c_{t_2}\\
-d&d_{t_0}&d_{t_1}&d_{t_2}
-}$$
-
-With $ \delta = 1$ time unit, $a'$ is the change rate of $a$, computed via 
 \begin{equation}\label{eq:changeRate}
-    a'=\dfrac{\Delta a(t)}{\Delta t}=\dfrac{a(t+1)-a(t)}{(t+1)-t}=a(t+1)-a(t)
+    a'(t)=\dfrac{\Delta a(t)}{\Delta t}=\dfrac{a(t+1)-a(t)}{(t+1)-t}=a(t+1)-a(t)
 \end{equation}
 
-In this way, regulations of $b,c,d$ on $a$ are then evaluated by PSCC or PCCC.
-Also matrices representing different delays can be formed analogously.
+$$A=\kbordermatrix{\mbox{\footnotesize$t$}&0&1&2&3\\
+a&a(0)&a(1)&a(2)&a(3)\\
+b&b(0)&b(1)&b(2)&b(3)\\
+c&c(0)&c(1)&c(2)&c(3)\\
+d&d(0)&d(1)&d(2)&d(3)
+}
+\to A'^1=\kbordermatrix{\mbox{\footnotesize$t$}&0&1&2\\
+a'&a'(0)&a'(1)&a'(2)\\
+b&b(0)&b(1)&b(2)\\
+c&c(0)&c(1)&c(2)\\
+d&d(0)&d(1)&d(2)
+}$$
+
+In this way, regulations of $b,c,d$ on $a$ are then evaluated by PPCC or PSCC (see Def \ref{def:PPCC} and \ref{def:PSCC}).
+\end{example}
+
+With the matrices $A'^k$, we can compute the matrix containing the correlation information of all the variable pairs.
+
+\begin{definition}[Correlation matrix]\label{def:corrMatrix}
+    Let $A'^k$ be the regrouped matrices of time-series data matrix $A$ with $k\in [1,n]$ and $\Sigma$ be the set of all the variables, the $n\times n$ correlation matrix is defined:
+    $$\mathcal{R}_{ij}=pr_{ij,\Sigma\setminus\{i,j\}}$$ 
+    where the original data for computing $pr_{ij,\Sigma\setminus\{i,j\}}$ come from $A'^i$.
+    As we do not study self-regulation in this thesis, we set $pr_{ij,\Sigma\setminus\{i,j\}}=\mathrm N/A$.
+    Also, $pr$ (PPCC) can be replaced by $prs$ (PSCC).
+    In the following, we abuse the simplification of the notation $pr_{ij,\Sigma\setminus\{i,j\}}$ by $r_{ij}$.
+\end{definition}
+
+To expand the applicability, matrices $A'^k$ and $\mathcal{R}$ representing different delays can be formed analogously by only changing the value of $\delta$.
 
 \subsection{Variable Reconstruction}
-By following previous steps, regulations in the form of $a\xrightarrow{+/-}b$ are deduced, but the result is not in the precise form of ABAN. 
-As is stated on page \ref{par:advantage}, ABAN has a finer description.
+By following previous steps, candidate regulations in form $(a,b,+/-)$ are deduced, but the result is not in the precise form of ABAN. 
+As is stated on page \pageref{par:advantage}, ABAN has a finer description.
 We need to study the regulations in different qualitative levels of each variable.
 To obtain a result in ABAN form, variable reconstruction is necessary.
 
 \begin{definition}[Variable Reconstruction]
     Let $x(t)$ be a variable in time series data with $l$ levels from $0$ to $l-1$, the corresponding intervals are $[0,x_0],[x_0,x_1],\cdots,[x_{l-2},x_{l-1}]$, with $x_i$ the thresholds. 
     The reconstructed variable of $x$ are:
-        $x_i'(t)=x(t)$ with their domain in $\{t|x(t)\in [x_{i-2},x_{i-1}]\}$
+        $x_i'(t)=x(t)$ with their domain in $\{t|x(t)\in [x_{i-2},x_{i-1}]\}$ and $i\in [0,l-1]$.
 \end{definition}
 
 \begin{example}
-In Figure \ref{varRec}, with the Boolean discretization, variable $a(t)=0.8\sin t+1\ (t\in [0,7])$ is split into 2 variables $a_0'(t)=0.8\sin t+1\ (t\in (\pi,2\pi))$ (dark gray) and $a_1'(t)=0.8\sin t+1(t\in [0,\pi]\cup[2\pi,7])$ (light gray) with different domains according to the qualitative threshold.
+In Figure \ref{varRec}, with the Boolean discretization on the threshold, variable $a(t)=0.8\sin t+1\ (t\in [0,7])$ is split into 2 variables $a_0'(t)=0.8\sin t+1\ (t\in (\pi,2\pi))$ (dark gray) and $a_1'(t)=0.8\sin t+1(t\in [0,\pi]\cup[2\pi,7])$ (light gray) with different domains according to the qualitative threshold.
 \end{example}
 
 \begin{figure}[ht]
@@ -414,11 +474,11 @@ In Figure \ref{varRec}, with the Boolean discretization, variable $a(t)=0.8\sin 
 \end{figure}
 
 
-For the system with 2 Boolean variables $a,b$ split into $a_0,a_1,b_0,b_1$, the PCCC matrix is created as follows:
+For the system with 2 Boolean variables $a,b$, the PCCC matrix is created according to Definition \ref{def:corrMatrix}:
 
 %Global state after discretization: $L=\{a_0,a_1\}\times \{b_0,b_1\}\ $
 
-Original PCCC Matrix: $r=\left[
+$$\mathcal{R}=\left[
 \begin{array}{*{20}c}
 r_{a'a} & r_{a'b}\\
 r_{b'a} & r_{b'b} \\
@@ -429,11 +489,12 @@ r_{b'a} & r_{b'b} \\
 r_{b'a} & {\rm N/A} \\
 \end{array}
 \right]\ 
-$
+$$
 
-After variable reconstruction:
+After variable reconstruction, the variables are split into four, $a_0,a_1,b_0,b_1$.
+The corresponding PCCC matrix $\mathcal{R}'$ is:
 
-$$r'=\left[
+$$\mathcal{R}'=\left[
 \begin{array}{*{20}c}
 r_{a'_0a_0} & r_{a'_0a_1}& r_{a'_0b_0}&r_{a'_0b_1}\\
 r_{a'_1a_0} & r_{a'_1a_1}& r_{a'_1b_0}&r_{a'_1b_1}\\
@@ -447,17 +508,17 @@ r_{b'_0a_0} & r_{b'_0a_1}& {\rm N/A}&{\rm N/A}\\
 r_{b'_1a_0} & r_{b'_1a_1}& {\rm N/A}&{\rm N/A}\\
 \end{array}\right]$$
 
-Here, even though the size of matrix has doubled (it can also be $n$ times large, depending on discrete levels $n$), as the domains of $a_0,a_1,b_0,b_1$ are not continuous and the variables with same origins (like $a_0$ and $a_1$) have no common domain, hence $r_{a_0a_1}$, $r_{a_1a_0}$, $r_{b_0b_1}$, $r_{b_1b_0}$ are meaningless. 
+Here, even though the size of matrix has doubled (it can also be $l$ times large, depending on the number of discrete levels), as the domains of $a_0,a_1,b_0,b_1$ are not continuous and the variables with same origins (like $a_0$ and $a_1$) have no common domain, hence $r_{a_0a_1}$, $r_{a_1a_0}$, $r_{b_0b_1}$, $r_{b_1b_0}$ are meaningless. 
 Also, even some variables of from different origins may have no common domain, that will lead to $r_{a_ib_j}=0$, making resulted matrix more sparse, which gives possibilities of optimization.
 
 \subsection{Toy Example}
 
-To better illustrate the whole process of generating candidate regulations, a toy example of $4$ variables $a$, $b$, $c$ and $d$ is given below.
-To prepare the inputs for the model inference in Section \ref{sec:modelInference} on page \pageref{sec:modelInference}, we want to output regulation hypothesis.
+In order to better illustrate the whole process of generating candidate regulations, a toy example of $4$ variables $a$, $b$, $c$ and $d$ is given below.
+To prepare the inputs for the model inference in Section \ref{sec:modelInference} on page \pageref{sec:modelInference}, we want to output candidate regulations.
 
 Input: time series data in Table \ref{TyTable1}, equi-temporal measurement of 8 time units.
 
-Output: regulation hypotheses for completion of over/under-approximation.
+Output: candidate regulations for completion by over/under-approximation.
 
 \begin{table}[ht]
 \centering
@@ -469,10 +530,10 @@ $b$&0.74&0.87&0.78&0.33&0.51&0.82&0.86&1.81&1.08\\
 $c$&0.43&0.18&0.42&0.23&0.17&0.23&0.32&0.53&0.80\\
 $d$&1.62&1.22&1.07&0.57&0.27&0.28&0.24&0.27&0.31
 \end{tabular} 
-\caption{Original data}\label{TyTable1}
+\caption{Original time-series data generated by Gene Net Weaver \cite{schaffter2011genenetweaver}}\label{TyTable1}
 \end{table}
 
-
+Change rates are obtained in Table \ref{TyTable2} by Equation \ref{eq:changeRate}.
 
 \begin{table}[ht]
 \centering
@@ -487,7 +548,7 @@ $d$&-0.4&-0.15&-0.5&-0.3&0.01&-0.04&0.03&0.04
 \caption[Change rates]{Change rates derived from original data by $x'[t]=x[t+1]-x[t]$}\label{TyTable2}
 \end{table}
 
-Change rates are obtained in Table \ref{TyTable2} by Equation \ref{eq:changeRate}. After data regrouping, we obtain 4 matrices with change rate of  each component respectively, 4 matrices of correlation are then computed: 
+After data regrouping, we obtain 4 matrices with change rate of each variable respectively, four correlation matrices are then computed: 
 
 $$\kbordermatrix{\mbox{}&a'&b&c&d\\
 a'&1.0&0.091&-0.296&-0.090   \\
@@ -514,31 +575,36 @@ c&0.780&-0.929&1.0&0.907   \\
 d'&0.884&-0.867&0.907&1.0   
 }$$
 
- $r'$ is formed by taking the $i$-th line from the $i$-th matrix, which suggests the relevance between change rate of one components and the others.
+ $r'$ is formed by taking the $i$-th line from the $i$-th matrix, which suggests the relevance between change rate of one variables and the others.
 $$r'=\kbordermatrix{\mbox{}&a&b&c&d\\
-a&1.0&0.091&-0.296&-0.0892\\
-b&0.652&1.0&0.747&-0.615\\
+a&1.0&0.091&-0.296&-0.090\\
+b&0.653&1.0&0.747&-0.615\\
 c&-0.561&-0.709&1.0&0.704\\
 d&0.884&-0.867&0.907&1.0
 }$$
-We can set an arbitrary threshold e.g. 0.6, all the coefficients with their absolute value greater than 0.6 are listed below:
-$$(b,a,1,0.652),\ (b,c,1,0.747),\ (b,d,1,-0.615),\ (c,b,1,-0.709)$$
-$$(c,d,1,0.704),\ (d,a,1,0.884),\ (d,b,1,-0.867),\ (d,c,1,0.907)$$
-For example $(d,b,1,-0.867)$ tells that $d\xrightarrow{-}b$ is probably a good hypothesis as its absolute value of correlation coefficient is close enough to 1. Like this, a BRN model is formed, see Figure \ref{ResultBRN}. According to the configuration of ABAN (whether absence of regulation is regarded as counter regulation), a ABAN is then deduced.
+We can set an arbitrary threshold e.g. $0.6$, all the coefficients with their absolute value greater than $0.6$ are listed below:
+$$(b,a,0.653),\ (b,c,0.747),\ (b,d,-0.615),\ (c,b,-0.709)$$
+$$(c,d,0.704),\ (d,a,0.884),\ (d,b,-0.867),\ (d,c,0.907)$$
+For example $(d,b,1,-0.867)$ tells that $d\xrightarrow{-}b$ is probably a good candidate regulation as its absolute value of correlation coefficient is close enough to 1. Like this, a BRN model is formed, see Figure \ref{ResultBRN}. According to the configuration of ABAN (whether absence of regulation is regarded as counter regulation), an ABAN is then deduced.
 
 \begin{figure}[ht]
 \centering
 \input{figures/exampleHypothesis.tex}
-\caption{Resulting hypotheses of the toy example}\label{ResultBRN}
+\caption{Resulted candidate regulations of the toy example}\label{ResultBRN}
 \end{figure}
 
-In fact the choice of threshold of correlation coefficients has little influence: if resulting regulations do not satisfy desired properties, we can decrease the threshold down to $0.5$, because when coefficient $r =0.5$, then the $95\%$ prediction interval of $y|x$ will be about 13\% smaller than the $95\%$ prediction interval of $y$, i.e. $y$ behaves more individually than relevantly \cite{hull1927correlation}.
+In fact, the choice of threshold of correlation coefficients has little influence if it is above $0.5$: we can even lower the threshold if resulting regulations do not satisfy desired properties.
+Because when coefficient $r =0.5$, then the $95\%$ prediction interval of $y|x$ will be about $13\%$ smaller than the $95\%$ prediction interval of $y$, i.e. $y$ behaves more relevantly than individually \cite{hull1927correlation}.
 
-It is worth noticing that the high-correlated variable pairs are not necessarily the reality but can also be a coincidence, i.e. the inferred regulations/transitions can probably reproduce the system dynamics but cannot guarantee the identity.
-In fact, there is no method that can guarantee it reveal the reality, as what model inference does is to infer \textit{via} the correlations instead of causality.
+It is worth noticing that this method does not take into account the interactions between regulations, i.e. we do not distinguish between the conjunctions and disjunctions.
+For candidate regulations $(a,c,+)$ and $(b,c,+)$, the following set of transitions are both consistent \{\ac{a_1,b_1}{c_0}{c_1}\} and \{\ac{a_1}{c_0}{c_1}, \ac{b_1}{c_0}{c_1}\}.
+In CRAC, we do not consider conjunctions for candidate regulations.
+
+Last but not least, the high-correlated variable pairs are not necessarily the reality but can also be a coincidence, i.e. the inferred candidate regulations/transitions can probably reproduce the system dynamics but cannot guarantee the identity.
+In fact, there is no method that can guarantee it reveals the reality, as what model inference does is to infer \textit{via} the correlations instead of causality.
 Causality, or the reason behind the observation is very hard to retrieve.
 
-\section{Model Revision \textit{via} Reachability Properties and Time-Series Data}
+\section{Model Revision \textit{via} Reachability and Interpretation Transitions (M2RIT)}
 When modeling a real system, instead of causality, one usually require to assess the \textit{consistency} between a given modeling network and the concrete system by checking whether the observed configurations are indeed reachable in the Boolean network.
 Whenever it is not the case, it typically means that the designed Boolean functions do not model the given system correctly and thus should be revised before further model analysis.
 
@@ -547,33 +613,39 @@ In this paper, we provide an approach to revise a logic program to fit temporal 
 %
 Such logic program can be learned from observations of state transition using LFIT algorithm in \cite{ribeiro2015learning}, but the approach restricts the model to only synchronous update scheme.
 One of the benefits of synchronous modeling is computational tractability, while classical state space exploration algorithms fail on asynchronous ones.
+
 Yet the synchronous modeling relies on quite heavy assumptions:
 all genes can make a transition simultaneously and need an equivalent amount of time to change their expression level.
 Even if this is not realistic from a biological point of view, it is usually sufficient as the exact kinetics and order of transformations are generally unknown.
-However, the asynchronous semantics helps one to capture more realistic behaviors \cite{bernot2009}.
+However, asynchronous semantics helps one to capture more realistic behaviors \cite{bernot2009}.
 At a given time point, at most one single gene can change its expression level.
 Non-deterministic behaviors are often observed in biological systems, e.g. cell differentiation.
 From a given state, several possible behaviors can be expected as future states.
 Asynchronous update scheme results in a potential combinatorial explosion to the number of states.
 
+Considering the ignorance of conjunctions by CRAC, we use a more precise learning technique (LFIT) to obtain the model to be revised in M2RIT.
+The trade-off is that M2RIT cannot deal with noisy data sets and there are more constraints in the revision phase because we have to keep the consistency of the resulted network with the original time-series data.
 
-\subsection{Learning From Interpretation Transitions}\label{sec:lfit}
+Here we follow the same methodology as shown in Figure \ref{fig:bigPicture} on page \pageref{fig:bigPicture}.
+First we obtain the model to be revised via learning method LFIT, then we modify the learned transitions according to the SLCG but in a way that maintaining the revised model can always reproduce the original time-series data.
+
+\subsection{Learning From Interpretation Transitions (LFIT)}\label{sec:lfit}
 LFIT framework so far can only capture finite dynamical properties, i.e. relation at $T$-$1$ or $T$-$k$ and the system has to be synchronous deterministic.
 In asynchronous systems, non-determinism can lead to loops for several times before taking a path to a certain state.
-In this paper, we adapt the algorithms of \cite{ribeiro2015learning,DMTRICLP15} to capture asynchronous dynamics and extend upon this method to propose an approach allowing to fit a logic program to reachability properties.
-By modifying rules of the program using logic generalization/specialization operations, we iteratively revise the program to fit a set of reachability/unreachability constraints while keeping the observation and learned rules consistent.
+In this thesis, we adapt the algorithms of \cite{ribeiro2015learning,DMTRICLP15} to capture asynchronous dynamics and extend upon this method to propose an approach allowing to fit a logic program to reachability properties.
+By modifying rules of the program using logic generalization/specialization operations, we iteratively revise the program to fit a set of reachability/unreachability constraints while keeping the observation and the learned rules consistent.
 
 \subsection{Formalization}
     
 	Boolean asynchronous systems can be non-deterministic, thus from the same state a variable can take both value $0$ or $1$.
 	To encode this dynamics, one requires to have explicit rules for each value of a variable and the modeling of \cite{ribeiro2015learning} is not suitable.
-	In \cite{DMTRICLP15}, we proposed a modeling of multi-valued synchronous systems as annotated logic program.
+	Mart{\'\i}nez \textit{et al.} \cite{DMTRICLP15} have proposed a modeling of multi-valued synchronous systems as annotated logic program.
     This modeling can be applied to represent Boolean asynchronous systems and is recalled in the following section.
     %
 	In order to represent multi-valued variables, all atoms of a logic program are now restricted to the form $var^{val}$.
 	The intuition behind this form is that $var$ represents some variable of the system and $val$ represents the value of this variable.
 	In annotated logics, the atom $var$ is said to be annotated by the constant $val$.
-	We consider a {\it multi-valued logic program\/} as a set of {\it rules\/} of the form  
+	Let us consider a {\it multi-valued logic program\/} as a set of {\it rules\/} of the form  
 	\begin{equation}\label{multi_value}
 		var^{val} \leftarrow var_1^{val_1} \wedge \cdots \wedge var_n^{val_n}
 	\end{equation}
@@ -585,8 +657,8 @@ By modifying rules of the program using logic generalization/specialization oper
 	the variable $var$ takes the value $val$ in the next state if all variables $var_i$ have the value $val_i$ in the current state.
 	A state of a multi-valued program provides the value of each variable of the system and a transitions is a pair of states.
 	The value of a variable in a state is called a local state.
-	The set of all local state is denoted $\mathbf{LS}$.
-	The subset of state is called a partial state.
+	The set of all local states is denoted $\mathbf{LS}$.
+	The subset of a state is called a partial state.
 	A rule $R$ matches a state $s$ when $b(R) \subseteq s$.
 	A rule $R$ subsumes a rule $R'$ when $h(R)=h(R'), b(R) \subseteq b(R')$.
 %
@@ -596,7 +668,7 @@ This section provides the necessary additional formalization to interpret asynch
 \subsection{Modeling and Learning of Asynchronous Dynamics}\label{sec:alfit}
 
 Due to the non-deterministic nature of asynchronous systems and its restriction to atmost one variable change per transition,
-the notion of consistency, realization and successor has to be adapted as follows.
+the notions of consistency, realization and successor have to be adapted as follows.
 
 \begin{definition}[Consistency]
 	Let $R$ be a rule and $E$ be a set of state transition $(I,J)$.
@@ -704,12 +776,9 @@ In the next section we propose an algorithm exploiting the SLCG structure to res
     Specialization/generalization operations aim to revise the rule nearest to the target state in the SLCG. If it is not possible, they try to revise the successor, if there is no possible solution, return $\varnothing$ to show the input logic program is not revisable. Specialization operation is limited by the observation. If $P$ after specialization can not explain all the transitions, the specialization is not admissible. %When specializing one rule, we check if all appeared transitions are explained, if not, check if there are other rules can explain it, otherwise we can not specialize it.
     Generalization is similar but without the constraint of the observation, as the observation is partial, $P$ may describe some state transitions never observed.
    
-    \noindent
-    \begin{minipage}{\linewidth}
-    \vspace{1em}
     Specialization:
     \begin{itemize}
-        \item \textbf{Input}: a logic program $P$, an unsatisfied element $(\alpha,\omega)$, a reachable set $Re$, an unreachable set $Un$%, a maximum addable components $k$
+        \item \textbf{Input}: a logic program $P$, an unsatisfied element $(\alpha,\omega)$, a reachable set $Re$, an unreachable set $Un$%, a maximum addable variables $k$
         \item \textbf{Output}: modified logic program $P$ or $\varnothing$ if not revisable
     \end{itemize}
     \begin{enumerate}
@@ -721,10 +790,6 @@ In the next section we propose an algorithm exploiting the SLCG structure to res
         \item $Rev\gets b(R)$ with $h(R)=Rev$ and back to step 2
         \item There is no revision for $(\alpha,\omega)$, \textbf{return} $\varnothing$
     \end{enumerate}
-    \end{minipage}
-    \noindent
-    \begin{minipage}{\linewidth}
-    \vspace{1em}
     Generalization:
     \begin{itemize}
         \item \textbf{Input}: a logic program $P$, an unsatisfied element $(\alpha,\omega)$, a reachable set $Re$, an unreachable set $Un$
@@ -739,11 +804,6 @@ In the next section we propose an algorithm exploiting the SLCG structure to res
         \item $Rev\gets b(R)$ with $h(R)=Rev$ and back to step 2
         \item There is no revision for $(\alpha,\omega)$, \textbf{return} $\varnothing$
     \end{enumerate}
-    \vspace{0.1em}
-    \end{minipage}
-    \noindent
-    \begin{minipage}{\linewidth}
-    \vspace{1em}
     Complete revision:
     \begin{itemize}
         \item \textbf{Input}: a logic program $P$, a reachable set $Re$ and an unreachable set $Un$
@@ -766,9 +826,65 @@ In the next section we propose an algorithm exploiting the SLCG structure to res
         \item \textbf{If} $L\neq\varnothing$ , back to step 1 \label{step:recheck}
         \item \textbf{Return} $P$
     \end{enumerate} 
-    \vspace{0.1em}
-    \end{minipage}
-    
+%        \noindent
+%    \begin{minipage}{\linewidth}
+%    Specialization:
+%    \begin{itemize}
+%        \item \textbf{Input}: a logic program $P$, an unsatisfied element $(\alpha,\omega)$, a reachable set $Re$, an unreachable set $Un$%, a maximum addable variables $k$
+%        \item \textbf{Output}: modified logic program $P$ or $\varnothing$ if not revisable
+%    \end{itemize}
+%    \begin{enumerate}
+%        \item $Rev\gets\{\omega\}$
+%        \item \textbf{For} each $R$ s.t. $h(R)=Rev$, for each $R'\in\{R''|R''\in ls(R)\land \nexists (I,J)\in E, \text{ s.t. } \nexists R'''\in P\cup \{R''\}\setminus \{R\}, h(R''')\in J, b(R''')\in I\}$
+%        \begin{itemize}
+%            \item \textbf{If} $P' \gets P \setminus \{R\} \cup \{R'\}$, $unreachable(P',\alpha,\omega$) and $P'$ satisfies all previous properties, \textbf{return} $P'$
+%        \end{itemize}
+%        \item $Rev\gets b(R)$ with $h(R)=Rev$ and back to step 2
+%        \item There is no revision for $(\alpha,\omega)$, \textbf{return} $\varnothing$
+%    \end{enumerate}
+%    \end{minipage}
+%    \noindent
+%    \begin{minipage}{\linewidth}
+%    Generalization:
+%    \begin{itemize}
+%        \item \textbf{Input}: a logic program $P$, an unsatisfied element $(\alpha,\omega)$, a reachable set $Re$, an unreachable set $Un$
+%        \item \textbf{Output}: modified logic program $P$ or $\varnothing$ if not revisable
+%    \end{itemize}
+%    \begin{enumerate}
+%        \item $Rev\gets\{\omega\}$
+%        \item \textbf{For} each $R$ s.t. $h(R)=Rev$, for each $R'\in lg(R)$
+%        \begin{itemize}
+%            \item \textbf{If} $P' \gets P \setminus \{R\} \cup \{R'\}$, $reachable(P',\alpha,\omega$) and $P'$ satisfies all previous properties, \textbf{return} $P'$
+%        \end{itemize}
+%        \item $Rev\gets b(R)$ with $h(R)=Rev$ and back to step 2
+%        \item There is no revision for $(\alpha,\omega)$, \textbf{return} $\varnothing$
+%    \end{enumerate}
+%    \end{minipage}
+%    \noindent
+%    \begin{minipage}{\linewidth}
+%    Complete revision:
+%    \begin{itemize}
+%        \item \textbf{Input}: a logic program $P$, a reachable set $Re$ and an unreachable set $Un$
+%        \item \textbf{Output}: revised logic program $P$ or $\varnothing$ if not revisable
+%    \end{itemize}
+%    \begin{enumerate}
+%        \item Construct the cycle-free SLCGs for the elements in $Re$ and $Un$ and compute unsatisfied sets $Re'\subseteq Re$ and $Un'\subseteq Un$ which are to be revised
+%        \item \textbf{If} $Re'=\varnothing$ and $Un'=\varnothing$, \textbf{return} $P$
+%        \item Let $L=\{l_i,\ldots\}$ with $i\in Re' \cup Un'$, $l_i=\{j,\ldots\}$, with $j=(\alpha,\omega)$, $\omega \in SLCG(i)$ and $ j\in Re\cup Un$ \label{step:dependency}
+%        \item Pick one of $l_i\in L$ of the smallest cardinality: $\nexists l_i'$, $|l_i'| < |l_i|$ \label{step:cardinality}
+%        \item \textbf{If} $l_i\cap (Re'\cup Un')\neq\varnothing$, \label{step:check}
+%        \begin{enumerate}
+%            \item Reconstruct the SLCG for $i$
+%            \item \textbf{If} $l_i$ becomes consistent because of former revision, $L\gets L\setminus \{l_i\}$ and back to step 4
+%        \end{enumerate}
+%        \item \textbf{If} $i\in Un'$, specialize $P$ to make $i$ unreachable, \textbf{if} not revisable, \textbf{return} $\varnothing$ \label{step:specialize}
+%        \item Otherwise generalize $P$ to make $i$ reachable, \textbf{if} it is not revisable, \textbf{return} $\varnothing$ \label{step:generalize}
+%        
+%        \item $L\gets L\setminus\{l_i\}$ \label{step:update}
+%        \item \textbf{If} $L\neq\varnothing$ , back to step 1 \label{step:recheck}
+%        \item \textbf{Return} $P$
+%    \end{enumerate} 
+%    \end{minipage}
       
     The main algorithm starts with constructing the SLCGs to verify $Re$ and $Un$ in order to ensure the reachability/unreachability properties to be satisfied.
     Then, for the unsatisfied properties, the program $P$ has to be revised.
@@ -798,7 +914,7 @@ To cover this disadvantage, the statistic approach \textit{via} correlation coef
 The statistic approach can use all the continuous time-series data to construct a model from nothing but hard to take into account additional constraints.
 The first two approaches are combined as \textbf{CRAC} (\textbf{C}ompletion \textit{via} \textbf{R}eachability \textbf{A}nd \textbf{C}orrelations)
 
-Considering the disadvantages of the combination of CRAC, the third approach \textbf{M2RIT} (Model Revision \textit{via} Reacchability and Interpretation Transitions) does not need candidate transitions and can adjust the result by reachability constraints.
+Considering the disadvantages of the combination of CRAC, the third approach \textbf{M2RIT} (Model Revision \textit{via} Reachability and Interpretation Transitions) does not need candidate transitions and can adjust the result by reachability constraints.
 It revises the logic program learned by LFIT w.r.t. the knowledge on reachability properties.
 When talking about reachability, we should fix at first update scheme of the dynamic system.
 We use asynchronicity as the update scheme as it implies non-determinism which is meaningful to the modeling of nuanced uncertain parts in biology.

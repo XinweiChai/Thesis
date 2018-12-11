@@ -65,7 +65,7 @@ Under ABAN, SLCG is more prone to conclude than LCG under AAN (Section \ref{sec:
 \begin{definition}[ABAN]\label{def:ABAN}
 An ABAN is a triplet $AB = (\Sigma,L,T)$, where:
 \begin{itemize}
-\item $\Sigma\triangleq\{a,b,\ldots\}$ is the finite set of automata with every component having a Boolean state;
+\item $\Sigma\triangleq\{a,b,\ldots\}$ is the finite set of automata with every automaton having a Boolean state;
 \item $LS\triangleq \underset{a\in \Sigma}{\cup} \{a_0,a_1\}$ is the set of all \textit{local states}, $L\triangleq \underset{a\in \Sigma'}{\times} \{a_0,a_1\}$ is the set of \textit{joint states} where $\Sigma'\subseteq\Sigma$. Particularly, if $\Sigma'=\Sigma$, $L$ is the set of \textit{global states}. 
 \item $T\triangleq \{A\rightarrow b_i\mid b\in \Sigma \land A\in L\}$ is the set of transitions.
 For transition $tr=A\to b_i$, $A$ (called head, noted $head(tr)$) is the set of required state(s), which allows to flip $b_{1-i}$ to $b_i$ (called body, noted $body(tr)$). In other words, transition $tr$ is said fireable iff $A\subseteq s$, where $s$ is the current global state. 
@@ -286,7 +286,7 @@ To identify cycles, we search instead Strongly Connected Components (SCC) of siz
 Because cycles may have intersections but there is no such problem with SCC.
 In other words, a SCC contains as many as possible nested cycles which strongly connect to each other.
 \cite{tarjan1972} shows that the detection of SCCs can be done in $O (|V|+|E|)$ time, with $|V|$ the number of the vertices and $|E|$ the number of the edges.
-SLCG is usually a sparse graph, as in biological systems, the components mostly interact with only a part of the system, hence the out-degree can be considered of $O (1)$ and the detection of SCCs\footnote{Implementation in Python3 by Mario Alviano at \url{https://github.com/alviano/python/blob/master/rewrite_aggregates/scc.py}} can be done in $O(|V|)$, \textit{i.e.} linear time.
+SLCG is usually a sparse graph, as in biological systems, the automata mostly interact with only a part of the system, hence the out-degree can be considered of $O (1)$ and the detection of SCCs\footnote{Implementation in Python3 by Mario Alviano at \url{https://github.com/alviano/python/blob/master/rewrite_aggregates/scc.py}} can be done in $O(|V|)$, \textit{i.e.} linear time.
 
 \begin{theorem}\label{th:break_cycle}
 Given a cycle $x\to \circ \to \cdots \to \circ \to x$ in an SLCG, if there is at most one incoming edge to the cycle, the cycle can be removed.
@@ -686,6 +686,8 @@ A model checker must terminate for any input like the standard for any algorithm
 
 In the worst case, ASPReach has an exponential complexity due the exhaustive search of admissible order by ASP solver.
 However random tests in Chapter \ref{chap:test} shows even when the number of automata increases to 1000, the runtime is still acceptable.
+
+\textbf{Identify the conditions that my method works as well in multiple levels}
 
 \section{R\'esum\'e}
 In this chapter, we formally (re)defined the modeling framework used for static analysis: Asynchronous Binary Automata Network and some terminology.

@@ -462,6 +462,24 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 %\caption{ASPReach}%\label{algOverall}
 %\end{algorithm}
 \chapter{Proofs}\label{sec:proof}
+\begin{theorem}[Change rate of sigmoid function]
+    Sigmoid function $S(x)={\dfrac {1}{1+e^{-x}}}$ on $\mathbb{R}$ is monotonically increasing and its change rate is high around $x=0$.
+    \begin{proof}
+    The derivative of $S(x)$ is $S'(x)=\dfrac{1}{e^x+e^{-x}+2}>0$, thus $S(x)$ is monotonically increasing.
+    
+    The second derivative of $S(x)$ is $S''(x)=\dfrac{e^{-x}-e^x}{(e^x+e^{-x}+2)^2}$, $S''(x)=0$ iff $x=0$, thus the change rate of $S(x)$ reaches its maximum at $x=0$ and is high around $x=0$.
+    \end{proof}
+    
+    
+\end{theorem}
+
+\begin{theorem}[Future states of synchronous semantics]
+    There are at most $C_n^m$ possible future states for a system of synchronous update scheme, where $n$ is the number of fireable transitions and $m$ is the number of different variables in all the heads of fireable transitions. 
+    \begin{proof}
+        \textbf{To do}
+    \end{proof}
+\end{theorem}
+
 \begin{theorem}[Termination and correctness of ASPReach] ~
     Let $l=(V_{\mathrm{state}}, V_{\mathrm{solution}}, E)$ be an SLCG with initial state $\alpha$ and target local state $\omega$ and $k > 0$ be an integer.
     The call \textit{ASPReach(l,k)} terminates.\\
@@ -527,10 +545,8 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
     \end{proof}
 \end{theorem}
 
-\begin{theorem}[Future states of synchronous semantics]
-    There are at most $C_n^m$ possible future states for a system of synchronous update scheme, where $n$ is the number of fireable transitions and $m$ is the number of different variables in all the heads of fireable transitions. 
+\begin{theorem}[Coverage of under-approximation]\label{th:underapprox}
     \begin{proof}
-        \textbf{To do}
     \end{proof}
 \end{theorem}
 

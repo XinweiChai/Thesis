@@ -176,6 +176,7 @@ We find no timeout case.
 Another test is on the different density with the same number of automata. 
 In Figure \ref{fig:inconcTest}, we fixed $|\Sigma|=20$ and vary the number of the transitions per automaton (density) from 1 to 12.
 The runtime peak is at density 8, a possible explanation is that even the topology of the network is more complex with the growth of density, more available transitions lead to more pathways from the initial state to the target state, thus the heuristics may end with less trials.
+
 \begin{figure}[ht]
     \subfigure[0.5\textwidth][Average runtime(s) w.r.t. ABAN size, ABAN density fixed to 3]{
     \input{curveSizeTest.tex}

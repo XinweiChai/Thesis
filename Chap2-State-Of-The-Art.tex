@@ -54,7 +54,7 @@ Biologically it is not probable that multiple components in one system change th
 This deficiency demands us to consider more update schemes.
 Detailed discuss is in Section \ref{sec:semantics}.
 
-\section{Modeling Frameworks}
+\section{Discrete Modeling Frameworks}
 Original biological problems are usually difficult to study directly due to the uncertainty and the big scale of biological systems. 
 Modeling is a process of abstracting the real system into a more concise and more easily automatized system.
 To solve a certain problem, an appropriate modeling framework is crucial because different models have different bias from reality and have also different advantages in computation, e.g. fixed point, reachability etc.
@@ -436,6 +436,21 @@ Saadatpour \textit{et al.} \cite{saadatpour2010attractor} researched only the re
 
 To tackle the complexity issue, symbolic model checking \cite{burch1992symbolic} based on OBDDs and SAT-solvers (satisfiability) \cite{abdulla2000symbolic} have been studied over years, but still fail to analyze big biological systems with more than $1000$ variables. 
 Bounded Model Checking (BMC) \cite{clarke2001bounded} is an efficient approach but generally not complete as its searching depth is limited to a given integer $k$.
+
+\section{Learning and Model Revision}
+LFIT and other learning approaches
+
+\cite{rodrigues2011active} Active learning of relational action models, action theory
+
+\subsection{Learning From Interpretation Transitions (LFIT)}\label{sec:lfitSyn}
+
+\subsection{Cut set}\label{sec:cutset}
+
+Paulev\'e \textit{et al.} \cite{PAK13-CAV} have designed an algorithm for identifying sets of local states of components whose activity is necessary for the reachability of a given local state. 
+If all the local states from such a set are disabled in the model, the concerned reachability is impossible. 
+Those sets are referred to as cut sets and are computed from a particular abstract causality structure, so-called Graph of Local Causality, inspired from previous work and generalised here to finite automata networks.
+The extracted sets of local states form an under-approximation of the complete minimal cut sets of the dynamics: there may exist smaller or additional cut sets for the given reachability.
+
 
 
 \section{R\'esum\'e}
