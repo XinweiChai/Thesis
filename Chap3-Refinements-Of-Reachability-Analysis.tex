@@ -84,8 +84,9 @@ In fact, when we take all the automata in the system as the set of automata, the
 To conclude, joint state is the most general case, when $|\Sigma'|=1$, it becomes a local state;
 when $\Sigma'=\Sigma$, it becomes a global state.
 
-\begin{definition}[Dynamics]
+\begin{definition}[Dynamics]\label{def:ABANdynamics}
     From current global state $s$, the global state after firing transition $tr=A\to b_j$ is denoted $s \cdot tr = s \setminus \{b_i\} \cup \{b_j\}, b_i \in s$.
+    If there does not exist fireable transition, $s$ remains unchanged.
     The state of a certain automaton $a$ is noted $(s\cdot tr)[a]$.
 \end{definition}
 

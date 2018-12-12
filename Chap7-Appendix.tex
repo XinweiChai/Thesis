@@ -19,7 +19,7 @@ PermReach and ASPReach can also be applied to multivalued Logic Programs.
 
 \textbf{To be continued}
 
-\chapter{Algorithms}
+\chapter{Algorithms}\label{chap:algo}
 
 \begin{algorithm}[ht]
 \begin{algorithmic}
@@ -413,6 +413,66 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 \doWhile {$CS_{iter}\neq \varnothing$}
 \State \Return{$CS$}
 \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[ht]
+\begin{algorithmic}
+    \State \textbf{Input}: a logic program $P$, a set of state transitions $E$, an unsatisfied element $(\alpha,\omega)$, a reachable set $Re$
+    \State \textbf{Output}: modified logic program $P'$ or $\varnothing$ if not revisable
+    \State Initialization: $Rev\gets\{\omega\}$
+    \Do
+    \State $RS\gets \varnothing$
+    \For{$R\in P$}
+        \If{$h(R)\in Rev$}
+            \State $RS\gets RS\cup \{R\}$
+        \EndIf
+    \EndFor
+    \For{$R\in RS$}
+        \For{$R'\in ls(R)$}
+            \State $P'\gets P\cup \{R'\}\setminus \{R\}$
+            \If{$P'$ is consistent with $E$ and $P'$ satisfies $Re$}
+                \If {$reach(\alpha,\omega)=\mathbf{False}$}
+                    \Return $P'$
+                \EndIf
+            \EndIf
+        \EndFor
+    \EndFor
+    \For{$R\in RS$}
+        \State $Rev\gets b(R)$
+    \EndFor
+    \doWhile{$RS\neq \varnothing$}    
+\end{algorithmic}
+\caption{Specialization}\label{alg:specialization}
+\end{algorithm}
+
+\begin{algorithm}[ht]
+\begin{algorithmic}
+    \State \textbf{Input}: a logic program $P$, a set of state transitions $E$, an unsatisfied element $(\alpha,\omega)$, an unreachable set $Un$
+    \State \textbf{Output}: modified logic program $P'$ or $\varnothing$ if not revisable
+    \State Initialization: $Rev\gets\{\omega\}$
+    \Do
+    \State $RS\gets \varnothing$
+    \For{$R\in P$}
+        \If{$h(R)\in Rev$}
+            \State $RS\gets RS\cup \{R\}$
+        \EndIf
+    \EndFor
+    \For{$R\in RS$}
+        \For{$R'\in lg(R)$}
+            \State $P'\gets P\cup \{R'\}\setminus \{R\}$
+            \If{$P'$ satisfies $Un$}
+                \If {$reach(\alpha,\omega)=\mathbf{True}$}
+                    \Return $P'$
+                \EndIf
+            \EndIf
+        \EndFor
+    \EndFor
+    \For{$R\in RS$}
+        \State $Rev\gets b(R)$
+    \EndFor
+    \doWhile{$RS\neq \varnothing$}    
+\end{algorithmic}
+\caption{Generalization}\label{alg:generalization}
 \end{algorithm}
 %\begin{algorithm}[htb]
 %\begin{algorithmic}[1]

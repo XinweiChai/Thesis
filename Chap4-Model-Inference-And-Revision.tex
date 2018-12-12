@@ -111,7 +111,7 @@ $R$ is the set of possible relations between variables, $body$ may inhibit ($sgn
 $C$ is the set of reachability properties to be satisfied, $\omega$ is (un)reachable from $\alpha$.
 The definition of consistency is straightforward, but its meaning changes for reachability constraints and candidate regulations.
 
-\begin{definition}[Consistency]
+\begin{definition}[Consistency]\label{def:consistencyFirst}
 \leavevmode
 \makeatletter
 \@nobreaktrue
@@ -667,47 +667,55 @@ This section provides the necessary additional formalization to interpret asynch
 
 \subsection{Modeling and Learning of Asynchronous Dynamics}\label{sec:alfit}
 
-Due to the non-deterministic nature of asynchronous systems and its restriction to atmost one variable change per transition,
-the notions of consistency, realization and successor have to be adapted as follows.
+Due to the non-deterministic nature of asynchronous systems and its restriction to at most one variable change per transition,
+the notions of consistency, realization and successor have to be redefined as follows in order to be adapted to further revision process.
 
-\begin{definition}[Consistency]
+\begin{definition}[Consistency]\label{def:consistencySecond}
 	Let $R$ be a rule and $E$ be a set of state transition $(I,J)$.
 	$R$ is {\it consistent} with $E$ iff
 	$b(R)\subseteq I$ implies $\exists (I,J) \in E, h(R) \in J$.
 	A logic program $P$ is {\it consistent} with $E$ if all rules of $P$ are {\it consistent} with $E$.
 \end{definition}
 
+Former definition of consistency is Definition \ref{def:consistencyFirst} on page \pageref{def:consistencyFirst}.
+Here we enlarge the domain to the consistency between logic programs and state transitions (time-series data), i.e. all rules are applied in the state transitions. 
+
 \begin{definition}[Program realization]
 	Let $P$ be a logic program and $E$ be a set of state transitions.
 	$P$ realizes $E$ if $\forall (I,J) \in E, \exists R, b(R) \subseteq I, (I \setminus J) = \{h(R)\}$.
 \end{definition}
 
+Similarly, program realization describes that all the state transitions can be explained by the existing rules.
+
 \begin{definition}[Asynchronous successors]
 	Let $I$ be the current state of an asynchronous system represented by a set of multi-valued rules $S$.
 	Let $T_P(I,S) = \{h(R) | R \in S, b(R) \subseteq I\}$.
 	The successors of $I$ according to $S$ is
-	$$T_P^{as}(I,S) = \{I \setminus \{v^{val'}\} \cup \{v^{val}\} | v^{val'} \in I, v^{val} \in T_P(I,S)\} \cup \{I \mid T_P(I,S) = \emptyset\}$$ % Self loop only for non-point atractor
+	$$T_P^{as}(I,S) = \{I \setminus \{v^{val'}\} \cup \{v^{val}\} | v^{val'} \in I, v^{val} \in T_P(I,S)\} \cup \{I \mid T_P(I,S) = \varnothing\}$$ % Self loop only for non attractor point 
 \end{definition}
+
+Like the definition of ABAN dynamics (Definition \ref{def:ABANdynamics} on page \pageref{def:ABANdynamics}), here asynchronous successors defines formally system dynamics of logic programs.
 
 We now adapt the {\bf LFIT} algorithm of \cite{ribeiro2015learning} to the learning of asynchronous systems.
 In synchronous case, the rules $R$ learned by {\bf LFIT} represent a necessity: $h(R)$ \textit{will} be in the next state if $R$ match the current state.
 In asynchronous case, the rules represent a possibility: $h(R)$ \textit{can} be in next state if $R$ match the current state.
-It allows the modeling of non-determinism: two rules $R, R'$ can have the same head variables but different values and match the same state which occurs in these case:
+This mechanics allows one to model non-determinism: two rules $R, R'$ can have the same head variables but different values and match the same state which occurs in these case:
 $h(R)=var^{val}, h(R')=var^{val'}, val \neq val'$ and $var^{val''} \in b(R), var^{val'''}\in b(R') \implies val'' = val'''$.
 
-Like in previous versions, {\bf LFIT} takes a set of state transitions $E$ as input and outputs a logic program $P$ that realizes $E$.
-In \cite{DMTRICLP15} multi-valued least specialization was used to learn multi-valued {\bf synchronous} systems dynamics.
-Starting from the most general rules, least specialization allows to learn the minimal rules of such system iteratively from its state transition $(I,J) \in E$.
+In \cite{DMTRICLP15}, multi-valued least specialization was used to learn multi-valued \textit{synchronous} systems dynamics.
+Like in previous versions of LFIT, asynchronous LFIT takes a set of state transitions $E$ as input and outputs a logic program $P$ that realizes $E$.
+
+Starting from the most general rules, least specialization allows one to learn the minimal rules of such system iteratively from its state transition $(I,J) \in E$.
 For every possible $var^{val}$, $var^{val} \not \in J$ the most specific rule that is not consistent, with the transition, i.e. an anti-rule, was generated: $MSR := var^{val} \leftarrow I$.
-Here, for the {\bf asynchronous} case, this anti-rule is generated and the revision occurs only if $\nexists (I,J') \in E, var^{val'} \in J'$,
+Here, for the \textit{asynchronous} case, this anti-rule is generated and the revision occurs only if $\nexists (I,J') \in E, var^{val'} \in J'$,
 i.e. it is impossible to have a transition to $var^{val}$ from $I$.
-Each rule of the currently learned program $P$ that subsumes such an anti-rule are specialized using least specialization.
+Each rule of the currently learned program $P$ that subsumes such an anti-rule is specialized using least specialization.
 The resulting program $P'$ is consistent and realizes all previously treated transition plus $(I,J)$.
 By doing so iteratively for each transition, the algorithm outputs a program $P$ which models the dynamics of the system observed in the transitions $E$.
 
 \vspace{0.5em}
 \noindent
-\textbf{Asynchronous LFIT}
+\textbf{Asynchronous LFIT algorithm}
 \vspace{-0.4em}
 \begin{itemize}
 	\item INPUT: $\mathcal{B}$ a set of annotated atoms and $E$ a set of transitions
@@ -731,9 +739,10 @@ By doing so iteratively for each transition, the algorithm outputs a program $P$
 	\item OUTPUT: $P$
 \end{itemize}
 
+Like in Definition \ref{def:consistencyFirst}, here we introduce the consistency between reachability properties and logic programs.
+
 \begin{definition}[Consistent program]
-Let $P$ be a logic program, $Re$ (resp. $Un$) be a set of reachability (resp. unreachability) properties.
-$P$ is said to be {\em consistent} with $Re$ (resp. $Un$) iff
+Let $P$ be a logic program, $Re$ (resp. $Un$) be a set of reachability (resp. unreachability) properties, $P$ is said to be {\em consistent} with $Re$ (resp. $Un$) iff
 $\forall (\alpha,\omega) \in Re, \exists$ a trajectory $t$ in $P$ s.t. $\alpha.t=\omega$ and 
 $\forall (\alpha,\omega) \in Un, \nexists$ a trajectory $t$ in $P$ s.t. $\alpha.t=\omega$.
 \end{definition}
@@ -743,7 +752,7 @@ thus to make the condition of a rule more difficult to be satisfied (in a more s
 
 \begin{definition}[Least specialization of a rule]
 	Let $R$ be a rule, a least specialization of $R$ is a rule $R' \in ls(R) := \{h(R) \leftarrow b(R) \cup \{var^{val}\}, \nexists var^{val'} \in b(R)\}$.
-	If $R$ contains already all the variables in its body, the only way to specialize $R$ is to remove $R$.
+	If $b(R)$ contains already all the variables in the logic program $P$, the only way to specialize $R$ is to remove $R$ from $P$ as there is no more available variables to be added in $b(R)$.
 \end{definition}
 
     Similarly, generalization of a rule is to remove certain elements in the body of a rule, thus to make the condition of a rule easier to be satisfied.
@@ -755,56 +764,78 @@ thus to make the condition of a rule more difficult to be satisfied (in a more s
 \begin{definition}[Revisable]\label{def:revisable}
 	A logic program $P$ is said revisable w.r.t. a reachability (resp. unreachability) property if:
 	$\exists P' \in \{(P \setminus R_P) \cup \{R' \mid R \in R_P, R' \in ls(R) \cup lg(R)\} \} \mid R_P \subseteq P\}$.
-	$P$ is revisable w.r.t. to a set of property $S$:
-	if their exists an ordering $S'$ of the elements of $S$ such that each $i$th revision, $0 \leq i \leq |S'|$, ($P$ being the $0$th revision) is revisable w.r.t. the $i+1$th property.
+	$P$ is revisable w.r.t. a set of property $S$:
+	if their exists an ordering $S'$ of the elements of $S$ such that each $i$-th revision, $0 \leq i \leq |S'|$, ($P$ being the $0$-th revision) is revisable w.r.t. the $(i+1)$-th property.
 \end{definition} 
 
 From definition \ref{def:revisable}, it follows that the revision of logic program $P$ w.r.t. a set of reachability/unreachability properties $S$ can be found (or proved to be non-existent) by brute force enumeration of all possible ordering of $S$ and trying all possible iterative revisions of $P$.
-In the next section we propose an algorithm exploiting the SLCG structure to restrict the search to valid ordering of the properties.
-\subsection{Revision}
-\label{sec:algorithm}
+In the next section, we propose an algorithm exploiting the SLCG structure to restrict the search to valid ordering of the properties.
+\subsection{Revision}\label{sec:algorithm}
 
     In this section, we are going to present our algorithm \textbf{M2RIT} (\textbf{M}odel \textbf{R}evision \textit{via} \textbf{R}eachability and \textbf{I}nterpretation \textbf{T}ransitions) exploiting the previous formalization to fit a logic program to reachability properties.
-    Given a set of transition $E$ of an asynchronous system $S$, a logic program $P$ is learned via the adaptation of \textbf{asynchronous LFIT} of section \ref{sec:alfit}.
+    Given a set of state transitions $E$ of an asynchronous system $S$, a logic program $P$ is learned via the adaptation of \textbf{asynchronous LFIT} of section \ref{sec:alfit}.
     When $E$ is partial, the learned program $P$ does not have the exact dynamics of $S$.
     Given a set of reachability properties $Re$ and a set of unreachability properties $Un$ of $S$, we propose an algorithm to revise $P$ so that the dynamics of $P$ satisfy $S$.
     As discussed previously, this can be done by complete brute force but here we propose a first attempt to reduce the search space.
 	% TODO: detail why ordering is correct, notion of precedence and so on
-    Furthermore, our aim is to find what could be considered a metric of minimal revision of $P$:
+    Furthermore, our goal is to find what could be considered a metric of minimal revision of $P$:
     a revision $P'$ s.t. $\nexists P'', (P''\setminus P \cap P'')\subseteq (P' \setminus P \cap P')$
    
-    Specialization/generalization operations aim to revise the rule nearest to the target state in the SLCG. If it is not possible, they try to revise the successor, if there is no possible solution, return $\varnothing$ to show the input logic program is not revisable. Specialization operation is limited by the observation. If $P$ after specialization can not explain all the transitions, the specialization is not admissible. %When specializing one rule, we check if all appeared transitions are explained, if not, check if there are other rules can explain it, otherwise we can not specialize it.
-    Generalization is similar but without the constraint of the observation, as the observation is partial, $P$ may describe some state transitions never observed.
+    Specialization and generalization algorithms aim at revising the rule nearest to the target state in the SLCG. 
+    If it is not possible, they try to revise the successor, if there is no possible solution, return $\varnothing$ to show the input logic program is not revisable.
+    Specialization operation is limited by the observation. If $P$ after specialization can not explain all the transitions, the specialization is not admissible.
+    If the direct revision on the unsatisfied element fails, we replace the element with its successsors in the SLCG.
+    Well-formed detailed algorithms of specialization and generalization are Algorithm \ref{alg:specialization} and Algorithm \ref{alg:generalization} in Appendix \ref{chap:algo}.
+    %When specializing one rule, we check if all appeared transitions are explained, if not, check if there are other rules can explain it, otherwise we can not specialize it.
    
-    Specialization:
+    
+    \textbf{Specialization algorithm}:
     \begin{itemize}
-        \item \textbf{Input}: a logic program $P$, an unsatisfied element $(\alpha,\omega)$, a reachable set $Re$, an unreachable set $Un$%, a maximum addable variables $k$
+        \item \textbf{Input}: a logic program $P$, an unsatisfied element $reach(\alpha,\omega)=\mathbf{False}$, a satisfied reachable set $Re$%, a maximum addable variables $k$
         \item \textbf{Output}: modified logic program $P$ or $\varnothing$ if not revisable
     \end{itemize}
     \begin{enumerate}
         \item $Rev\gets\{\omega\}$
-        \item \textbf{For} each $R$ s.t. $h(R)=Rev$, for each $R'\in\{R''|R''\in ls(R)\land \nexists (I,J)\in E, \text{ s.t. } \nexists R'''\in P\cup \{R''\}\setminus \{R\}, h(R''')\in J, b(R''')\in I\}$
+        \item \textbf{For} each $R$ s.t. $h(R)=Rev$, \textbf{for} each $R'\in ls(R)$ and $P\cup\{R'\}\setminus\{R\}$ is consistent with $E$
+        
+        (The consistency can be verified by $\nexists (I,J)\in E$ s.t. $\nexists R'\in P\cup \{R''\}\setminus \{R\}, h(R'')\in J, b(R'')\subseteq I\}$)
         \begin{itemize}
-            \item \textbf{If} $P' \gets P \setminus \{R\} \cup \{R'\}$, $unreachable(P',\alpha,\omega$) and $P'$ satisfies all previous properties, \textbf{return} $P'$
+            \item \textbf{If} $P' \gets P \setminus \{R\} \cup \{R'\}$, $reach(\alpha,\omega)=\mathbf{False}$ for $P'$ and $P'$ satisfies $Re$, \textbf{return} $P'$
         \end{itemize}
         \item $Rev\gets b(R)$ with $h(R)=Rev$ and back to step 2
-        \item There is no revision for $(\alpha,\omega)$, \textbf{return} $\varnothing$
+        \item There is no revision for $reach(\alpha,\omega)=\mathbf{False}$, \textbf{return} $\varnothing$
     \end{enumerate}
-    Generalization:
+    
+     Generalization is similar but without the constraint of the observation, as the observation is partial, $P$ may describe some state transitions never observed.
+     
+    \textbf{Generalization algorithm}:
     \begin{itemize}
-        \item \textbf{Input}: a logic program $P$, an unsatisfied element $(\alpha,\omega)$, a reachable set $Re$, an unreachable set $Un$
+        \item \textbf{Input}: a logic program $P$, an unsatisfied element $reach(\alpha,\omega)=\mathbf{True}$, a satisfied unreachable set $Un$
         \item \textbf{Output}: modified logic program $P$ or $\varnothing$ if not revisable
     \end{itemize}
     \begin{enumerate}
         \item $Rev\gets\{\omega\}$
-        \item \textbf{For} each $R$ s.t. $h(R)=Rev$, for each $R'\in lg(R)$
+        \item \textbf{For} each $R$ s.t. $h(R)=Rev$, \textbf{for} each $R'\in lg(R)$
         \begin{itemize}
-            \item \textbf{If} $P' \gets P \setminus \{R\} \cup \{R'\}$, $reachable(P',\alpha,\omega$) and $P'$ satisfies all previous properties, \textbf{return} $P'$
+            \item \textbf{If} $P' \gets P \setminus \{R\} \cup \{R'\}$, $reach(\alpha,\omega)=\mathbf{True}$ for $P'$and $P'$ satisfies $Un$, \textbf{return} $P'$
         \end{itemize}
         \item $Rev\gets b(R)$ with $h(R)=Rev$ and back to step 2
-        \item There is no revision for $(\alpha,\omega)$, \textbf{return} $\varnothing$
+        \item There is no revision for $reach(\alpha,\omega)=\mathbf{True}$, \textbf{return} $\varnothing$
     \end{enumerate}
-    Complete revision:
+    
+    The main revision algorithm starts with constructing the SLCGs to verify $Re$ and $Un$ in order to ensure the reachability/unreachability properties to be satisfied.
+    Then, for the unsatisfied properties, the program $P$ has to be revised.
+    SLCG for one target state may contain the topology of SLCGs for other target states, hence revision based on one SLCG can influence other SLCGs.
+    By starting with the SLCGs with least dependencies on others, \textit{i.e.} the ones containing the least other SLCGs (the ones with the smallest cardinality of $l_i$), it increases the chance of partially satisfying other unsatisfied properties (step \ref{step:dependency} and \ref{step:cardinality}). 
+    Then all possible revision of $P$ are generated using least specialization or generalization according to $l_i\in Re$ or $l_i \in Un$ (step \ref{step:specialize} and \ref{step:generalize}). 
+    Each revision of $P$ is checked against $Re$ and $Un$ to verify that all properties satisfied by $P$ are still satisfied. 
+    If new ones are satisfied, $L$ is updated accordingly (step \ref{step:check}).
+    We update $P$ until there is no unsatisfied properties (step \ref{step:update} and \ref{step:recheck}).
+    %As the SLCGs are free of cycles, the algorithm always terminates.
+    %we revise first the elements whose SLCG contain least other elements in order to modify less $P$.
+    Finally, if a revision of $P$ consistent with all given properties is found the algorithm terminates and outputs it.
+    
+    \textbf{Main revision algorithm}:
     \begin{itemize}
         \item \textbf{Input}: a logic program $P$, a reachable set $Re$ and an unreachable set $Un$
         \item \textbf{Output}: revised logic program $P$ or $\varnothing$ if not revisable
@@ -886,46 +917,50 @@ In the next section we propose an algorithm exploiting the SLCG structure to res
 %    \end{enumerate} 
 %    \end{minipage}
       
-    The main algorithm starts with constructing the SLCGs to verify $Re$ and $Un$ in order to ensure the reachability/unreachability properties to be satisfied.
-    Then, for the unsatisfied properties, the program $P$ has to be revised.
-    SLCG can share the elements s.t. revising one can modify the others.
-    By starting with the SLCGs with least dependencies with others, i.e. the ones with the smallest cardinality of $l_i$, it increases the chance of partially satisfying other unsatisfied properties (step \ref{step:dependency} and \ref{step:cardinality}). 
-    Then all possible revision of $P$ are generated using least specialization or generalization according to $l_i\in Re$ or $l_i \in Un$ (step \ref{step:specialize} and \ref{step:generalize}). 
-    Each revision of $P$ is checked against $Re$ and $Un$ to verify that all properties satisfied by $P$ are still satisfied. 
-    If new ones are satisfied, $L$ is updated accordingly (step \ref{step:check}).
-    We update $P$ until there is no unsatisfied properties (step \ref{step:update} and \ref{step:recheck}).
-    %As the SLCGs are free of cycles, the algorithm always terminates.
-    %we revise first the elements whose SLCG contain least other elements in order to modify less $P$.
-    Finally, if a revision of $P$ consistent with all given properties is found the algorithm terminates and outputs it.
+
     
 \subsection{Toy Example}    
-\textbf{Some explanation}
+After introducing the algorithms, we are going to show how they work.
+
+\begin{example}
+Let us consider a logic program $P$ with rules: $a_1\gets b_1$, $a_1\gets d_1 \land c_0$, $b_1\gets c_0$, $c_1\gets b_0$ and initial state: $\alpha=\langle a_0,b_0,c_0,d_0\rangle$.
+Reachability properties to be verified: $Un=\{(\alpha,b_1),(\alpha,d_1)\}$ and $Re=\{(\alpha,a_1)\}$.
+Figure \ref{fig:toyExampleM2RIT} shows the SLCG of $a_1$.
+
+We compute first $L$ revealing the inclusion relations between the SLCGs: $L=\{\{(\alpha,a_1),(\alpha,b_1),(\alpha,d_1)\},\{(\alpha,b_1)\},\{(\alpha,d_1)\}\}$.
+The SLCG of $b_1$ and that of $d_1$ are contained in the SLCG of $a_1$.
+We begin with the SLCG containing least others SLCG of $b_1$ or $d_1$.
+$b_1\gets c_0$ can be specialized to $b_1\gets c_0\land a_1$ to make $b_1$ unreachable.
+Here the $a_1$ becomes unreachable due to the unreachability of $b_1$.
+Generalizing $a_1\gets d_1 \land c_0$ can solve this problem, it can only be generalized to $a_1 \gets c_0$ as $d_1\in U_K$.
+\end{example}
     \begin{figure}[ht]
         \centering
         \input{figures/toyExampleM2RIT.tex}
-        \caption{Toy example of M2RIT (Explanation of legends)}
+        \caption{Toy example of M2RIT, where dashed arrows are the revisions.}
         \label{fig:toyExampleM2RIT}
     \end{figure}
 \section{R\'esum\'e}
-In this chapter we presented three approaches to infer/revise models based on different \textit{a priori} knowledge.
-The first approach allows one to construct a good model among a large number of candidate transitions.
-The drawback of the first approach is to obtain the candidates.
-To cover this disadvantage, the statistic approach \textit{via} correlation coefficients provides us with candidate regulations to be verified by the first approach.
-The statistic approach can use all the continuous time-series data to construct a model from nothing but hard to take into account additional constraints.
-The first two approaches are combined as \textbf{CRAC} (\textbf{C}ompletion \textit{via} \textbf{R}eachability \textbf{A}nd \textbf{C}orrelations)
+In this chapter we presented two methods to infer/revise models based on different \textit{a priori} knowledge.
 
-Considering the disadvantages of the combination of CRAC, the third approach \textbf{M2RIT} (Model Revision \textit{via} Reachability and Interpretation Transitions) does not need candidate transitions and can adjust the result by reachability constraints.
+The first method \textbf{CRAC} (Completion \textit{via} Reachability And Correlations) consists of two parts.
+The first part allows one to construct a model among a large number of candidate regulations while aiming at (un)reaching certain states, but it is unable to obtain the candidates.
+To cover this disadvantage, the second part, statistic approach \textit{via} correlation coefficients provides us with candidate regulations to be verified by the first part.
+Correlation coefficients uses all the continuous time-series data to suggest what a complete model might be, thus can feed the first part with candidate regulations.
+
+
+Considering the disadvantages of the combination of CRAC, the second method \textbf{M2RIT} (Model Revision \textit{via} Reachability and Interpretation Transitions) does not need candidate transitions and can adjust the result by reachability constraints.
 It revises the logic program learned by LFIT w.r.t. the knowledge on reachability properties.
 When talking about reachability, we should fix at first update scheme of the dynamic system.
 We use asynchronicity as the update scheme as it implies non-determinism which is meaningful to the modeling of nuanced uncertain parts in biology.
 From the point of view of revisability, asynchronicity gives the possibilities of modifying the existing transitions.
 If the logic program is revisable, the revision is consistent with both state transitions and reachability information.
-Intuitively speaking, a given set of time-series data is usually consistent with less synchronous systems than asynchronous systems, thus it is more likely to revise a asynchronous system to satisfy certain reachabilty constraints.
+Intuitively speaking, a given set of time-series data is usually consistent with less synchronous systems than asynchronous systems, thus it is more likely to revise an asynchronous system to satisfy certain reachabilty constraints.
 
-The drawback of M2RIT is that there is a loss of information due to discretization, while the first two approaches make full use of the continuous data.
+The drawback of M2RIT is that there is a loss of information due to discretization (input time-series data must be discretized), while the CRAC makes full use of the original continuous data.
 Moreover, M2RIT does not guarantee the minimal revision of the logic program.
 
-From the contents of this chapter, we propose several topics as future work
+From the contents of this chapter, we propose several topics as possible future work:
 \begin{itemize}
     \item Developing heuristics to improve the performance of the existing algorithms
     \item Considering the metric for minimal revision and designing a related algorithm
