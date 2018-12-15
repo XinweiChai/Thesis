@@ -126,17 +126,115 @@ The definition of consistency is straightforward, but its meaning changes for re
 However, completion operation is not able to remove or modify existing trajectories towards the states to be reached as the transitions used in the trajectories are still present.
 To obtain an ABAN meeting all the unreachable constraints in $C$, we have to apply cut sets.
 
-Before our research began, Paulev\'e \textit{et al.} \cite{PAK13-CAV} had worked on cut-sets for reachability in large scale automata networks, which is the reverse operation of completion sets.
-Cut set is used to eliminate certain transitions to make certain local states unreachable.
+Before our research began, Paulev\'e \textit{et al.} \cite{PAK13-CAV} had worked on cut sets for reachability in large scale automata networks, which can be a reverse operation of completion sets.
+Cut set is used to inhibit certain local states to make certain local states unreachable.
 
-By combining these two operations, one can construct/revise a model according to \textit{a priori} information (candidate regulations) and constraints (reachability).
+By combining completion and cut set, one can construct/revise a model according to \textit{a priori} information (candidate regulations) and constraints (reachability).
+We introduce first the notion and the application of cut sets.
 
+\subsection{Cut set}\label{sec:cutsetModelInfer}
+
+Cut set operation works on the local states necessitating for reachability. 
+It is used to inhibit certain local states to make wanted local states unreachable.
+However we cannot eliminates the states in a given network, what we can manipulate here are the transitions. 
+We present how cut set functions and then adapt it to our requirements.
+
+The computation of cut sets starts with $\mathbb{V}_0=\varnothing$.
+For different elements $n$ in the graph,  
+
+\begin{itemize}
+\item if $n$ is a solution $\langle P,ls\rangle\in \mathbf{Sol}$, it is sufficient to prevent the reachability of any local state in $ls$ to cut $n$; therefore, the cut sets results from the union
+of the cut sets of the successor of $n$ (all local states).
+\item if $n$ is a local state $a_i$,  it is sufficient to cut all its successors (all solutions) to prevent the reachability of $a_i$ from any state in the context $\varsigma$. 
+In addition, if $a_i=\omega$, $\{a_i\}$ is added to the set of its cut sets.
+\end{itemize}
+
+\begin{definition}[Valuation]\label{def:valuation}
+Given an SLCG $l= (V_{\mathrm{state}},V_{\mathrm{solution}},E)$, its valuation $\mathbb{V}$ is a mapping from each node of $V_{\mathrm{state}}\cap V_{\mathrm{solution}}$ to a set of sets of local states.
+$\mathbb{V}_0$ refers to the initial valuation s.t $\forall n \in V_{\mathrm{state}}\cap V_{\mathrm{solution}}, \mathbb{V}_0(n)=\varnothing$.
+\end{definition}
+
+
+\begin{definition}[$\mathsf{update}$]
+\begin{equation}  
+\mathsf{update}(\mathbb{V},n)\triangleq 
+      \begin{cases}
+            \zeta^N(\bigcup_{m\in n.next}\mathbb{V}(m))&\text{if } n\in\mathbf{Sol}\\
+            \zeta^N(\prod_{m\in n.next}\mathbb{V}(m))&\text{if } n\in\mathbf{LS}\setminus\{\omega\}\\
+            \zeta^N(\{\{a\}\}\cup\prod_{m\in n.next}\mathbb{V}(m))&\text{if }n=\omega\\
+      \end{cases}
+\end{equation}
+where $\zeta^N(\{e_1,\ldots,e_n\})\triangleq\{e_i\mid i\in[1,n]\land |e_i|\leq N\land\nexists j\in[1,n],j\neq i,e_j\subset e_i\}$, $e_i$ being sets, $\forall i\in[1,n]$.
+\end{definition}
+
+\begin{algorithm}[ht]
+\begin{algorithmic}
+\State Input: an SLCG $l= (V_{\mathrm{state}},V_{\mathrm{solution}},E)$
+\State Output: 
+\State Initialization: $\mathcal{M}\gets V_{\mathrm{state}}\cap V_{\mathrm{solution}}$, $\mathbb{V}\gets\mathbb{V}_0=\varnothing$
+\While{$\mathcal{M}\neq\varnothing$}
+        \State $n\gets\mathrm{argmin}_{m\in\mathcal{M}}\{\mathsf{rank}(m)\}$
+		\State $\mathcal{M}\gets\mathcal{M}\setminus\{n\}$
+		\State $\mathbb{V}'\gets\mathsf{update}(\mathbb{V},n)$
+		\If{$\mathbb{V}'(n)\neq\mathbb{V}(n)$}
+		    \State $\mathcal{M}\gets\mathcal{M}\cup(n.pred)$
+		\EndIf
+		\State $\mathbb{V}\gets\mathbb{V}'$
+\EndWhile
+\State \Return{$\mathbb{V}$} 
+\end{algorithmic}
+\caption{Cut set}\label{alg:cut}
+\end{algorithm}
+
+$\mathsf{rank}(n)$ refers to the topological rank of $n$.
+
+Example:
+
+\begin{figure}[ht]
+\centering
+\input{cutset.tex}
+\caption{SLCG for the reachability of $a_1$}\label{fig:cut}
+\end{figure}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|c|c|l|}
+ \hline 
+ Node & $\mathsf{rank}$ & $\mathbb{V}$ \\ 
+ \hline 
+ $\langle b_1\to^*b_1,\varnothing\rangle$ & 1 & $\varnothing$ \\ 
+ \hline 
+ $b_1$ & 2 & $\{\{b_1\}\}$ \\ 
+ \hline 
+ $\langle d_0\to^*d_1,\{b_1\}\rangle$ & 3 & $\{\{b_1\}\}$ \\ 
+ \hline 
+ $d_1$ & 4 & $\{\{b_1\},\{d_1\}\}$ \\ 
+ \hline 
+ $\langle b_1\to^*b_0,\{d_1\}\rangle$ & 5 & $\{\{b_1\},\{d_1\}\}$ \\ 
+ \hline 
+ $b_0$ & 6 & $\{\{b_0\},\{b_1\},\{d_1\}\}$ \\ 
+ \hline 
+ $\langle a_0\to^*a_1,\{b_0\}\rangle$ & 7 & $\{\{b_0\},\{b_1\},\{d_1\}\}$ \\ 
+ \hline 
+ $\langle c_1\to^*c_1,\varnothing\rangle$ & 8 & $\varnothing$ \\ 
+ \hline 
+ $c_1$ & 9 & $\{\{c_1\}\}$ \\ 
+ \hline 
+ $\langle a_0\to^*a_1,\{b_1,c_1\}\rangle$ & 9 & $\{\{b_1\},\{c_1\}\}$ \\ 
+ \hline 
+ $a_1$ & 9 & $\{\{a_1\},\{b_1\},\{b_0,c_1\},\{c_1,d_1\}\}$ \\ 
+ \hline 
+ $\langle c_0\to^*c_1,\{a_1\}\rangle$ & 9 & $\{\{a_1\},\{b_1\},\{b_0,c_1\},\{c_1,d_1\}\}$ \\ 
+ \hline 
+ \end{tabular}
+ \caption[Example of cut set]{Running result of algorithm \ref{alg:cut} on the LCG in Figure \ref{fig:cut}.
+ In column of $\mathbb{V}$, it is sufficient to prevent the local states $\{\{a_3\},\{b_1\},\{b_3,c_2\},\{c_2,d_2\}\}$ in order to inhibit the reachability of $a_1$.}\label{tab:cutset}
+\end{table}
+
+\subsection{Completion by Over-Approximation}
 As stated in the previous chapter, verifying exact reachability is a hard task.
 Here we use two metrics, over-approximation and under-approximation to replace and approach the notion of reachability (as shown in Figure \ref{fig:vennDiagram} on page \pageref{fig:vennDiagram}).
 
-%In the context of SLCG, completion is defined as follows: given a state sequence $S$ of observation and a set of possible regulations $H$ (in the form of ABAN) to be verified, find the minimum subset of $H$ such that $S$ is realizable from initial state.
-
-\subsection{Completion by Over-Approximation}
 Over-approximation is the reasoning of pseudo-reachability in Definition \ref{defPseudoReach} on page \pageref{defPseudoReach}. 
 It associates local states and transitions with the initial state according to the causalities: if there exists a reverse pathway from the target local state to the initial state, this target state can be reachable.
 Over-approximationdoes not take into consideration the order of transitions to be fired, which is the cause of inconclusiveness (literally it over-approximates the reachability).
@@ -156,7 +254,7 @@ $T'=\{\acm{a_1}{b_0}{b_1},\acm{c_0}{a_0}{a_1}\}$, $CS=\{\acm{c_0}{a_0}{a_1}\}$.
 \end{figure}
 Algorithm \ref{algComOver} in Appendix shows the detailed algorithm of the completion by over-approximation.
 
-\subsection{Completion by Under-Approximation}
+\subsection{Completion by Under-Approximation}\label{sec:completionUnder}
 Over-approximation is only a necessary condition of reachability.
 If one wants the guarantee of the reachability even at the price of redundant transitions, he may consider the completion by under-approximation.
 
@@ -436,7 +534,7 @@ c&c(0)&c(1)&c(2)\\
 d&d(0)&d(1)&d(2)
 }$$
 
-In this way, regulations of $b,c,d$ on $a$ are then evaluated by PPCC or PSCC (see Def \ref{def:PPCC} and \ref{def:PSCC}).
+In this way, regulations of $b,c,d$ on $a$ are then evaluated by PPCC or PSCC (see Definition \ref{def:PPCC} and \ref{def:PSCC}).
 \end{example}
 
 With the matrices $A'^k$, we can compute the matrix containing the correlation information of all the variable pairs.
@@ -514,7 +612,7 @@ Also, even some variables of from different origins may have no common domain, t
 \subsection{Toy Example}
 
 In order to better illustrate the whole process of generating candidate regulations, a toy example of $4$ variables $a$, $b$, $c$ and $d$ is given below.
-To prepare the inputs for the model inference in Section \ref{sec:modelInference} on page \pageref{sec:modelInference}, we want to output candidate regulations.
+To prepare the inputs for the model inference in Section \ref{sec:completionUnder} on page \pageref{sec:completionUnder}, we want to output candidate regulations.
 
 Input: time series data in Table \ref{TyTable1}, equi-temporal measurement of 8 time units.
 
@@ -718,7 +816,7 @@ By doing so iteratively for each transition, the algorithm outputs a program $P$
 \textbf{Asynchronous LFIT algorithm}
 \vspace{-0.4em}
 \begin{itemize}
-	\item INPUT: $\mathcal{B}$ a set of annotated atoms and $E$ a set of transitions
+	\item INPUT: $\mathcal{B}$ a set of annotated atoms and $E$ a set of state transitions
 	\item Initialize $P := \{var^{val} \leftarrow \emptyset \mid var^{val} \in \mathcal{B}\}$
 	\item For each $(I,J) \in E$
 	\begin{itemize}

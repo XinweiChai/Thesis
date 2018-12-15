@@ -6,7 +6,7 @@
     \addplot[mark=none,color=red] {cos(deg(x))}; 
     \addplot[mark=none,color=black]{0.5};
     %\addplot[mark=square,color=black] {0*deg(x)};
-    \addplot[mark=square,color=black] coordinates {
+    \addplot[only marks,color=black] coordinates {
         (0,0)
         (0.5*pi,0)
         (pi,0)
@@ -21,7 +21,7 @@
     \addplot[mark=none,color=blue] {sin(deg(x))}; 
     \addplot[mark=none,color=red] {cos(deg(x))}; 
     \addplot[mark=none,color=black]{0.5};
-    \addplot[mark=square,color=black] coordinates {
+    \addplot[only marks,color=black] coordinates {
         (pi/6,0.5)
         (pi/3,0.5)
         (5*pi/6,0.5)

@@ -65,9 +65,8 @@ In this thesis, we mainly study \textbf{asynchronous discrete models} based on t
 
 Apart from modelings, another important topic is model inference (or model learning).
 It turns the data coming from biological experiment into model parameters, given modeling framework.
-Bonneau \textit{et al.} \cite{bonneau2006inferelator} have developed a learning algorithm based on regression but with the limit on the size of clusters.
-Opgen-Rhein \textit{et al.} \cite{opgen2007correlation} have studied the learning using correlation coefficients, but their resulting regulatory networks are undirected. 
-Ribeiro \textit{et al.} have designed learning approaches LFIT using Inductive Logic Programming \cite{ribeiro2015learning,ribeiro2018learning,ribeiro2017inductive} but these approaches cannot deal with noisy inputs.
+In this thesis, we focus on the LFIT-based method (Learning From Interpretation Transition) proposed by Robeiro \textit{et al.} \cite{ribeiro2015learning,ribeiro2018learning,ribeiro2017inductive} as it is used in our model revisers.
+
 
 \section{Contributions}\label{sec:contribution}
 The main contributions of the thesis are the followings:
@@ -106,14 +105,14 @@ According to the problems of model inference above, we designed two algorithms:
 Chapter \ref{chap:stateOfTheArt} introduces the state of the art on several modeling frameworks, model checkers and different dynamics of modelings.
 We are especially interested in Asynchronous Automata Network, reachability analysis and the learning from state transitions.
 
-Chapter \ref{chap:refinement} presents our modeling framework adapted from Automata Nerwork and its relating reachability analyzers based on static analysis.
+Chapter \ref{chap:refinement} presents our modeling framework adapted from Automata Network and its relating reachability analyzers based on static analysis.
 We will focus on the inconclusive cases of pure static analysis and analyze the key components preventing from a direct solution.
 We then apply some different heuristics on the the key components to solve them dynamically in order to reach a conclusive result on the reachability problem.
 
 Chapter \ref{chap:modelInference} presents the methodology of model revision in this thesis and our model revisers mentioned above.
 These model revisers perform a model selection. 
 They choose a model from the candidates satisfying all the provided constraints.
-However the number of candidate models can be exponential, our model revisers shrink the search space drastically to obtain a result.
+However the number of candidate models can be exponential, our model revisers can shrink the search space drastically to obtain a result.
 
 Chapter \ref{chap:test} shows some comparative and exploratory tests and their results on the approaches presented in Chapter \ref{chap:refinement} and Chapter \ref{chap:modelInference}.
 

@@ -8,6 +8,7 @@ Concretely speaking, we are going to present the state of the art constituting o
     \item Several modeling frameworks, some of which are the ancestors of the new modelings to be used in this thesis and some of which will be used in comparison
     \item The notion of model-checking and some existed model checkers 
     \item Different update schemes of modeling frameworks
+    \item Several model learning/inference methods
 \end{itemize}
 
 These notions will be helpful for readers to understand our new model-checkers and new model inference approaches.
@@ -128,14 +129,17 @@ Transition interpretation table (C) and state transition graph (D) are straightf
 \end{itemize}
 One set of transition interpretations or one state transition graph could correspond to multiple set of Boolean functions.
 
-By the way, BN can be translated to Normal Logic Program (NLP) \cite{inoue2011logic}.
+By the way, BNs can be translated to Normal Logic Programs (NLP) \cite{inoue2011logic}.
 NLP provides a more dynamical representation and also for applying SAT techniques in the computation of point attractors of both synchronous and asynchronous semantics \cite{dubrova2011sat,harvey1997time}.
 
-\subsection{Normal Logic Program (NLP)}
+\subsection{Normal Logic Program (NLP)}\label{sec:logicProgram}
 Logic programming is a type of programming paradigm which is largely based on formal logic.
 Any program written in a logic programming language is a set of sentences in logical form, expressing facts and rules about some problem domain.
 Major logic programming language families include Prolog, Answer set programming (ASP, which we will detail in Section \ref{sec:introAsp} of Chapter \ref{chap:refinement}) and Datalog.
-In all of these languages, rules are written in the form of clauses (formula representation on the left while code representation on the right):
+
+In all of these languages, the basic element is called an \textit{atom}, representing a variable with certain value.
+The set of atom is denoted $\mathcal{B}$.
+Rules are written in the form of clauses consisting of atoms (formula representation on the left while code representation on the right):
 
 \begin{table}[ht]
     \centering
@@ -144,7 +148,8 @@ In all of these languages, rules are written in the form of clauses (formula rep
     \end{tabular}
 \end{table}
 
-and are read declaratively as logical implications:
+$H,B_1,\ldots,B_n$ are atoms. 
+The rule is read declaratively as logical implications:
 
 \begin{center}
     $H$ if $B_1$ and $\ldots$ and $B_n$.
@@ -437,21 +442,46 @@ Saadatpour \textit{et al.} \cite{saadatpour2010attractor} researched only the re
 To tackle the complexity issue, symbolic model checking \cite{burch1992symbolic} based on OBDDs and SAT-solvers (satisfiability) \cite{abdulla2000symbolic} have been studied over years, but still fail to analyze big biological systems with more than $1000$ variables. 
 Bounded Model Checking (BMC) \cite{clarke2001bounded} is an efficient approach but generally not complete as its searching depth is limited to a given integer $k$.
 
-\section{Learning and Model Revision}
-LFIT and other learning approaches
+\section{Model Learning and Model Revision}
+All the modeling frameworks and model-checkers mentioned above are not effective unless they are fed with trustworthy system topology.
+Model learning is used to classify the original data into generalized topological knowledge of the system where the original data come from raw data after being discretized, normalized, denoised \textit{etc.}
+In this thesis we do not assess the quality of raw data as it is related to the results of biological experiments.
 
-\cite{rodrigues2011active} Active learning of relational action models, action theory
+Among the important contributions, Rodrigues \textit{et al.} \cite{rodrigues2011active} have studied active learning of relational action model whose dynamics is however not compatible with BRNs.
+Bonneau \textit{et al.} \cite{bonneau2006inferelator} have developed a learning algorithm based on regression but with the limit on the size of clusters.
+Opgen-Rhein \textit{et al.} \cite{opgen2007correlation} have studied the learning using correlation coefficients, but their resulting regulatory networks are undirected. 
+Ribeiro \textit{et al.} have designed LFIT-based (Learning From Interpretation Transitions) learning methods \cite{ribeiro2015learning,ribeiro2018learning,ribeiro2017inductive} but these approaches cannot deal with noisy or imprecise inputs.
+
+Here we introduce some basic ideas of LFIT which will be of help in Chapter \ref{chap:modelInference}.
+
+As for model revision, to our knowledge, model revision based on dynamical properties has never been considered in the literature.
+One possible related work is cut set to be introduced after LFIT.
+In practice, cut sets are useful for proposing potential therapeutic targets that have been formally identified from the model for preventing the activation of a particular molecule.
+However, cut sets are not of direct help in model revision, as they inhibit certain states to be reached rather than modifying the system topology.
 
 \subsection{Learning From Interpretation Transitions (LFIT)}\label{sec:lfitSyn}
+LFIT aims at learning a logic program $P$ (definition in Section \ref{sec:logicProgram} on page \pageref{sec:logicProgram}) from a set of state transitions $E$ in the form $S_1\to S_2$ where $S_1,S_2$ are the states of the system.
+$E$ can be extracted from discretized time-series data.
+Here LFIT considers only synchronous updating scheme, hence we name it as ``synchronous LFIT''.
+
+Basically, the mechanics of synchronous LFIT is as follows: it starts from the most general logic program.
+It verifies if every element in $E$ is consistent with $P$.
+Obtained inconsistencies are classified as conflicts.
+Then LFIT tries to specialize the conflicting rules by adding atoms in their body to make them harder to be matched.
+When there is no conflict, $P$ can reproduce perfectly $E$.
+
+Algorithm \ref{alg:syncLFIT} in Appendix \ref{chap:algo} describes the details of synchronous LFIT.
+To prevent potential ambiguities, we denote assignment operation as $:=$. 
+
 
 \subsection{Cut set}\label{sec:cutset}
 
-Paulev\'e \textit{et al.} \cite{PAK13-CAV} have designed an algorithm for identifying sets of local states of components whose activity is necessary for the reachability of a given local state. 
-If all the local states from such a set are disabled in the model, the concerned reachability is impossible. 
-Those sets are referred to as cut sets and are computed from a particular abstract causality structure, so-called Graph of Local Causality, inspired from previous work and generalised here to finite automata networks.
-The extracted sets of local states form an under-approximation of the complete minimal cut sets of the dynamics: there may exist smaller or additional cut sets for the given reachability.
-
-
+Paulev\'e \textit{et al.} \cite{PAK13-CAV} have designed an algorithm for identifying sets of atoms whose activity is necessary for the reachability of a given local state. 
+If all the atoms from such a set are disabled in the model, the concerned reachability is impossible. 
+Those sets are referred to as cut sets and are computed from a particular abstract causality structure, so-called Local Causality Graph (detailed in Section \ref{sec:SLCG}).
+%The extracted sets of local states form an under-approximation of the complete minimal cut sets of the dynamics: there may exist smaller or additional cut sets for the given reachability.
+\textit{Via} such manipulation on the atoms, one may dynamical properties of a BRN.
+The detail of cut set is in Section \ref{sec:cutsetModelInfer}. 
 
 \section{R\'esum\'e}
 In this chapter, we presented mainly three main basic contents of the state of the art:

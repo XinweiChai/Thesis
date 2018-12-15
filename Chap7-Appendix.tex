@@ -23,6 +23,54 @@ PermReach and ASPReach can also be applied to multivalued Logic Programs.
 
 \begin{algorithm}[ht]
 \begin{algorithmic}
+\State \textbf{Input}: a set of annotated atoms $\mathcal{B}$ and a set of state transitions $E$
+\State \textbf{Output}: an NLP $P$
+\State Initialization: $P:= \{var^{val}\gets\varnothing|var^{val}\in \mathcal{B}\}$
+\While{$E\neq \varnothing$}
+    \State Pick $(I,J)\in E,E:= E \ \{(I,J)\}$
+    \For{$A\in J$}
+        \State $R_A^I:= (A\gets\underset{B_i\in I}{\bigwedge}B_i\land \underset{C_j\in (\mathcal{B}\setminus I)}{\bigwedge}\lnot C_j)$
+        \State $P:= \mathbf{Specialize}(P,R_A^I)$
+    \EndFor
+\EndWhile
+\Return $P$
+\end{algorithmic}
+\caption{Synchronous LFIT}\label{alg:syncLFIT}
+\end{algorithm}
+
+\begin{algorithm}[ht]
+\begin{algorithmic}
+\State Input: an NLP $P$ and a rule $R$
+\State Output: the maximal specialization of $P$ that does not subsumes $R$
+\State Initialization: $conflicts := \varnothing$
+\State{\textcolor{gray}{// Search rules that need to be specialized}}
+\For{$R_P\in P$}
+    \If{$b(R_P)\subseteq b(R)$}
+        \State $conflicts := conflicts\cup R_P$
+        \State $P := P \setminus R_P$
+    \EndIf
+\EndFor
+\State{\textcolor{gray}{// Revise the rules by least specialization}}
+\For{$R_c\in conflicts$}
+    \For{$l \in b(R)$}
+        \If{$l \not\in b(R_c)$ and $\not l \not\in b(R_c)$}
+            \State $R'_c=:= (h(R_c) \gets (b(R_c) \cup \not l))$
+            \If{$P$ does not subsumes $R_c$}
+                \State $P := P \setminus$ all rules subsumed by $R'_c$
+                \State $P := P \cup R'_c$
+            \EndIf
+        \EndIf
+    \EndFor
+\EndFor
+\Return{P}
+\end{algorithmic}
+\caption{\textbf{Specialize} in synchronous LFIT algorithm% in \cite{ribeiro2015learning}
+}\label{alg:specializeLFIT}
+\end{algorithm}
+
+
+\begin{algorithm}[ht]
+\begin{algorithmic}
 \State Input: an ABAN $AB=(\mathbf{\Sigma},\mathbf{L},\mathbf{T})$, an initial state $\alpha$, a target state $\omega$
 \State Output: SLCG $l=(V_{\mathrm{state}},V_{\mathrm{solution}}, E)$
 \State Initialization: 
@@ -610,6 +658,10 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
     \end{proof}
 \end{theorem}
 
+\begin{definition}[Rank in digraphs]
+Given a digraph $G=(V,E)$, the rank of 
+
+\end{definition}
 
 
 \chapter{Pure ASP reachability analyzer}
