@@ -1,4 +1,10 @@
 \chapter{Introduction}\label{chap:intro}
+\begin{mybox}
+Problematics, what is our work, why this work
+
+analysis and learning, challenges, contributions
+\end{mybox}
+
 \section{Context and Motivations}
 In the studies of concurrent systems, modeling is an inevitable topic.
 The modeling frameworks discussed in this thesis are all designed for biological use but they can be potentially useful in other domains, \textit{e.g.} robotics, human engineering.
@@ -61,11 +67,13 @@ However, the compatibility of asynchronous models is also a shortcoming as they 
 The exploration of state space leads to so-called state space explosion problem.
 To deal with such problem, Paulev\'e \textit{et al.} proposed Process Hitting framework and its related static model checker \cite{pauleve2012} and Folschette \textit{et al.} proposed Asynchronous Automata Network enriching model semantics \cite{folschette2015}.
 
-In this thesis, we mainly study \textbf{asynchronous discrete models} based on the models above.
+In this thesis, we mainly study \textbf{asynchronous discrete models} based on the models above. \textbf{what is the problem of the thesis}
 
-Apart from modelings, another important topic is model inference (or model learning).
+Apart from modelings, another important topic is model inference (or model learning). \textbf{(why this)}
 It turns the data coming from biological experiment into model parameters, given modeling framework.
 In this thesis, we focus on the LFIT-based method (Learning From Interpretation Transition) proposed by Robeiro \textit{et al.} \cite{ribeiro2015learning,ribeiro2018learning,ribeiro2017inductive} as it is used in our model revisers.
+
+\section{Problematic}
 
 
 \section{Contributions}\label{sec:contribution}
@@ -82,11 +90,9 @@ This thesis aims at solving the problems in the last sections by refining existi
 
 To solve both the state space explosion problem and the unsatisfying precision of pure static analysis, we developed two approaches based on static analysis with different weights on \textit{efficiency} and \textit{precision}.
 
-%\textbf{Model learners}
-
 \textbf{Model Revisers}
 
-As far as we know, model revision based on dynamical properties has never been considered in the literature.
+As far as we know, model revision based on reachability properties has never been considered in the literature.
 According to the problems of model inference above, we designed two algorithms:
 \begin{itemize}
     \item algorithm based on learning from \textbf{continuous} time-series data

@@ -181,11 +181,11 @@ In the worst case, SLCG contains all the local states of the ABAN.
 Given an ABAN $AB = (\Sigma,L,T)$, a global initial state $\alpha$ and a target local state $\omega$, SLCG $l= (V_{\mathrm{state}},V_{\mathrm{solution}},E)$ is the smallest recursive structure with $E \subseteq (V_{\mathrm{state}}\times V_{\mathrm{solution}})\cap (V_{\mathrm{solution}}\times V_{\mathrm{state}})$ which satisfies:
 \begin{eqnarray*}
     \omega&\in& V_{\mathrm{state}} \\
-    a_i\in V_{\mathrm{state}} &\Leftrightarrow& \{ (a_i, sol_{a_i}\mid head(sol_{a_i})=a_i)\}\subseteq E \\
-    sol_{a_i}\in V_{\mathrm{solution}}&\Leftrightarrow& \{ (sol_{a_i},\mathbf{V}(sol_{a_i}))| \mathbf{V}(sol_{a_i})=\varnothing \text{ \rm if } a_i\in \alpha,\\
-    &&\text{ \rm else }\mathbf{V}(sol_{a_i})\in body(sol_{a_i}) \}\subseteq E
+    a_i\in V_{\mathrm{state}} &\Leftrightarrow& \{ (a_i, A\to a_i)\}\subseteq E \\
+    A\to a_i\in V_{\mathrm{solution}}&\Leftrightarrow& \{ (A\to a_i,X)\mid X= \varnothing \text{ \rm if } a_i\in \alpha,\\
+    &&\text{else }  X= b_j, \forall b_j\in A\}\subseteq E
 \end{eqnarray*}
-where $V_{\mathrm{state}}\subseteq LS$ is a set of local states, $V_{\mathrm{solution}}\subseteq T$ is the a of solutions and $\mathbf{V}(sol_{a_i})$ is the set of required local states of $sol_{a_i}$.
+where $V_{\mathrm{state}}\subseteq LS$ is a set of local states, $V_{\mathrm{solution}}\subseteq T$ is the set of solutions and $X$ is one of the required local states of $A\to a_i$.
 \end{definition}
 
 It is worth noticing that every state node in $V_{\mathrm{state}}$ forms an \textbf{OR gate} as a local state $a$ is reachable if there exists one fireable transition with body $a$.

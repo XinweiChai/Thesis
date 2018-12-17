@@ -114,7 +114,7 @@ In some applications, the nodes are classified into incoming nodes, outgoing nod
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.7\textwidth]{BooleanNetwork.png}
-    \caption[Representations of Biological Topology]{4 ways of representing biological topology: A. regulatory network, B. Boolean functions, C. transition interpretation table, D. State transition graph}
+    \caption[Representations of Biological Topology]{Four ways of representing biological topology: A. regulatory network, B. Boolean functions, C. transition interpretation table, D. State transition graph}
     \label{fig:booleannetwork}
 \end{figure}
 
@@ -129,7 +129,7 @@ Transition interpretation table (C) and state transition graph (D) are straightf
 \end{itemize}
 One set of transition interpretations or one state transition graph could correspond to multiple set of Boolean functions.
 
-By the way, BNs can be translated to Normal Logic Programs (NLP) \cite{inoue2011logic}.
+In term of expressivity, BNs can be translated to Normal Logic Programs (NLP) \cite{inoue2011logic}.
 NLP provides a more dynamical representation and also for applying SAT techniques in the computation of point attractors of both synchronous and asynchronous semantics \cite{dubrova2011sat,harvey1997time}.
 
 \subsection{Normal Logic Program (NLP)}\label{sec:logicProgram}
@@ -218,7 +218,7 @@ Full arrows are regulations while the following dashed arrows are the actions un
 
 Nevertheless, PH cannot encode equivalently the conjunctions in Boolean functions like $f(a)=b\land c$.
 
-To overcome this drawback, we need to introduce a cooperative sort $bc$ to represent the conjunction of $b$ and $c$, with 8 actions $b_0\to bc_{10}\Rsh bc_{00}$, $b_0\to bc_{11}\Rsh bc_{01}$, $b_1\to bc_{00}\Rsh bc_{10}$, $b_1\to bc_{01}\Rsh bc_{11}$, $c_0\to bc_{01}\Rsh bc_{00}$, $c_0\to bc_{11}\Rsh bc_{10}$, $c_1\to bc_{00}\Rsh bc_{01}$, $c_0\to bc_{10}\Rsh bc_{11}$.
+To overcome this drawback, it is needed to introduce a cooperative sort $bc$ to represent the conjunction of $b$ and $c$, with 8 actions $b_0\to bc_{10}\Rsh bc_{00}$, $b_0\to bc_{11}\Rsh bc_{01}$, $b_1\to bc_{00}\Rsh bc_{10}$, $b_1\to bc_{01}\Rsh bc_{11}$, $c_0\to bc_{01}\Rsh bc_{00}$, $c_0\to bc_{11}\Rsh bc_{10}$, $c_1\to bc_{00}\Rsh bc_{01}$, $c_0\to bc_{10}\Rsh bc_{11}$.
 
 However, the size of this representation grows exponentially with the size of the conjunction and the behavior of cooperative sorts are not equivalent to that of BN. 
 Also, this encoding introduces extra reactions, producing a temporal shift between the presence of the reactants and the playability of the reaction.
@@ -465,10 +465,10 @@ $E$ can be extracted from discretized time-series data.
 Here LFIT considers only synchronous updating scheme, hence we name it as ``synchronous LFIT''.
 
 Basically, the mechanics of synchronous LFIT is as follows: it starts from the most general logic program.
-It verifies if every element in $E$ is consistent with $P$.
+It verifies whether every element in $E$ is consistent with $P$.
 Obtained inconsistencies are classified as conflicts.
 Then LFIT tries to specialize the conflicting rules by adding atoms in their body to make them harder to be matched.
-When there is no conflict, $P$ can reproduce perfectly $E$.
+When there is no conflict, $P$ can reproduce perfectly all the state transitions in $E$.
 
 Algorithm \ref{alg:syncLFIT} in Appendix \ref{chap:algo} describes the details of synchronous LFIT.
 To prevent potential ambiguities, we denote assignment operation as $:=$. 

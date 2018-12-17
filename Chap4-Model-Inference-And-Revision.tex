@@ -139,13 +139,21 @@ It is used to inhibit certain local states to make wanted local states unreachab
 However we cannot eliminates the states in a given network, what we can manipulate here are the transitions. 
 We present how cut set functions and then adapt it to our requirements.
 
-The computation of cut sets starts with $\mathbb{V}_0=\varnothing$.
-For different elements $n$ in the graph,  
+We first obtain the rank of a digraph SLCG (detailed in Appendix \ref{def:rank}) which refers to the parental relations.
+Child nodes cannot have higher rank than their parent nodes.
+Nodes in the same SCC (Strongly Connected Components) have the same rank.
+
+The computation of cut sets is recursive.
+We begin with the nodes of low rank, computing the valuation of each node, called $\mathsf{update}$ (defined below).
+The process stops when the valuation becomes saturated, \textit{i.e.} the valuation of every node does not change after $\mathsf{update}$.
+Valuation shows the global dependencies of reachability and saturated valuation is the cut set we want.
+
+For different elements $n$ in the SLCG,  
 
 \begin{itemize}
-\item if $n$ is a solution $\langle P,ls\rangle\in \mathbf{Sol}$, it is sufficient to prevent the reachability of any local state in $ls$ to cut $n$; therefore, the cut sets results from the union
+\item if $n$ is a solution $A\to a_i \in V_{\mathrm{solution}}$, it is sufficient to prevent the reachability of any local state in $a_i$ to cut $n$; therefore, the cut sets results from the union
 of the cut sets of the successor of $n$ (all local states).
-\item if $n$ is a local state $a_i$,  it is sufficient to cut all its successors (all solutions) to prevent the reachability of $a_i$ from any state in the context $\varsigma$. 
+\item if $n$ is a local state $a_i\in V_{\mathrm{state}}$, it is sufficient to cut all its successors (all solutions) to prevent the reachability of $a_i$ from $\alpha$. 
 In addition, if $a_i=\omega$, $\{a_i\}$ is added to the set of its cut sets.
 \end{itemize}
 
@@ -161,16 +169,21 @@ $\mathbb{V}_0$ refers to the initial valuation s.t $\forall n \in V_{\mathrm{sta
       \begin{cases}
             \zeta^N(\bigcup_{m\in n.next}\mathbb{V}(m))&\text{if } n\in\mathbf{Sol}\\
             \zeta^N(\prod_{m\in n.next}\mathbb{V}(m))&\text{if } n\in\mathbf{LS}\setminus\{\omega\}\\
-            \zeta^N(\{\{a\}\}\cup\prod_{m\in n.next}\mathbb{V}(m))&\text{if }n=\omega\\
+            \zeta^N(\{\{\omega\}\}\cup\prod_{m\in n.next}\mathbb{V}(m))&\text{if }n=\omega\\
       \end{cases}
 \end{equation}
 where $\zeta^N(\{e_1,\ldots,e_n\})\triangleq\{e_i\mid i\in[1,n]\land |e_i|\leq N\land\nexists j\in[1,n],j\neq i,e_j\subset e_i\}$, $e_i$ being sets, $\forall i\in[1,n]$.
 \end{definition}
 
+Algorithm \ref{alg:cut} describes the whole process, where $\mathsf{rank}(n)$ refers to the rank of $n$ in the SLCG.
+We associate a first valuation with the nodes of low rank, check if it changes the valuation of its parent node.
+If yes, we have to add the unsaturated node back to the set to be updated ($\mathcal{M}$).
+The algorithm terminates when valuation $\mathbb{V}$ becomes saturated, \textit{i.e.} the valuation becomes the cut set.
+
 \begin{algorithm}[ht]
 \begin{algorithmic}
 \State Input: an SLCG $l= (V_{\mathrm{state}},V_{\mathrm{solution}},E)$
-\State Output: 
+\State Output: cut set $\mathbb{V}$
 \State Initialization: $\mathcal{M}\gets V_{\mathrm{state}}\cap V_{\mathrm{solution}}$, $\mathbb{V}\gets\mathbb{V}_0=\varnothing$
 \While{$\mathcal{M}\neq\varnothing$}
         \State $n\gets\mathrm{argmin}_{m\in\mathcal{M}}\{\mathsf{rank}(m)\}$
@@ -186,15 +199,23 @@ where $\zeta^N(\{e_1,\ldots,e_n\})\triangleq\{e_i\mid i\in[1,n]\land |e_i|\leq N
 \caption{Cut set}\label{alg:cut}
 \end{algorithm}
 
-$\mathsf{rank}(n)$ refers to the topological rank of $n$.
-
-Example:
+We are going to run a tiny example on the mechanics of cut set.
 
 \begin{figure}[ht]
 \centering
 \input{cutset.tex}
-\caption{SLCG for the reachability of $a_1$}\label{fig:cut}
+\caption[Example of cut set]{ABAN and SLCG for the reachability of $a_1$}\label{fig:cut}
 \end{figure}
+
+\begin{example}\label{example:cutset}
+Figure \ref{fig:cut} shows an ABAN and its under approximate SLCG of $a_1$.
+The ABAN has transitions $T=\{\acm{b_1,c_1}{}{a_1},\acm{a_1}{}{c_1},\acm{b_0}{}{a_1},\acm{d_1}{}{b_0},\acm{b_1}{}{d_1}\}$, and initial state $\alpha= \langle a_0, ,b_1,c_1,d_0\rangle$, the target state is $\omega=a_1$.
+
+
+Table \ref{tab:cutset} shows the steps to obtain a saturated valuation.
+The cut set is $\{\{a_3\},\{b_1\},\{b_3,c_2\},\{c_2,d_2\}\}$, meaning that by inhibiting any of $\{a_3\}$ or $\{b_1\}$ or $\{b_3,c_2\}$ or $\{c_2,d_2\}$ leads to the unreachability of $a_1$.
+
+\end{example}
 
 \begin{table}[ht]
 \centering
@@ -202,34 +223,65 @@ Example:
  \hline 
  Node & $\mathsf{rank}$ & $\mathbb{V}$ \\ 
  \hline 
- $\langle b_1\to^*b_1,\varnothing\rangle$ & 1 & $\varnothing$ \\ 
+ $\varnothing$ (of $b_1$) & 1 & $\varnothing$ \\ 
  \hline 
  $b_1$ & 2 & $\{\{b_1\}\}$ \\ 
  \hline 
- $\langle d_0\to^*d_1,\{b_1\}\rangle$ & 3 & $\{\{b_1\}\}$ \\ 
+ $\{b_1\}\to d_1$ & 3 & $\{\{b_1\}\}$ \\ 
  \hline 
  $d_1$ & 4 & $\{\{b_1\},\{d_1\}\}$ \\ 
  \hline 
- $\langle b_1\to^*b_0,\{d_1\}\rangle$ & 5 & $\{\{b_1\},\{d_1\}\}$ \\ 
+ $\{d_1\}\to b_0$ & 5 & $\{\{b_1\},\{d_1\}\}$ \\ 
  \hline 
  $b_0$ & 6 & $\{\{b_0\},\{b_1\},\{d_1\}\}$ \\ 
  \hline 
- $\langle a_0\to^*a_1,\{b_0\}\rangle$ & 7 & $\{\{b_0\},\{b_1\},\{d_1\}\}$ \\ 
+ $\{b_0\}\to a_1$ & 7 & $\{\{b_0\},\{b_1\},\{d_1\}\}$ \\ 
  \hline 
- $\langle c_1\to^*c_1,\varnothing\rangle$ & 8 & $\varnothing$ \\ 
+ $\varnothing$ (of $c_1$) & 8 & $\varnothing$ \\ 
  \hline 
  $c_1$ & 9 & $\{\{c_1\}\}$ \\ 
  \hline 
- $\langle a_0\to^*a_1,\{b_1,c_1\}\rangle$ & 9 & $\{\{b_1\},\{c_1\}\}$ \\ 
+ $\{b_1,c_1\}\to a_1$ & 9 & $\{\{b_1\},\{c_1\}\}$ \\ 
  \hline 
  $a_1$ & 9 & $\{\{a_1\},\{b_1\},\{b_0,c_1\},\{c_1,d_1\}\}$ \\ 
  \hline 
- $\langle c_0\to^*c_1,\{a_1\}\rangle$ & 9 & $\{\{a_1\},\{b_1\},\{b_0,c_1\},\{c_1,d_1\}\}$ \\ 
+ $\{a_1\}\to c_1$ & 9 & $\{\{a_1\},\{b_1\},\{b_0,c_1\},\{c_1,d_1\}\}$ \\ 
  \hline 
  \end{tabular}
  \caption[Example of cut set]{Running result of algorithm \ref{alg:cut} on the LCG in Figure \ref{fig:cut}.
  In column of $\mathbb{V}$, it is sufficient to prevent the local states $\{\{a_3\},\{b_1\},\{b_3,c_2\},\{c_2,d_2\}\}$ in order to inhibit the reachability of $a_1$.}\label{tab:cutset}
 \end{table}
+
+Cut set inhibits certain \textit{local states} to prevent the reachability.
+However, it mismatches the operations of revision in this thesis as revision aims at adding/deleting transitions to change the dynamics properties.
+
+Here, we introduce the cut set w.r.t transitions.
+Given a cut set, we delete first the element containing target state, then replace every local state with its parent node.
+The last step is to delete identical sets.
+
+\begin{algorithm}[ht]
+\begin{algorithmic}
+\State Input: an SLCG $l= (V_{\mathrm{state}},V_{\mathrm{solution}},E)$, a cut set $\mathbb{V}$
+\State Output: cut set w.r.t transitions $\mathbb{V}_t$
+\State Initialization: $\mathbb{V}_t\gets \varnothing$
+\For{$S\in \mathbb{V}$}
+    \If{$S=\{\omega\}$}
+        \State $\mathbb{V}\gets \mathbb{V}\setminus \{\omega\}$
+    \EndIf
+    \State $S_t\gets \textbf{new } set(\varnothing)$
+    \For{$ls\in S$}
+        \State $S_t\gets S_t\cup \{ls.pred\}$
+    \EndFor
+    \State $\mathbb{V}_t\gets \mathbb{V}_t\cup \{S_t\}$
+\EndFor
+\State Delete identical elements in $\mathbb{V}_t$
+\State \Return{$\mathbb{V}_t$}
+\end{algorithmic}
+\caption{Cut set w.r.t transitions}\label{alg:cutsetTr}
+\end{algorithm}
+
+If we apply this Algorithm \ref{alg:cutsetTr} to the same example, Example \ref{example:cutset} and its cut set, resulted cut set w.r.t transitions is $\mathbb{V}_t= \{\{\acm{b_1,c_1}{}{a_1},\acm{b_0}{}{a_1}\},\{\acm{b_1,c_1}{}{a_1},\acm{d_1}{}{b_0}\},\{\acm{b_1,c_1}{}{a_1},\acm{b_1}{}{d_1}\}\}$.
+By deleting any set of transitions in the cut set w.r.t transitions, we can ensure the unreachability of $a_1$ if $a_1$ is not at initial state.
 
 \subsection{Completion by Over-Approximation}
 As stated in the previous chapter, verifying exact reachability is a hard task.
@@ -275,17 +327,21 @@ Update does not stop until the set of associated local states becomes stable.
 Given ABAN $AB = (\Sigma,L,T)$, a global initial state $\alpha$ and a target local state $\omega$, under-approximate SLCG $l= (V_{\mathrm{state}},V_{\mathrm{solution}},E)$ is the smallest recursive structure with $E \subseteq (V_{\mathrm{state}}\times V_{\mathrm{solution}})\cap (V_{\mathrm{solution}}\times V_{\mathrm{state}})$ which satisfies:
 \begin{eqnarray*}
     \omega&\in& V_{\mathrm{state}} \\
-    a_i\in V_{\mathrm{state}} &\Leftrightarrow& \{ (a_i, sol_{a_i}| head(sol_{a_i})=a_i)\}\subseteq E \\
-    sol_{a_i}\in V_{\mathrm{solution}}&\Leftrightarrow& \{ (sol_{a_i},\mathbf{V}(sol_{a_i}))| \mathbf{V}(sol_{a_i})=\varnothing \text{ \rm if } a_i\in \alpha\land a_{1-i}\not\in V_{\mathrm{state}},\\
-    &&\text{ \rm else }\mathbf{V}(sol_{a_i})\in body(sol_{a_i}) \}\subseteq E
+    a_i\in V_{\mathrm{state}} &\Leftrightarrow& \{ (a_i, A\to a_i)\}\subseteq E \\
+    A\to a_i\in V_{\mathrm{solution}}&\Leftrightarrow& \{ (A\to a_i,X)\mid X= \varnothing \text{ \rm if } a_i\in \alpha\land a_{1-i}\not\in V_{\mathrm{state}},\\
+    &&\text{else }  X= b_j, \forall b_j\in A\}\subseteq E
+%    \omega&\in& V_{\mathrm{state}} \\
+%    a_i\in V_{\mathrm{state}} &\Leftrightarrow& \{ (a_i, sol_{a_i}| head(sol_{a_i})=a_i)\}\subseteq E \\
+%    sol_{a_i}\in V_{\mathrm{solution}}&\Leftrightarrow& \{ (sol_{a_i},\mathbf{V}(sol_{a_i}))| \mathbf{V}(sol_{a_i})=\varnothing \text{ \rm if } a_i\in \alpha\land a_{1-i}\not\in V_{\mathrm{state}},\\
+%    &&\text{ \rm else }\mathbf{V}(sol_{a_i})\in body(sol_{a_i}) \}\subseteq E
 \end{eqnarray*}
-where $V_{\mathrm{state}}\subseteq LS$ is a set of local states, $V_{\mathrm{solution}}\subseteq T$ is the a of solutions and $\mathbf{V}(sol_{a_i})$ is the set of required local states of $sol_{a_i}$. 
+where $V_{\mathrm{state}}\subseteq LS$ is a set of local states, $V_{\mathrm{solution}}\subseteq T$ is the set of solutions and $X$ is one of the required local states of $A\to a_i$. 
 \end{definition}
 
-If we compare the definition of under-approximation with Definition \ref{defSLCG} of over-approximation on page \pageref{defSLCG}, the difference lies in the condition of $\mathbf{V}(sol_{a_i})$. 
+If we compare the definition of under-approximation with Definition \ref{defSLCG} of over-approximation on page \pageref{defSLCG}, the difference lies in the condition of $X$. 
 The reasoning of over-approximation stops when certain automaton $a$ reaches the initial state. 
 However, to guarantee all the possible orders, we exige $a_i$ and $a_{1-i}$ are reachable from each other if they are both present in the under-approximate SLCG.
-The corresponding formula is $\mathbf{V}(sol_{a_i})=\varnothing \text{ \rm if } a_i\in \alpha\land a_{1-i}\not\in V_{\mathrm{state}}$.
+The corresponding formula is $X= \varnothing \text{ \rm if } a_i\in \alpha\land a_{1-i}\not\in V_{\mathrm{state}}$.
 
 The visualization of under-approximate SLCGs has a slight difference with the one of over-approximate SLCGs.
 $a_0\Rsh a_1$ means $a_1$ is to be reached \textit{via} $a_0$.
@@ -310,7 +366,7 @@ Figure \ref{Under1} shows the under-approximate SLCG of the reachability $a_1$.
 \begin{figure}[ht]
 \centering
 \input{figures/completionUnderLCG1.tex}
-\caption[Operations on SLCG(1)]{Step 1, under-approximation S of Figure \ref{ExUnder} studying the reachability of $a_1$ (small circles stand for solutions and squares stand for required local states). }\label{Under1}
+\caption[Operations on SLCG(1)]{Step 1, under-approximation SLCG of Figure \ref{ExUnder} studying the reachability of $a_1$ (small circles stand for solutions and squares stand for required local states). }\label{Under1}
 \end{figure}
 
 In Figure \ref{Under2}, according to candidate regulation ${(d,c,-)}\in R$, transition \ac{d_1}{c_0}{c_1} is added.
