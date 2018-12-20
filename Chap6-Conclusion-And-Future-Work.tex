@@ -1,13 +1,76 @@
-\chapter{Conclusion and Future Work}\label{chap:conclusion}
-Work done:
+\chapter{Conclusion and Outlooks}\label{chap:conclusion}
+\begin{mybox}
+We will recap in this chapter what have been discussed during this thesis and propose some possible future work.
+We answered the two questions in Section~\ref{sec:problemStatement}, how to analyze the reachability efficiently and precisely (Chapter~\ref{chap:refinement}) and how to build a model by given time series data and reachability information (Chapter~\ref{chap:modelInference}).
+
+\end{mybox}
+
+
+Increasing amount of data, need to extract knowledge, application in biological engineering (gene knock-off/down  knock-in), pharmaceutics, Molecularly Targeted Therapy
+
+Robotics, ensure system safety and robustness, simulation.
+
+Difficulty
+
+Model-checking and revision is the KEY to understanding then control complex systems 
+
+Modelings in systems biology, the usage of asynchronicity and discretization
+
+The importance of model construction (model learning) and analysis (model checking)
+    
+A story about how I introduced all these contents in this thesis 
+
+\section{Contributions}
+
+Simplified model based on the work of Paulev\'e et al.
+In the same way, our analysis focuses on an over-approximation of the system dynamics 
+the condition of under-approximation is too strict.
+What is the complexity?
+We get some interesting properties.
+Two model checkers based on pure static analysis
 \begin{itemize}
+    \item PermReach
+    \item ASPreach
+    
+    combine static analysis and Answer Set Programming for a good performance on both criteria.
+ASPReach performs normally on models with $1000$ components while traditional model checkers fail to compute and static analyzer Pint also fails to give conclusive results on certain instances.
+\end{itemize}
+
+Some discussion of the benchmark (to be done)
+
+We understand the way towards efficiency and precision is probably hybrid analysis.
+
+Two model learning/revision techniques based on reachability analysis, covering the incapability of taking background knowledge into account
+\begin{itemize}
+    \item CRAC
+    \item M2RIT
+    
+    we strengthen the capability of LFIT framework to the learning of Boolean asynchronous systems in the form of logic programs.
+    
+    Yamamoto et al.~\cite{yamamoto2014completing} Completing SBGN-AF networks by logic-based hypothesis finding is a study on STATIC data, what we have done
+\end{itemize}
+
+
+Limitations: not theoretical conclusive (explanation, heuristic approach, with risks of failure), sensitive to noise, need more knowledge on the of non-cooperative elements.
+Need a LOT of studies to prove the CAUSALITY instead of Correlation/Consistency
+
+
+Work done:
+
+\begin{itemize}
+    \item reachability in models containing transitions of different delays
     \item Studied different modeling frameworks and semantics
     \item Investigated several model inference approach
     \item Two reachability analyzers
     \item Cooperation with model learning approaches
 \end{itemize}
 
-Future work:
+\section{Future Work}
+
+and why:
 \begin{itemize}
     \item More applications to biology
+    \item We are now considering the incorporation of heuristic, like the work of \cite{PRNs-TCS18}, to improve the performance of our approach regarding runtime.
+    \item However, our algorithm does not guarantee the minimal revision of the logic program.
+As future works, considering the metric for minimal revision and designing a related algorithm will be interesting.
 \end{itemize}

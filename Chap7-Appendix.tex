@@ -2,10 +2,10 @@
 \section{Transformation from BNs to ABANs}\label{appendix:trans}
 
 Given Boolean functions $v_i(t+1)=f_i(\mathbf{V}_i)$, with $\mathbf{V}_i$ the set of participating variables among $v_1(t),\cdots,v_n(t)$.
-Boolean functions could be transformed to equivalent CNF (conjunctive normal form) and DNF (disjunctive normal form) if the length of Boolean functions is limited to $O(1)$ \cite{miltersen2005converting} which is often the case.
+Boolean functions could be transformed to equivalent CNF (conjunctive normal form) and DNF (disjunctive normal form) if the length of Boolean functions is limited to $O(1)$~\cite{miltersen2005converting} which is often the case.
 
 \begin{proposition}[Transformation from BN to ABAN]
-Given a BN $G_B=(V,F)$, with its functions in CNF form $v^i(t+1)=A_1\land\ldots A_j \ldots\land A_n$ and DNF form $v^i(t+1)=A'_1\lor\ldots A_k\ldots\lor A'_m$, an equivalent ABAN $AB$ has transitions $A_j\to v^i_1$ and $\lnot A_k\to v^i_0$ where $A_j$ are disjunctions and $A'_K$ are conjunctions.
+Given a BN $G_B=(V,F)$, with its functions in CNF form $v^i(t+1)=A_1\land\ldots A_j \ldots\land A_n$ and DNF form $v^i(t+1)=A'_1\lor\ldots A_k\ldots\lor A'_m$, an equivalent ABAN $\mathbb{A}$ has transitions $A_j\to v^i_1$ and $\lnot A_k\to v^i_0$ where $A_j$ are disjunctions and $A'_K$ are conjunctions.
 \end{proposition}
 
 \begin{example}
@@ -64,30 +64,30 @@ PermReach and ASPReach can also be applied to multivalued Logic Programs.
 \EndFor
 \Return{P}
 \end{algorithmic}
-\caption{\textbf{Specialize} in synchronous LFIT algorithm% in \cite{ribeiro2015learning}
+\caption{\textbf{Specialize} in synchronous LFIT algorithm% in~\cite{ribeiro2015learning}
 }\label{alg:specializeLFIT}
 \end{algorithm}
 
 
 \begin{algorithm}[ht]
 \begin{algorithmic}
-\State Input: an ABAN $AB=(\mathbf{\Sigma},\mathbf{L},\mathbf{T})$, an initial state $\alpha$, a target state $\omega$
-\State Output: SLCG $l=(V_{\mathrm{state}},V_{\mathrm{solution}}, E)$
+\State Input: an ABAN $\mathbb{A}=(\Sigma,T)$, an initial state $\alpha$, a target state $\omega$
+\State Output: SLCG $l=(V_{\mathrm{state}},V_{\mathrm{sol}}, E)$
 \State Initialization: 
-$Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution}}\gets \varnothing$, $E\gets \varnothing$
+$Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{sol}}\gets \varnothing$, $E\gets \varnothing$
 \While{$Ls\neq \varnothing$}
     \State $Ls=Ls\setminus V_{\mathrm{state}}$
 	\For{$a_i\in Ls$}
 		\State $Ls\gets Ls\setminus \{a_i\}$
 		\If{$a_i\in \alpha$}
 			%\State $a_i{\rm .next}=sol_{a_i}$
-			%\State $V_{\mathrm{solution}}\gets V_{\mathrm{solution}}\cup \{(a_i,\varnothing)\} $
+			%\State $V_{\mathrm{sol}}\gets V_{\mathrm{sol}}\cup \{(a_i,\varnothing)\} $
 			\State $E\gets E\cup \{(a_i,\varnothing)\} $
             %\State $sol_{a_i}{\rm .next}=\varnothing$
     	\Else
     	    \State{\textcolor{gray}{// Choose the transitions reaching $a_i$}}
     		\For{$sol=A\to a_i\in \mathbf{T}$}
-    		    \State $V_{\mathrm{solution}}\gets V_{\mathrm{solution}}\cup \{sol\}$
+    		    \State $V_{\mathrm{sol}}\gets V_{\mathrm{sol}}\cup \{sol\}$
     		    \State $E\gets E\cup \{(a_i,sol)\} $
     			%\State $a_i{\rm .next}\gets a_i{\rm .next}\cup sol$
     			\State $V_{\mathrm{state}}\gets V_{\mathrm{state}}\cup {A}$
@@ -98,21 +98,21 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
     			\State $Ls\gets Ls\cup A$
                 \State $V_{\mathrm{state}}\gets V_{\mathrm{state}}\cup Ls$
     		\EndFor
-    		\State$V_{\mathrm{solution}}\gets V_{\mathrm{solution}}\cup a_i{\rm .next}$           
+    		\State$V_{\mathrm{sol}}\gets V_{\mathrm{sol}}\cup a_i{\rm .next}$           
     	\EndIf
 	\EndFor
 \EndWhile
-\State\Return{$(V_{\mathrm{state}},V_{\mathrm{solution}},E)$}
+\State\Return{$(V_{\mathrm{state}},V_{\mathrm{sol}},E)$}
 \end{algorithmic}
 \caption{Construction of SLCG (over-approximation)}\label{AlgConstructLCG}
 \end{algorithm}
 
 \begin{algorithm}[ht]
 \begin{algorithmic}
-\State Input: an ABAN $AB=(\mathbf{\Sigma},\mathbf{L},\mathbf{T})$, an initial state $\alpha$, a target state $\omega$
-\State Output: SLCG $l=(V_{\mathrm{state}},V_{\mathrm{solution}}, E)$
+\State Input: an ABAN $\mathbb{A}=(\Sigma,T)$, an initial state $\alpha$, a target state $\omega$
+\State Output: SLCG $l=(V_{\mathrm{state}},V_{\mathrm{sol}}, E)$
 \State Initialization: 
-$Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution}}\gets \varnothing$, $E\gets \varnothing$, $rev\gets \varnothing$
+$Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{sol}}\gets \varnothing$, $E\gets \varnothing$, $rev\gets \varnothing$
 \While{$Ls\neq \varnothing$}
     \State $Ls=Ls\setminus V_{\mathrm{state}}$
 	\For{$a_i\in Ls$}
@@ -128,7 +128,7 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
     	    \EndIf
     	    \State{\textcolor{gray}{// Choose the transitions reaching $a_i$}}
     		\For{$sol=A\to a_i\in \mathbf{T}$}
-    		    \State $V_{\mathrm{solution}}\gets V_{\mathrm{solution}}\cup \{sol\}$
+    		    \State $V_{\mathrm{sol}}\gets V_{\mathrm{sol}}\cup \{sol\}$
     		    \State $E\gets E\cup \{(a_i,sol)\} $
     			%\State $a_i{\rm .next}\gets a_i{\rm .next}\cup sol$
     			\State $V_{\mathrm{state}}\gets V_{\mathrm{state}}\cup {A}$
@@ -139,11 +139,11 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
     			\State $Ls\gets Ls\cup A$
                 \State $V_{\mathrm{state}}\gets V_{\mathrm{state}}\cup Ls$
     		\EndFor
-    		\State$V_{\mathrm{solution}}\gets V_{\mathrm{solution}}\cup a_i{\rm .next}$           
+    		\State$V_{\mathrm{sol}}\gets V_{\mathrm{sol}}\cup a_i{\rm .next}$           
     	\EndIf
 	\EndFor
 \EndWhile
-\State\Return{$(V_{\mathrm{state}},V_{\mathrm{solution}},E)$}
+\State\Return{$(V_{\mathrm{state}},V_{\mathrm{sol}},E)$}
 \end{algorithmic}
 \caption{Construction of SLCG (under-approximation)}\label{AlgConstructLCGUnder}
 \end{algorithm}
@@ -183,13 +183,13 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 
 %\begin{algorithm}[ht]
 %\begin{algorithmic}
-%\State Input: an SLCG $l=(V_{\mathrm{state}},V_{\mathrm{solution}}, E)$, initial state $\alpha$, target state $\omega$, an integer $k$
+%\State Input: an SLCG $l=(V_{\mathrm{state}},V_{\mathrm{sol}}, E)$, initial state $\alpha$, target state $\omega$, an integer $k$
 %\State Output: reachability $r$
 %\State \textcolor{gray}{// 1) Try to break cycles}%\label{delete_cycle_begin}
-%\For{each $ scc=(V'_{\mathrm{state}},V'_{\mathrm{solution}}) \in \mathrm{SCC}(l)$ with $V'_{\mathrm{state}} \subseteq V_{\mathrm{state}},V'_{\mathrm{solution}}\subseteq V_{\mathrm{solution}}$}
+%\For{each $ scc=(V'_{\mathrm{state}},V'_{\mathrm{solution}}) \in \mathrm{SCC}(l)$ with $V'_{\mathrm{state}} \subseteq V_{\mathrm{state}},V'_{\mathrm{solution}}\subseteq V_{\mathrm{sol}}$}
 %    \If{$scc$ has less than one incoming edge}
 %        \For{each $v \in V'_{\mathrm{state}}$}
-%            \If {$\exists(v,v')\in E, v' \in (V_{\mathrm{solution}} \setminus V'_{\mathrm{solution}})$}
+%            \If {$\exists(v,v')\in E, v' \in (V_{\mathrm{sol}} \setminus V'_{\mathrm{solution}})$}
 %                \State $E\gets E\setminus \{(v,v'')|v''\in V'_{\mathrm{solution}},(v,v'')\in E\}$
 %            \EndIf
 %        \EndFor
@@ -202,8 +202,8 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 %    \For {$v \in V_{\mathrm{state}}$}
 %        \If{$\not\exists(v,v')\in E$}
 %            \State $V_{\mathrm{state}} \gets V_{\mathrm{state}}\setminus \{v\}$; $E\gets E\setminus \{ (v'',v)\in E\}$
-%            \State $E\gets E\setminus \{ (v'',sol)\in E | sol \in \{sol = (A \rightarrow a) \in V_{\mathrm{solution}} | v \in A\}\}$
-%            \State $V_{\mathrm{solution}} \gets V_{\mathrm{solution}}\setminus \{sol = (A \rightarrow a) \in V_{\mathrm{solution}} | v \in A\}$
+%            \State $E\gets E\setminus \{ (v'',sol)\in E | sol \in \{sol = (A \rightarrow a) \in V_{\mathrm{sol}} | v \in A\}\}$
+%            \State $V_{\mathrm{sol}} \gets V_{\mathrm{sol}}\setminus \{sol = (A \rightarrow a) \in V_{\mathrm{sol}} | v \in A\}$
 %            \State pruned = true
 %        \EndIf
 %    \EndFor \label{prune_end}
@@ -215,7 +215,7 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 %
 %\State \textcolor{gray}{// 4) main search loop} %\label{main_loop_begin}
 %\For{each $i$ in $1\ldots k$}
-%    \State $l'=(V'_{\mathrm{state}}, V'_{\mathrm{solution}},E')\gets(V_{\mathrm{state}}, V_{\mathrm{solution}},E)$
+%    \State $l'=(V'_{\mathrm{state}}, V'_{\mathrm{solution}},E')\gets(V_{\mathrm{state}}, V_{\mathrm{sol}},E)$
 %    \For{$v \in V'_{state}$} \textcolor{gray}{// Treat each OR gates}
 %        \State pick a random element $(v,v') \in E'$
 %        \State $E'\gets E' \setminus  \{(v,v'') \in E'| v''\neq v'\}$
@@ -253,13 +253,13 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 \begin{algorithm}
   \caption{PermReach}\label{alg:perm}
   \begin{algorithmic}[1]
-   \State Input: an SLCG $l=(V_{\mathrm{state}},V_{\mathrm{solution}}, E)$, initial state $\alpha$, target state $\omega$, an integer $k$
+   \State Input: an SLCG $l=(V_{\mathrm{state}},V_{\mathrm{sol}}, E)$, initial state $\alpha$, target state $\omega$, an integer $k$
 \State Output: reachability $r$
 \State \textcolor{gray}{// 1) Try to break cycles}%\label{delete_cycle_begin}
-\For{each $ scc=(V'_{\mathrm{state}},V'_{\mathrm{solution}}) \in \mathrm{SCC}(l)$ with $V'_{\mathrm{state}} \subseteq V_{\mathrm{state}},V'_{\mathrm{solution}}\subseteq V_{\mathrm{solution}}$}
+\For{each $ scc=(V'_{\mathrm{state}},V'_{\mathrm{solution}}) \in \mathrm{SCC}(l)$ with $V'_{\mathrm{state}} \subseteq V_{\mathrm{state}},V'_{\mathrm{solution}}\subseteq V_{\mathrm{sol}}$}
     \If{$scc$ has less than one incoming edge}
         \For{each $v \in V'_{\mathrm{state}}$}
-            \If {$\exists(v,v')\in E, v' \in (V_{\mathrm{solution}} \setminus V'_{\mathrm{solution}})$}
+            \If {$\exists(v,v')\in E, v' \in (V_{\mathrm{sol}} \setminus V'_{\mathrm{solution}})$}
                 \State $E\gets E\setminus \{(v,v'')|v''\in V'_{\mathrm{solution}},(v,v'')\in E\}$
             \EndIf
         \EndFor
@@ -272,8 +272,8 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
     \For {$v \in V_{\mathrm{state}}$}
         \If{$\not\exists(v,v')\in E$}
             \State $V_{\mathrm{state}} \gets V_{\mathrm{state}}\setminus \{v\}$; $E\gets E\setminus \{ (v'',v)\in E\}$
-            \State $E\gets E\setminus \{ (v'',sol)\in E | sol \in \{sol = (A \rightarrow a) \in V_{\mathrm{solution}} | v \in A\}\}$
-            \State $V_{\mathrm{solution}} \gets V_{\mathrm{solution}}\setminus \{sol = (A \rightarrow a) \in V_{\mathrm{solution}} | v \in A\}$
+            \State $E\gets E\setminus \{ (v'',sol)\in E | sol \in \{sol = (A \rightarrow a) \in V_{\mathrm{sol}} | v \in A\}\}$
+            \State $V_{\mathrm{sol}} \gets V_{\mathrm{sol}}\setminus \{sol = (A \rightarrow a) \in V_{\mathrm{sol}} | v \in A\}$
             \State pruned = true
         \EndIf
     \EndFor %\label{prune_end}
@@ -296,7 +296,7 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
       \algrestore{myalg}
 \State \textcolor{gray}{// 4) main search loop} %\label{main_loop_begin}
 \For{each $i$ in $1\ldots k$}
-    \State $l'=(V'_{\mathrm{state}}, V'_{\mathrm{solution}},E')\gets(V_{\mathrm{state}}, V_{\mathrm{solution}},E)$
+    \State $l'=(V'_{\mathrm{state}}, V'_{\mathrm{solution}},E')\gets(V_{\mathrm{state}}, V_{\mathrm{sol}},E)$
     \For{$v \in V'_{state}$} \textcolor{gray}{// Treat each OR gates}
         \State pick a random element $(v,v') \in E'$
         \State $E'\gets E' \setminus  \{(v,v'') \in E'| v''\neq v'\}$
@@ -332,13 +332,13 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 
 \begin{algorithm}[htb]
 \begin{algorithmic}[1]
-\State Input: SLCG $l=(V_{\mathrm{state}},V_{\mathrm{solution}}, E)$, an integer $k$
+\State Input: SLCG $l=(V_{\mathrm{state}},V_{\mathrm{sol}}, E)$, an integer $k$
 \State Output: reachability $r$ and a trajectory $t$
 \State Compute SCCs, classify them into $\mathrm{SCC1}(l)$ with at most 1 incoming edge and $\mathrm{SCC2}(l)$ otherwise
 \State \textcolor{gray}{// 1) Break all cycles and prune useless branches}\label{delete_cycle_begin}
-\For{each $(V'_{\mathrm{state}} \subseteq V_{\mathrm{state}},V'_{\mathrm{solution}} \subseteq V_{\mathrm{solution}}) \in \mathrm{SCC1}(l)$}
+\For{each $(V'_{\mathrm{state}} \subseteq V_{\mathrm{state}},V'_{\mathrm{solution}} \subseteq V_{\mathrm{sol}}) \in \mathrm{SCC1}(l)$}
     \For{each $v \in V'_{\mathrm{state}}$}
-    \If {$\exists(v,v')\in E, v' \in (V_{\mathrm{solution}} \setminus V'_{\mathrm{solution}})$}
+    \If {$\exists(v,v')\in E, v' \in (V_{\mathrm{sol}} \setminus V'_{\mathrm{solution}})$}
         \State $E\gets E\setminus \{(v,v'')|v''\in V'_{\mathrm{solution}},(v,v'')\in E\}$
     \EndIf
 \EndFor
@@ -350,8 +350,8 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
     \For {$v \in V_{\mathrm{state}}$}
         \If{$\not\exists(v,v')\in E$}
             \State $V_{\mathrm{state}} \gets V_{\mathrm{state}}\setminus \{v\}$; $E\gets E\backslash \{ (v'',v)\in E\}$
-            \State $E\gets E\backslash \{ (v'',sol)\in E | sol \in \{sol = (A \rightarrow a) \in V_{\mathrm{solution}} | v \in A\}\}$
-            \State $V_{\mathrm{solution}} \gets V_{\mathrm{solution}}\backslash \{sol = (A \rightarrow a) \in V_{\mathrm{solution}} | v \in A\}$
+            \State $E\gets E\backslash \{ (v'',sol)\in E | sol \in \{sol = (A \rightarrow a) \in V_{\mathrm{sol}} | v \in A\}\}$
+            \State $V_{\mathrm{sol}} \gets V_{\mathrm{sol}}\backslash \{sol = (A \rightarrow a) \in V_{\mathrm{sol}} | v \in A\}$
             \State pruned = \textbf{True}
         \EndIf
     \EndFor \label{prune_end}
@@ -363,7 +363,7 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 
 \State \textcolor{gray}{// 4) main search loop} \label{main_loop_begin}
 \For{each $i$ in $1\ldots k$}
-    \State $l'=(V'_{\mathrm{state}}, V'_{\mathrm{solution}},E')\gets(V_{\mathrm{state}}, V_{\mathrm{solution}},E)$ 
+    \State $l'=(V'_{\mathrm{state}}, V'_{\mathrm{solution}},E')\gets(V_{\mathrm{state}}, V_{\mathrm{sol}},E)$ 
     \For{$v \in V'_{state}$} \textcolor{gray}{// Treat each OR gates}
         \State pick a random element $(v,v') \in E'$
         \State $E'\gets E' \backslash  \{(v,v'') \in E'| v''\neq v'\}$ with $\nexists i\in \mathrm{SCC2}(l)$ and $i\in E'$
@@ -381,10 +381,10 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 \begin{algorithm}[ht]
 \caption{Completion by over-approximation}\label{algComOver}
 \begin{algorithmic}
-\State Input: an incomplete ABAN $AB=(\Sigma, L,T)$, set of candidate regulations $R$, targeted reachability $(\alpha,\omega)$
+\State Input: an incomplete ABAN $\mathbb{A}=(\Sigma,T)$, set of candidate regulations $R$, targeted reachability $(\alpha,\omega)$
 \State Output: Completed set $CS$ %or $\varnothing$ if there is no solution
 \State Initialization: $rev\gets\{(\{\omega\},\{\omega\},\varnothing)\}$, $CS\gets \varnothing$
-\State Construct SLCG $l=SLCG(\alpha,\omega)=(V_{\mathrm{state}},V_{\mathrm{solution}}, E)$ by Algorithm \ref{AlgConstructLCG}
+\State Construct SLCG $l=SLCG(\alpha,\omega)=(V_{\mathrm{state}},V_{\mathrm{sol}}, E)$ by Algorithm~\ref{AlgConstructLCG}
 \If {$reach(\alpha,\omega)$}
     \Return{$(\mathbf{True},\varnothing)$}
 \EndIf
@@ -429,7 +429,7 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 \State Output: Completed set $CS$ %or $\varnothing$ if there is no solution
 \State Initialization: $rev\gets\{(\{\omega\},\{\omega\},\varnothing)\}$, $CS\gets \varnothing$, $CS_{iter}\gets \varnothing$
 \Do
-\State SLCG $l=SLCG(\alpha,\omega)=(V_{\mathrm{state}},V_{\mathrm{solution}}, E)$ by Algorithm \ref{AlgConstructLCGUnder}
+\State SLCG $l=SLCG(\alpha,\omega)=(V_{\mathrm{state}},V_{\mathrm{sol}}, E)$ by Algorithm~\ref{AlgConstructLCGUnder}
 \While {$rev\neq \varnothing$}
     \For {$i=(ls,fr,tr)\in rev$}
         \State $rev\gets rev \setminus\{i\}$
@@ -524,13 +524,13 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 \end{algorithm}
 %\begin{algorithm}[htb]
 %\begin{algorithmic}[1]
-%\State Input: LCG $l=(V_{\mathrm{state}},V_{\mathrm{solution}}, E)$, an integer $k$
+%\State Input: LCG $l=(V_{\mathrm{state}},V_{\mathrm{sol}}, E)$, an integer $k$
 %\State Output: reachability $r$ and a trajectory $t$
 %\State Compute SCCs, classify them into $\mathrm{SCC1}(l)$ with at most 1 incoming edge and $\mathrm{SCC2}(l)$ otherwise
 %\State \textcolor{gray}{// 1) Break all cycles and prune useless branches}%\label{delete_cycle_begin}
-%\For{each $(V'_{\mathrm{state}} \subseteq V_{\mathrm{state}},V'_{\mathrm{solution}} \subseteq V_{\mathrm{solution}}) \in \mathrm{SCC1}(l)$}
+%\For{each $(V'_{\mathrm{state}} \subseteq V_{\mathrm{state}},V'_{\mathrm{solution}} \subseteq V_{\mathrm{sol}}) \in \mathrm{SCC1}(l)$}
 %    \For{each $v \in V'_{\mathrm{state}}$}
-%    \If {$\exists(v,v')\in E, v' \in (V_{\mathrm{solution}} \setminus V'_{\mathrm{solution}})$}
+%    \If {$\exists(v,v')\in E, v' \in (V_{\mathrm{sol}} \setminus V'_{\mathrm{solution}})$}
 %        \State $E\gets E\backslash \{(v,v'')|v''\in V'_{\mathrm{solution}},(v,v'')\in E\}$
 %    \EndIf
 %\EndFor
@@ -542,8 +542,8 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 %    \For {$v \in V_{\mathrm{state}}$}
 %        \If{$\not\exists(v,v')\in E$}
 %            \State $V_{\mathrm{state}} \gets V_{\mathrm{state}}\backslash \{v\}$; $E\gets E\backslash \{ (v'',v)\in E\}$
-%            \State $E\gets E\backslash \{ (v'',sol)\in E | sol \in \{sol = (A \rightarrow a) \in V_{\mathrm{solution}} | v \in A\}\}$
-%            \State $V_{\mathrm{solution}} \gets V_{\mathrm{solution}}\backslash \{sol = (A \rightarrow a) \in V_{\mathrm{solution}} | v \in A\}$
+%            \State $E\gets E\backslash \{ (v'',sol)\in E | sol \in \{sol = (A \rightarrow a) \in V_{\mathrm{sol}} | v \in A\}\}$
+%            \State $V_{\mathrm{sol}} \gets V_{\mathrm{sol}}\backslash \{sol = (A \rightarrow a) \in V_{\mathrm{sol}} | v \in A\}$
 %            \State pruned = \textbf{True}
 %        \EndIf
 %    \EndFor %\label{prune_end}
@@ -555,7 +555,7 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 %
 %\State \textcolor{gray}{// 4) main search loop} %\label{main_loop_begin}
 %\For{each $i$ in $1\ldots k$}
-%    \State $l'=(V'_{\mathrm{state}}, V'_{\mathrm{solution}},E')\gets(V_{\mathrm{state}}, V_{\mathrm{solution}},E)$ 
+%    \State $l'=(V'_{\mathrm{state}}, V'_{\mathrm{solution}},E')\gets(V_{\mathrm{state}}, V_{\mathrm{sol}},E)$ 
 %    \For{$v \in V'_{state}$} \textcolor{gray}{// Treat each OR gates}
 %        \State pick a random element $(v,v') \in E'$
 %        \State $E'\gets E' \backslash  \{(v,v'') \in E'| v''\neq v'\}$ with $\nexists i\in \mathrm{SCC2}(l)$ and $i\in E'$
@@ -589,24 +589,24 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
 \end{theorem}
 
 \begin{theorem}[Termination and correctness of ASPReach] ~
-    Let $l=(V_{\mathrm{state}}, V_{\mathrm{solution}}, E)$ be an SLCG with initial state $\alpha$ and target local state $\omega$ and $k > 0$ be an integer.
+    Let $l=(V_{\mathrm{state}}, V_{\mathrm{sol}}, E)$ be an SLCG with initial state $\alpha$ and target local state $\omega$ and $k > 0$ be an integer.
     The call \textit{ASPReach(l,k)} terminates.\\
     $ASPReach(l,k)$=$(\mathbf{False},\varnothing)$ only if $\nexists t$ a trajectory in $l$ from $\alpha$ to $\omega$.\\
     $ASPReach(l,k)$=$(\mathbf{True},t)$ only if $\exists t$ a trajectory in $l$ from $\alpha$ to $\omega$.
     \begin{proof}
     
-        1: The algorithm starts by breaking all cycles of the LCG and according to Theorem \ref{th:break_cycle} it terminates and does not affect the reachability of $\alpha$ in $l$.
+        1: The algorithm starts by breaking all cycles of the SLCG and according to Theorem~\ref{th:break_cycle} it terminates and does not affect the reachability of $\alpha$ in $l$.
         
         2: Then all nodes of $V_{\mathrm{state}}$ and (resp. ${\mathrm{solution}}$) with no (resp. missing) outgoing edges are removed.
         Such nodes cannot be part of a trajectory leading to initial state $\alpha$ and thus this operation does not affect the reachability of $\alpha$ in $l$.
         The internal for loop of this operation iterates over $V_{\mathrm{state}}$ which is finite.
-        To continue looping, it requires one state deletion thus this operation will terminate atleast when $V_{\mathrm{state}}$ becomes $\varnothing$.
+        To continue looping, it requires one state deletion thus this operation will terminate at least when $V_{\mathrm{state}}$ becomes $\varnothing$.
         
-        Conclusion 1: $ASPReach(l,k)=\mathbf{False}$ only if $\nexists t$ a trajectory in $l$ from $\alpha$ to $v \in V_{\mathrm{solution}}$.
+        Conclusion 1: $ASPReach(l,k)=\mathbf{False}$ only if $\nexists t$ a trajectory in $l$ from $\alpha$ to $v \in V_{\mathrm{sol}}$.
         
         Conclusion 2: the call \textit{ASPReach(l,k)} terminates.
         
-        Conclusion 3: After this pre-processing, pseudo reachability is checked and according to \cite{pauleve2012}, it terminates and is correct.
+        Conclusion 3: After this pre-processing, pseudo reachability is checked and according to~\cite{pauleve2012}, it terminates and is correct.
         It is the only possibility for ASPReach to output $\mathbf{False}$.
         
         Conclusion 4: Stochastic search follows by randomly reducing each OR gate of $l$ to one of its edges to form $l'$.
@@ -619,13 +619,13 @@ $Ls\gets \{\omega\}$, $V_{\mathrm{state}}\gets\varnothing$, $V_{\mathrm{solution
         
         Furthermore when $ASPsolve(l')=(\mathbf{True},t)$, t is a trajectory of $l$ proving reachability of $\alpha$ in $l$ and it is the only possibility for ASPReach to output $\mathbf{True}$.
         
-        Conclusion 3: $ASPReach(l,k)=(\mathrm{\mathbf{True}},t)$ only if $\exists t$ a trajectory in $l$ from $\alpha$ to $v \in V_{\mathrm{solution}}$.
+        Conclusion 3: $ASPReach(l,k)=(\mathrm{\mathbf{True}},t)$ only if $\exists t$ a trajectory in $l$ from $\alpha$ to $v \in V_{\mathrm{sol}}$.
     \end{proof}
 \end{theorem}
 
 \begin{theorem}[ASPReach complexity]
-    Let $l=(V_{\mathrm{state}},V_{\mathrm{solution}}, E)$ be an LCG with initial state $\alpha$ and $k > 0$ be an integer.
-    Let $s=|V_{\mathrm{solution}}|$ be the number of target state of $l$.
+    Let $l=(V_{\mathrm{state}},V_{\mathrm{sol}}, E)$ be an SLCG with initial state $\alpha$ and $k > 0$ be an integer.
+    Let $s=|V_{\mathrm{sol}}|$ be the number of target state of $l$.
     Let $v = |V_{\mathrm{state}}|$ be the number of vertices of $l$.
     Let $e=|E|$ be the number of edges of $l$.
     The complexity of $ASPReach(l,k)$ is $O(v + s + e + (v+s) / 2 \times v \times e \times s + v^{2} \times e + v \times e + k \times (v \times e^{2} + 2^{v}))$ which is bound by $O(k \times 2^{v})$.
@@ -674,14 +674,14 @@ Given a digraph $G=(V,E)$, the rank of
     \begin{tabular}{c|c|c|c|c|c|c}
         Model-target & \#automata & ASP-Th & Pint & libddd & GINsim & ASPi-PH\\
         \hline
-        ERBB-whole & 20& 0m2.44s& out& 1m55.38s& 2m31.64s& 0m11.84s\\
+        ERBB-whole & 20& 2.4s& out& 1m55s& 2m32s& 12s\\
         \hline
-        ERBB-sub& 20& 0m2.61s& 0m0.03s& 1m54.96s& -& 0m5.02s\\
+        ERBB-sub& 20& 2.6s& 0.03s& 1m55s& -& 5s\\
         \hline
-        TCR-whole& 40& - &Inconc& out& out& 4m27.93s\\
+        TCR-whole& 40& - &Inconc& out& out& 4m28s\\
         \hline
-        TCR-sub& 40 &- &0m0.02s& out& -& 1m35.08s
+        TCR-sub& 40 &- &0.02s& out& -& 1m35s
     \end{tabular}
-    \caption[Performance of pure ASP method]{Compared performances of Rocca et al. method \cite{rocca2014asp} denoted by ASP-Th, Pint, libddd, GINsim and our new iterative method ASP-PH}
+    \caption[Performance of pure ASP method]{Compared performances of Rocca et al. method~\cite{rocca2014asp} denoted by ASP-Th, Pint, libddd, GINsim and our new iterative method ASP-PH}
     \label{tab:pureAsp}
 \end{table}
