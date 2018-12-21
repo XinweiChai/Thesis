@@ -373,7 +373,7 @@ The next step is to analyze an SLCG with only \textbf{AND gates}.
 We need to find a trajectory reaching all the components of the \textbf{AND gates} simultaneously.
 Usually one cannot achieve good conclusiveness and low complexity at the same time, that is why we propose two solutions for different needs of conclusiveness-complexity balance: Reachability via search in permutations (PermReach) which is a partial search and Reachability via Answer Set Programming (ASPReach) which is a exhaustive search.
 
-\subsection{Reachability via Permutations}
+\subsection{Reachability via Permutations}\label{sec:permreach}
 
 Before running into the definitions, we compare Example~\ref{example:unreach} and Example~\ref{example:order} with minor difference.
 
@@ -453,7 +453,7 @@ $reach(\alpha,a_1)$=\textbf{True} but \textbf{Inconclusive} is given by PermReac
 
 \textbf{Some algorithmic properties of PermReach}
 
-\subsection{Reachability via Answer Set Programming}
+\subsection{Reachability via Answer Set Programming}\label{sec:aspreach}
 
 As we have seen in the last section, PermReach is more conclusive than pure static analysis, but still fails in the cases where there are nested \textbf{AND gates} and the order of these \textbf{AND gates} influence the reachability.
 

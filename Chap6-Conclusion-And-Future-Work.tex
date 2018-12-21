@@ -5,45 +5,66 @@ We answered the two questions in Section~\ref{sec:problemStatement}, how to anal
 
 \end{mybox}
 
+With the increasing amount of biological data, the needs of analyzing, extracting knowledge and predicting system behaviors based on these data is becoming crucial.
+Modeling is one of the ways to answer all these needs by collecting, classifying, analyzing the common features of the data and make reasonable prediction.
 
-Increasing amount of data, need to extract knowledge, application in biological engineering (gene knock-off/down  knock-in), pharmaceutics, Molecularly Targeted Therapy
+The application of modeling in biological engineering can be diverse. 
+By analyzing the mechanics of a cell or a bacterium, one may locate the gene to be knocked-off or knocked-in in order to let the system perform his desired system behaviors;
+by analyzing the interaction between human body and medicine in molecular scale, one may ameliorate existing targeted therapies or design new ones;
+in pharmaceutics, a thorough understanding of bio-chemical reactions allows one to design new medicine or new synthesis processes.
 
-Robotics, ensure system safety and robustness, simulation.
+As also mentioned in the chapter of introduction, robotic models are also of importance.
+For a non black-box system, model checking is helpful to controlling the system, ensuring system safety and robustness.
 
-Difficulty
-
-Model-checking and revision is the KEY to understanding then control complex systems 
-
-Modelings in systems biology, the usage of asynchronicity and discretization
-
-The importance of model construction (model learning) and analysis (model checking)
-    
-A story about how I introduced all these contents in this thesis 
+In robotics, we prefer synchronous models as every move of a robot is programmed, the system parameters are usually accessible.
+However modelings in systems biology are different.
+Since the inner mechanics of biological systems are usually unknown, or partially known and biological systems have intrinsic non-determinism (\textit{e.g.} cell differentiation), 
+these two facts suggest us to consider a non-deterministic model.
+As discussed in Section~\ref{sec:semantics}, asynchronicity can nearly impose non-determinism.
+Moreover, to avoid the solution of differential equations and tolerate some noise, discretized models are preferred.
+In all, \textit{asynchronous  modelings} are used in the most of this thesis.
 
 \section{Contributions}
 
-Simplified model based on the work of Paulev\'e et al.
-In the same way, our analysis focuses on an over-approximation of the system dynamics 
-the condition of under-approximation is too strict.
-What is the complexity?
-We get some interesting properties.
-Two model checkers based on pure static analysis
+Based on the background of systems biology, our goal is to \textit{enrich and correct} the existing models with additional knowledge.
+To do so, we have to first develop the efficient model checkers to verify whether the model is consistent with qualitative properties such as reachability (Chapter~\ref{chap:refinement}).
+
+In Section~\ref{sec:modelchecking}, we stated that exact model checkers provide conclusive results of dynamic properties but the computational cost is unaffordable while the computational cost of abstract model checkers are acceptable but the results are not necessarily conclusive.
+
+With the previous work on the Asynchonous Automata Network (AAN) by Paulev\'e \textit{et al},
+we squeeze the application domain of AAN and simplified its semantics, called ABAN (Asynchonous Binary Automata Network).
+This semantic change is to give a possibility of making related reachability analyzer more conclusive.
+
+Our research focuses on a static analysis called \textit{over-approximation} of the system dynamics as this abstract method relies on only topological information of the model instead of simulation.
+We also proposed Simplified Local Causality Graph (SLCG) to visualize the static analysis on ABANs.
+The computation is efficient but still inconlusive.
+
+However, the result can be used in the refined analysis if it is not conclusive.
+%the condition of the adverse under-approximation is too strict.
+During the theoretical analysis of the reason of inconclusiveness of the over-approximation, we developed two model checkers to deal with the key components impeding conclusiveness.
+They are based on heuristic methods and pure static analysis:
 \begin{itemize}
-    \item PermReach
-    \item ASPreach
+    \item PermReach (Section~\ref{sec:permreach})
     
-    combine static analysis and Answer Set Programming for a good performance on both criteria.
-ASPReach performs normally on models with $1000$ components while traditional model checkers fail to compute and static analyzer Pint also fails to give conclusive results on certain instances.
+        which performs a \textit{limited search of permutations} on conjunctive nodes in the SLCG as the existence of conjunctive node is one of the factor of inconclusiveness.
+        Since PermReach does not take the nodes appearance orders into account, the analysis remains theoretically inconclusive.
+    \item ASPreach (Section~\ref{sec:aspreach})
+        
+        which performs a \textit{global search of possible nodes} order in the SLCG with the help of Answer Set Programming (ASP).
+        ASPreach covers the weakpoint of Permreach but is still inconclusive due to the heuristic preprocessing which simplifies the problem but creates inequivalence.
 \end{itemize}
 
-Some discussion of the benchmark (to be done)
+PermReach and ASPReach perform normally on models with $1000$ components while traditional model checkers fail to compute and static analyzer Pint also fails to give conclusive results on certain instances (Section~\ref{sec:compReachAnalyzers}).
+Moreover, ASPReach is more conclusive than PermReach but need extra runtime.
 
-We understand the way towards efficiency and precision is probably hybrid analysis.
+Next, with the unsatisfied properties detected by model checkers, we need a way to correct the model in order to make the properties satisfied (Chapter~\ref{chap:modelInference}).
 
-Two model learning/revision techniques based on reachability analysis, covering the incapability of taking background knowledge into account
+Two model learning/revision techniques based on reachability analysis, covering the incapability of taking background knowledge into account.
 \begin{itemize}
-    \item CRAC
-    \item M2RIT
+    \item CRAC (Completion \textit{via} Reachability And Correlations)
+        
+        is based on differential equation
+    \item M2RIT (Model Revision \textit{via} Reachability and Interpretation Transitions)
     
     we strengthen the capability of LFIT framework to the learning of Boolean asynchronous systems in the form of logic programs.
     
@@ -54,6 +75,7 @@ Two model learning/revision techniques based on reachability analysis, covering 
 Limitations: not theoretical conclusive (explanation, heuristic approach, with risks of failure), sensitive to noise, need more knowledge on the of non-cooperative elements.
 Need a LOT of studies to prove the CAUSALITY instead of Correlation/Consistency
 
+Some discussion of the benchmark \textbf{(to be done as the code is not finished)}
 
 Work done:
 
@@ -66,6 +88,8 @@ Work done:
 \end{itemize}
 
 \section{Future Work}
+
+From PermReach and ASPReach, we assert that the way towards efficiency and precision is probably hybrid analysis.
 
 and why:
 \begin{itemize}
