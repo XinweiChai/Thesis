@@ -31,7 +31,7 @@ To do so, we have to first develop the efficient model checkers to verify whethe
 
 In Section~\ref{sec:modelchecking}, we stated that exact model checkers provide conclusive results of dynamic properties but the computational cost is unaffordable while the computational cost of abstract model checkers are acceptable but the results are not necessarily conclusive.
 
-With the previous work on the Asynchonous Automata Network (AAN) by Paulev\'e \textit{et al},
+With the previous work on the Asynchonous Automata Network (AAN) by Paulev\'e \textit{et al.} \cite{folschette2015},
 we squeeze the application domain of AAN and simplified its semantics, called ABAN (Asynchonous Binary Automata Network).
 This semantic change is to give a possibility of making related reachability analyzer more conclusive.
 
@@ -48,7 +48,7 @@ They are based on heuristic methods and pure static analysis:
     
         which performs a \textit{limited search of permutations} on conjunctive nodes in the SLCG as the existence of conjunctive node is one of the factor of inconclusiveness.
         Since PermReach does not take the nodes appearance orders into account, the analysis remains theoretically inconclusive.
-    \item ASPreach (Section~\ref{sec:aspreach})
+    \item ASPReach (Section~\ref{sec:aspreach})
         
         which performs a \textit{global search of possible nodes} order in the SLCG with the help of Answer Set Programming (ASP).
         ASPreach covers the weakpoint of Permreach but is still inconclusive due to the heuristic preprocessing which simplifies the problem but creates inequivalence.
@@ -57,44 +57,53 @@ They are based on heuristic methods and pure static analysis:
 PermReach and ASPReach perform normally on models with $1000$ components while traditional model checkers fail to compute and static analyzer Pint also fails to give conclusive results on certain instances (Section~\ref{sec:compReachAnalyzers}).
 Moreover, ASPReach is more conclusive than PermReach but need extra runtime.
 
-Next, with the unsatisfied properties detected by model checkers, we need a way to correct the model in order to make the properties satisfied (Chapter~\ref{chap:modelInference}).
+Next, with the unsatisfied properties detected by model checkers, we need a way to correct the model in order to make the system consistent withall the wanted properties (Chapter~\ref{chap:modelInference}).
 
 Two model learning/revision techniques based on reachability analysis, covering the incapability of taking background knowledge into account.
+
 \begin{itemize}
     \item CRAC (Completion \textit{via} Reachability And Correlations)
-        
-        is based on differential equation
+    
+    first applies ordinal differential equation model to generate regulation candidates.
+    Then it tries to satisfy all the reachability requirements by adding/deleting transitions in the model according to the regulation candidates.
+    
     \item M2RIT (Model Revision \textit{via} Reachability and Interpretation Transitions)
     
-    we strengthen the capability of LFIT framework to the learning of Boolean asynchronous systems in the form of logic programs.
-    
-    Yamamoto et al.~\cite{yamamoto2014completing} Completing SBGN-AF networks by logic-based hypothesis finding is a study on STATIC data, what we have done
+    is a strengthening to the capability of LFIT (Learning From Interpretation Transitions) framework to the learning of Boolean asynchronous systems in the form of logic programs.
+    Unlike CRAC, M2RIT uses the reproducibility as a constraint.
+    When changing the transitions in the model, the model has to always be able to reproduce the original time-series data.
 \end{itemize}
 
+As far as we know, the revision of dynamic model based on reachability properties has never been considered in the literature.
+Related work: Yamamoto \textit{et al.}~\cite{yamamoto2014completing} studied the completion of static models limited by \textit{static} data.
 
-Limitations: not theoretical conclusive (explanation, heuristic approach, with risks of failure), sensitive to noise, need more knowledge on the of non-cooperative elements.
-Need a LOT of studies to prove the CAUSALITY instead of Correlation/Consistency
+However our work, CRAC and M2RIT are not theoretical conclusive as they are built with heuristics, possessing risks of failure.
+
+Moreover, even though M2RIT can precisely reproduce all the provided time-series data, it is sensitive to noise, inheriting the fragility of LFIT.
+
+After all, to enhance learning methods, we need a lot of studies to prove the causality instead of correlation/consistency by fitting the data.
 
 Some discussion of the benchmark \textbf{(to be done as the code is not finished)}
 
-Work done:
+To sum up the contents in this thesis, we have:
 
-\begin{itemize}
-    \item reachability in models containing transitions of different delays
-    \item Studied different modeling frameworks and semantics
-    \item Investigated several model inference approach
-    \item Two reachability analyzers
-    \item Cooperation with model learning approaches
-\end{itemize}
+\begin{enumerate}
+    \item studied different modeling frameworks and semantics
+    \item investigated the weakness of existing model checkers and model learning methods
+    \item modified/Improved models interpretations to adapt to transitions of different delays
+    \item developed reachability analyzers PermReach and ASPReach
+    \item developed model revisors CRAC and M2RIT
+\end{enumerate}
 
 \section{Future Work}
 
-From PermReach and ASPReach, we assert that the way towards efficiency and precision is probably hybrid analysis.
-
-and why:
 \begin{itemize}
-    \item More applications to biology
-    \item We are now considering the incorporation of heuristic, like the work of \cite{PRNs-TCS18}, to improve the performance of our approach regarding runtime.
-    \item However, our algorithm does not guarantee the minimal revision of the logic program.
-As future works, considering the metric for minimal revision and designing a related algorithm will be interesting.
+    \item From the analysis of the drawbacks of PermReach and ASPReach, we assert that the way towards high efficiency and precision is probably hybrid analysis the needs of precision and effectiveness meet.
+
+    \item We studied only Boolean-related models, it is possible to generalize the study to multi-value systems.
+    %\item More applications to biology
+    \item We are now considering the incorporation of parameter zpace abstraction, like the work of \cite{PRNs-TCS18}, to
+    improve the performance of our model checkers regarding runtime.
+    \item M2RIT does not guarantee the minimal revision of the logic program.
+    Considering the metric for minimal revision and designing a related algorithm will be interesting.
 \end{itemize}

@@ -11,9 +11,9 @@ This thesis is dedicated to attacking this dilemma by proposing our modeling fra
 \section{Context and Motivations}
 
 In the studies of concurrent systems, modeling is an inevitable topic.
-The modeling frameworks discussed in this thesis are all designed for biological use but they can be potentially useful in other domains, \textit{e.g.} robotics, human engineering.
+The modeling frameworks discussed in this thesis are all designed for biological use and some features are drawn from biology but they can be potentially useful in other domains, \textit{e.g.} robotics, human engineering.
 
-Models help one to access, analyze and control the real system. 
+Models are supposed to represent the operations of a real system and help one to access, analyze and control the real system. 
 It is a tool to help people to understand the interaction of the components in real systems and the integral behavior of the systems.
 
 A good model is a model which
@@ -29,7 +29,7 @@ A good model is a model which
     
     \item allows one to access the I/O of the model
     
-    With full control of the I/O, we can carry some unfeasible tests in real system.
+    With full control of the I/O, we can carry some unfeasible tests in real system as the mechanical of the model is known.
     %\item allows one to access the state (historical, current and future) of the model
     \item has related analyzers of various properties
     
@@ -39,18 +39,18 @@ A good model is a model which
 
 Normally, the above metrics are self-constrained:
 The finer the model is, the bigger the computational complexity is (simulation, verification, \textit{etc.}).
-In this thesis, we will focus on modelings, their related analyzers of system properties and model revision based on these properties.
+In this thesis, we focus on modelings, their related analyzers of system properties and model revision based on these properties.
 
 \subsection{Models in Computational Biology}
 Systems biologists are interested in highly abstracted models because they need abstract representation and/or flexibility to make model compatible with unknown biological knowledge.
 
 Tractability with big data is also important.
-``Big'' can refer to two meanings: one is that biological systems can be huge, with enormous components and interactions in between; another is that the number and the size of data sets can be huge.
+``Big'' can refer to two meanings: one is that biological systems can be huge, with enormous number of components and interactions in between; another is that the number and the size of data sets can be huge.
 
 To model the real system, we need components to represent genes, RNA messengers, proteins, metabolites, \textit{etc}.
 At this stage, we can carry out a first-step abstraction.
 The synthesis of proteins is under the instruction of RNA messengers which are synthesized according to genes.
-This linear process allows us to compress three entities into one.
+This linear process allows  to compress the three entities into one.
 Their inner behaviors (\textit{e.g.} protein phosphorylation, activation/inhibition of genes) are characterized by the values of the associated entities.
 
 \subsection{Classification of Models}
@@ -71,7 +71,7 @@ Due to the fuzziness of biological system, asynchronous models are compatible wi
 
 However, the compatibility of asynchronous models is also a shortcoming as they explore more state space at each system transition compared with synchronous ones.
 The exploration of state space leads to so-called state space explosion problem.
-To deal with such problem, Paulev\'e \textit{et al.} proposed Process Hitting framework and its related static model checker~\cite{pauleve2012} and Folschette \textit{et al.} proposed Asynchronous Automata Network enriching model semantics~\cite{folschette2015}.
+To deal with such problem, Paulev\'e \textit{et al.} proposed the Process Hitting framework and its related static model checker~\cite{pauleve2012} and Folschette \textit{et al.} proposed Asynchronous Automata Network enriching model semantics~\cite{folschette2015}.
 In this thesis, we mainly work on \textbf{asynchronous discrete models} based on the models above.
 
 \subsection{Model Checking}
@@ -93,7 +93,7 @@ However, model learning is not enough, as we are not sure the resulted models ar
 
 With the background of model checking and model learning, we can now formulate the two main problems of this thesis:
 \begin{itemize}
-    \item How to analyze efficiently and precisely the reachability properties within an asynchronous discrete model?
+    \item How to analyze efficiently (less runtime) and precisely (less false positive/negative rate) the reachability properties within an asynchronous discrete model?
     
     \item How to build a model from time-series data such that the model satisfies desired reachability properties?
     
@@ -105,9 +105,9 @@ With the background of model checking and model learning, we can now formulate t
 \section{Contributions}\label{sec:contribution}
 The main contributions corresponding to the problems are the followings:
 \begin{itemize}
-    \item Development of efficient and precise reachability analyzers based on static analysis
+    \item Development of efficient and precise heuristic reachability analyzers based on static analysis
     %\item Design of model learners using time-series data
-    \item Design of model revisers using \textit{a priori} knowledge to revise existing models
+    \item Design of model revisers: using \textit{a priori} knowledge and reachability properties to revise existing models
 \end{itemize}
 
 This thesis aims at solving the problems in the last sections by refining existing modeling frameworks and learning approaches:
@@ -121,7 +121,7 @@ To solve both the state space explosion problem and the unsatisfying precision o
 As far as we know, model revision based on reachability properties has never been considered in the literature.
 According to the problems of model inference above, we designed two algorithms:
 \begin{itemize}
-    \item algorithm based on learning from \textbf{continuous} time-series data
+    \item algorithm based on learning from \textbf{raw} time-series data
     
     This algorithms uses correlation coefficients to infer the correlations between the change rate of each variable and other variables in order to suggest hypothetical regulations of the system.
     With the hypothetical regulations and \textit{a priori} biological knowledge, we can revise incomplete models by adding transitions consistent with the real system.
