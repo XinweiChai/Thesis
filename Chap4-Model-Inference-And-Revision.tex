@@ -561,7 +561,7 @@ To gain a better understanding of correlations between observation data and chan
     A^{'k}_{ij}=
     \begin{cases}
         \dfrac{A_{i,j+\delta}-A_{ij}}{\delta} & {\rm if\ } i=k\\
-         A_{ij} & {\rm if\ } i\neq k
+         A_{ij} & {\rm else}
     \end{cases}
 \end{equation}
 \end{definition}
@@ -783,6 +783,11 @@ The trade-off is that M2RIT cannot deal with noisy data sets and there are more 
 Here we follow the same methodology as shown in Figure~\ref{fig:bigPicture} on page \pageref{fig:bigPicture}.
 First we obtain the model to be revised via learning method LFIT, then we modify the learned transitions according to the SLCG but in a way that maintaining the revised model can always reproduce the original time-series data.
 
+
+
+
+
+
 \subsection{Learning From Interpretation Transitions (LFIT)}\label{sec:lfit}
 LFIT framework so far can only capture finite dynamical properties, i.e. relation at $T$-$1$ or $T$-$k$ and the system has to be synchronous deterministic.
 In asynchronous systems, non-determinism can lead to loops for several times before taking a path to a certain state.
@@ -867,10 +872,7 @@ Each rule of the currently learned program $P$ that subsumes such an anti-rule i
 The resulting program $P'$ is consistent and realizes all previously treated transition plus $(I,J)$.
 By doing so iteratively for each transition, the algorithm outputs a program $P$ which models the dynamics of the system observed in the transitions $E$.
 
-\vspace{0.5em}
-\noindent
 \textbf{Asynchronous LFIT algorithm}
-\vspace{-0.4em}
 \begin{itemize}
 	\item INPUT: $\mathcal{B}$ a set of annotated atoms and $E$ a set of state transitions
 	\item Initialize $P := \{var^{val} \leftarrow \emptyset \mid var^{val} \in \mathcal{B}\}$
@@ -944,6 +946,7 @@ In the next section, we propose an algorithm exploiting the SLCG structure to re
    
     
     \textbf{Specialization algorithm}:
+    
     \begin{itemize}
         \item \textbf{Input}: a logic program $P$, an unsatisfied element $reach(\alpha,\omega)=\mathbf{False}$, a satisfied reachable set $Re$%, a maximum addable variables $k$
         \item \textbf{Output}: modified logic program $P$ or $\varnothing$ if not revisable
@@ -963,6 +966,7 @@ In the next section, we propose an algorithm exploiting the SLCG structure to re
      Generalization is similar but without the constraint of the observation, as the observation is partial, $P$ may describe some state transitions never observed.
      
     \textbf{Generalization algorithm}:
+    
     \begin{itemize}
         \item \textbf{Input}: a logic program $P$, an unsatisfied element $reach(\alpha,\omega)=\mathbf{True}$, a satisfied unreachable set $Un$
         \item \textbf{Output}: modified logic program $P$ or $\varnothing$ if not revisable
@@ -989,7 +993,7 @@ In the next section, we propose an algorithm exploiting the SLCG structure to re
     %we revise first the elements whose SLCG contain least other elements in order to modify less $P$.
     Finally, if a revision of $P$ consistent with all given properties is found the algorithm terminates and outputs it.
     
-    \textbf{Main revision algorithm}:
+    \textbf{Main algorithm of revision}:
     \begin{itemize}
         \item \textbf{Input}: a logic program $P$, a reachable set $Re$ and an unreachable set $Un$
         \item \textbf{Output}: revised logic program $P$ or $\varnothing$ if not revisable
@@ -1074,7 +1078,7 @@ In the next section, we propose an algorithm exploiting the SLCG structure to re
 
     
 \subsection{Toy Example}    
-After introducing the algorithms, we are going to show how they work.
+After introducing the algorithms, we are going to show how they work in a minimum toy example.
 
 \begin{example}
 Let us consider a logic program $P$ with rules: $a_1\gets b_1$, $a_1\gets d_1 \land c_0$, $b_1\gets c_0$, $c_1\gets b_0$ and initial state: $\alpha=\langle a_0,b_0,c_0,d_0\rangle$.
