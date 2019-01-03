@@ -57,13 +57,14 @@ LCG can only conclude with the following two constraints:
 
 We are thus going to refine the reachability analysis to deal with more instances.
 To attack the inconclusiveness problem, we have designed a new discrete modeling framework for concurrent systems~\cite{chai2018heuristic}: Asynchronous Binary Automata Network (ABAN).
-\textbf{WHY} In ABAN, we adapted LCG to SLCG (Simplified LCG) to address reachability problem.
+In ABAN, we adapted LCG to SLCG (Simplified LCG) to address reachability problem.
 This approach refers to a static abstraction of the reachability (with an over-approximation of the real dynamics).
-Under ABAN, SLCG is more prone to conclude than LCG under AAN (Section~\ref{sec:SLCG}).
+In binary situation, the approximation of reachability has some interesting properties simplifying the whole reachability analysis.
+These properties do not hold in multi-valued models (See Section~\ref{sec:SLCG}).
 
 \subsection{Definitions}
 \begin{definition}[ABAN]\label{def:ABAN}
-An ABAN is a triplet $\mathbb{A} = (\Sigma,T)$, where:
+An ABAN is a tuple $\mathbb{A} = (\Sigma,T)$, where:
 \begin{itemize}
 \item $\Sigma\triangleq\{a,b,\ldots\}$ is the finite set of automata with every automaton having a Boolean state;
 \item The states of $\mathbb{A}$ can then be defined: $LS\triangleq \underset{a\in \Sigma}{\cup} \{a_0,a_1\}$ is the set of all \textit{local states}, $L\triangleq \underset{a\in \Sigma'}{\times} \{a_0,a_1\}$ is the set of \textit{joint states} where $\Sigma'\subseteq\Sigma$. Particularly, if $\Sigma'=\Sigma$, $L$ is the set of \textit{global states}. 
@@ -72,15 +73,15 @@ For transition $tr=A\to b_i$, $A$ (called head, noted $head(tr)$) is the set of 
 \end{itemize}
 \end{definition}
 
-\textbf{Remark:} In AAN or PH, the transitions (or called actions) are noted $A\rightarrow b_i\Rsh b_j$ to express ``automaton $b$ changes its value from $i$ to $j$ under condition $A$''.
+\textbf{Remark:} In AAN and PH, their transitions (or called actions) are noted $A\rightarrow b_i\Rsh b_j$ to express ``automaton $b$ changes its value from $i$ to $j$ under condition $A$''.
 However, the states in ABAN are all binary, the transition can only be realized from $0$ to $1$ or conversely.
 Thus we omit the state before transition while avoiding ambiguity.
 It might also be noted the notation $A\rightarrow b_i$ resembles the equivalent notation in Logic Program (LP): $b_i \leftarrow A$.
 
 Also, the notions of different states are \textit{crucial} in this thesis.
 A \textit{local state} represents the state of one automaton, \textit{e.g.} $a_1$ means automaton $a$ is at level $1$.
-A \textit{joint state} represents the state of a set of automata, \textit{e.g.} $\langle a_1, b_0\rangle$ means automaton $a$ is at level $1$ and automaton $b$ is at level $0$.
-In fact, when we take all the automata in the system as the set of automata, the corresponding \textit{joint state} becomes the state of the whole system, which is the global state, \textit{e.g.} given $\Sigma =\{a,b,c\}$, $\langle a_0, b_1,c_0 \rangle$ shows the state of \textit{all} the automata.
+A \textit{joint state} represents the state of a set of automata, \textit{e.g.} $\init{a_1, b_0}$ means automaton $a$ is at level $1$ and automaton $b$ is at level $0$.
+In fact, when we take all the automata in the system as the set of automata, the corresponding \textit{joint state} becomes the state of the whole system, which is the global state, \textit{e.g.} given $\Sigma =\{a,b,c\}$, $\init{a_0, b_1,c_0 }$ shows the state of \textit{all} the automata.
 To conclude, joint state is the most general case, when $|\Sigma'|=1$, it becomes a local state;
 when $\Sigma'=\Sigma$, it becomes a global state.
 
@@ -110,9 +111,9 @@ That is why we can distinguish the order of state changes, thus form a state seq
 
 Example~\ref{exABAN} illustrates all the definitions above.
 \begin{example}\label{exABAN}
-    Figure~\ref{fig:exampleABAN} shows an ABAN of 5 automata $a,b,c,d,e$, with the set of transitions $T=\{\acm{b_1,c_1}{a_0}{a_1},\acm{e_1}{a_0}{a_1},\acm{d_0}{b_0}{b_1},\acm{d_1}{c_0}{c_1},\acm{b_1}{d_0}{d_1}\}$ and the initial state $\alpha=\langle a_0,b_0,c_0,d_0,e_0\rangle$.
+    Figure~\ref{fig:exampleABAN} shows an ABAN of 5 automata $a,b,c,d,e$, with the set of transitions $T=\{\acm{b_1,c_1}{a_0}{a_1},\acm{e_1}{a_0}{a_1},\acm{d_0}{b_0}{b_1},\acm{d_1}{c_0}{c_1},\acm{b_1}{d_0}{d_1}\}$ and the initial state $\alpha=\init{a_0,b_0,c_0,d_0,e_0}$.
     A possible trajectory from $\alpha$ is $t=\acm{d_0}{b_0}{b_1}::\acm{b_1}{d_0}{d_1}::\acm{d_1}{c_0}{c_1}::\acm{b_1,c_1}{a_0}{a_1}$.
-    After firing the transitions in trajectory $t$, the global state becomes $\Omega=s\cdot t=\langle a_1,b_1,c_1,d_1,e_0\rangle$, and the local state of $a$ is $(\alpha\cdot t)[a]=a_1$. 
+    After firing the transitions in trajectory $t$, the global state becomes $\Omega=s\cdot t=\init{a_1,b_1,c_1,d_1,e_0}$, and the local state of $a$ is $(\alpha\cdot t)[a]=a_1$. 
     The corresponding state sequence is $seq=b_1::d_1::c_1::a_1$.
 \end{example}
 
@@ -131,7 +132,7 @@ $REACH (\alpha,\Omega)$ and $reach(\alpha,\omega)$ take Boolean values \textbf{T
 \end{definition}
 
 \begin{example}
-Taking the same ABAN as in Example~\ref{exABAN}, target global state $\Omega=\langle a_1,b_1,c_1,d_1,e_0\rangle$ or target local state $\omega=a_1$ are reachable from the initial state $\alpha$ \textit{via} trajectory $t$ or state sequence $s$, \textit{i.e.} $reach(\alpha,a_1)=\textbf{True}$ and $REACH(\alpha,\Omega)=\textbf{True}$. 
+Taking the same ABAN as in Example~\ref{exABAN}, target global state $\Omega=\init{a_1,b_1,c_1,d_1,e_0}$ or target local state $\omega=a_1$ are reachable from the initial state $\alpha$ \textit{via} trajectory $t$ or state sequence $s$, \textit{i.e.} $reach(\alpha,a_1)=\textbf{True}$ and $REACH(\alpha,\Omega)=\textbf{True}$. 
 \end{example}
 
 One can define various dynamical properties by using reachability, \textit{e.g.} safety (there exists no trajectory from any initial state to an unwanted state), robustness (there exist trajectories from any initial state to a wanted state).
@@ -183,7 +184,7 @@ Given an ABAN $\mathbb{A} = (\Sigma,T)$, a global initial state $\alpha$ and a t
     \omega&\in& V_{\mathrm{state}} \\
     a_i\in V_{\mathrm{state}} &\Leftrightarrow& \{ (a_i, A\to a_i)\}\subseteq E \\
     A\to a_i\in V_{\mathrm{sol}}&\Leftrightarrow& \{ (A\to a_i,X)\mid X= \varnothing \text{ \rm if } a_i\in \alpha,\\
-    &&\text{else }  X= b_j, \forall b_j\in A\}\subseteq E
+    &&\text{else }\forall b_j\in A,\ X= b_j\}\subseteq E
 \end{eqnarray*}
 where $V_{\mathrm{state}}\subseteq LS$ is a set of local states, $V_{\mathrm{sol}}\subseteq T$ is the set of solutions and $X$ is one of the required local states of $A\to a_i$.
 \end{definition}
@@ -191,7 +192,7 @@ where $V_{\mathrm{state}}\subseteq LS$ is a set of local states, $V_{\mathrm{sol
 It is worth noticing that every state node in $V_{\mathrm{state}}$ forms an \textbf{OR gate} as a local state $a$ is reachable if there exists one fireable transition with body $a$.
 Similarly, every solution node in $V_{\mathrm{sol}}$ forms an \textbf{AND gate} as a transition is fireable only if all the local states in its head are reachable.
 
-\begin{remark}
+\begin{remark}\label{remark:SLCG}
 Original LCGs consist of three kinds of nodes: \textbf{state nodes} corresponding to the local states of automata {\rm($V_{\mathrm{state}}$)}, \textbf{objective nodes} corresponding to the state transition paths within one automata {\rm($V_{\mathrm{objective}}$)}, \textbf{solution nodes} corresponding to the transitions to be used for each state transition path {\rm($V_{\mathrm{sol}}$)}.
 However, under the circumstance of ABAN, objective nodes are no longer needed.
 Because for one state $a_i$ to be reached, the only possible path is $a_{1-i}\to a_i$ ($0\to1 $ or $1\to 0$).
@@ -388,7 +389,7 @@ However, if we begin with the branch $b_1$, after firing $\acm{c_0}{b_0}{b_1}$, 
 \begin{figure}[ht]
 \centering
 \input{exampleOrderLCG}
-\caption[Ordering in SLCG]{The ABAN and the SLCG of \textit{Example~\ref{example:order}}, $\alpha=\langle a_0,b_0,c_0\rangle$. 
+\caption[Ordering in SLCG]{The ABAN and the SLCG of \textit{Example~\ref{example:order}}, $\alpha=\init{a_0,b_0,c_0}$. 
 The only difference with \textit{Example~\ref{example:unreach}} on page \pageref{example:unreach} is the transition \ac{\mathbf{c_0}}{b_0}{b_1}.
 %The reachability depends on firing order of transitions
 }
@@ -446,12 +447,12 @@ The trajectory towards $a_1$ may not be retrievable by PermReach even if $a_1$ i
 \begin{figure}[ht]
 \centering
 \input{conflictInForks}
-\caption[Counterexample of PermReach]{A counterexample of PermReach with $\alpha=\langle a_0,b_0,c_0,d_0,e_0\rangle$. 
+\caption[Counterexample of PermReach]{A counterexample of PermReach with $\alpha=\init{a_0,b_0,c_0,d_0,e_0}$. 
 $reach(\alpha,a_1)$=\textbf{True} but \textbf{Inconclusive} is given by PermReach.
 }\label{FigConflictInForks}
 \end{figure}
 
-\textbf{Some algorithmic properties of PermReach}
+\textcolor{red}{Some algorithmic properties of PermReach}
 
 \subsection{Reachability via Answer Set Programming}\label{sec:aspreach}
 
@@ -469,7 +470,7 @@ We use Clingo~\cite{gebser2016theory} which is a combination of grounder Gringo 
 Given an input program with first-order variables, a grounder computes an equivalent ground (variable-free) program for an ASP program, while a solver selects admissible solutions (answer sets) in the ground.
 
 A rule is in the following form:
-$$a_0 \gets a_1 , \ldots , a_m, not\ a_{m+1}, \ldots , not\ a_n.$$
+$$a_0 \gets a_1, \ldots , a_m,\ not\ a_{m+1}, \ldots,\ not\ a_n.$$
 where the element on the left of the arrow is called \textit{head} and the ones on the right called \textit{body}.
 %All the predicates $a_i$, with $0\leq i \leq n$ are replaceable. 
 $a_0$ is \textbf{True} if $a_1 , \ldots , a_m$ are \textbf{True} and $a_{m+1}, \ldots , a_n$ are \textbf{False}.
@@ -492,7 +493,7 @@ c:- not b.
 Indeed, the absence of $c$ makes $b$ true, and conversely absence of $b$ makes $c$ true. 
 Cardinality constraints are another way to obtain multiple answer sets. 
 The most usual way of using a cardinality is in place of \textit{head}:
-$$l \{q_1, \ldots , q_k \} u \gets a_1, \ldots , a_m, not\ a_{m+1}, \ldots , not\ a_n.$$
+$$l \{q_1, \ldots , q_k \} u \gets a_1, \ldots ,\ a_m, not\ a_{m+1}, \ldots ,\ not\ a_n.$$
 Or corresponding ASP code with $k=2$, $m=3$ and $n=2$:
 \begin{verbatim}
 l{q1, q2}u :- a1, a2, a3,..., not a4, not a5.
@@ -642,9 +643,6 @@ Random choices are made to fix a value for each \textbf{OR gate} of the SLCG all
 %The detailed of this operation is given in section~\ref{sec:OR}.
 %After the removal of cycles and the computation of pseudo reachability, the task remains to find a state sequence from the desired state $\omega$ to initial state. 
 
-
-
-
 \begin{figure}[ht]
     \centering
     \input{LCG_Inconc.tex}
@@ -655,7 +653,7 @@ Random choices are made to fix a value for each \textbf{OR gate} of the SLCG all
 Even though ASPReach is able to solve the inconclusive cases left by PermReach, still, ASPReach is not complete.
 
 \begin{example}\label{ex:counterex}
-A counter-example is shown in Figure~\ref{fig:lcgInconc}, ABAN with transitions $T=\{\acm{b_1,c_1}{a_0}{a_1},\acm{d_1,e_1}{a_0}{a_1},\acm{e_0}{d_0}{d_1},\acm{d_0}{e_0}{e_1},\acm{c_0}{b_0}{b_1},\acm{b_0}{c_0}{c_1}\}$ and initial state $\langle a_0,b_0,c_0,d_0,e_0\rangle$.
+A counter-example is shown in Figure~\ref{fig:lcgInconc}, ABAN with transitions $T=\{\acm{b_1,c_1}{a_0}{a_1},\acm{d_1,e_1}{a_0}{a_1},\acm{e_0}{d_0}{d_1},\acm{d_0}{e_0}{e_1},\acm{c_0}{b_0}{b_1},\acm{b_0}{c_0}{c_1}\}$ and initial state $\init{a_0,b_0,c_0,d_0,e_0}$.
 When there are multiple branches of one \textbf{OR gate} leading to unreachability, the result can be inconclusive. 
 Because in the assignment phase, no matter which branch we choose at $a_1$ ($b_1,c_1$ or $d_1,e_1$), we cannot find an admissible order as both side are exactly the case of Example~\ref{example:unreach}.
 At the end, the program will return \textbf{Inconclusive} due to the limit of iteration $k$ is reached.
@@ -664,7 +662,6 @@ At the end, the program will return \textbf{Inconclusive} due to the limit of it
 There is a tricky way to deal with this issue when $\mathbf{|OR\ gates|}$ is not big: we set a limit $n$, if $\mathbf{|OR\ gates|}<n$, we shift the heuristics on the assignment of \textbf{OR gates} to the enumeration of all possible assignments.
 This ``hack'' can deal with the inconclusive cases with small size, including the one in Example~\ref{ex:counterex}.
 In the benchmarks in the next section, inconclusive instances appear neither in biological examples nor in random generated tests.
-
 
 At last, we are going to show some algorithmic properties of ASPReach which are important for a model checker.
 A model checker must terminate for any input like the standard for any algorithm; also, its complexity is crucial for its wider applicability and scalability.
@@ -690,7 +687,51 @@ A model checker must terminate for any input like the standard for any algorithm
 In the worst case, ASPReach has an exponential complexity due the exhaustive search of admissible order by ASP solver.
 However random tests in Chapter~\ref{chap:test} shows even when the number of automata increases to 1000, the runtime is still acceptable.
 
-\textbf{Identify the conditions that my method works as well in multiple levels}
+\section{Extension to Multi-valued Models}
+
+The use of either pseudo-reachability, PermReach or ASPReach can be extended to multi-valued models for wider applications.
+
+To avoid the issues of inconclusiveness due to the notion of objective in PH or AAN (Remark~\ref{remark:SLCG} on page~\pageref{remark:SLCG}), we restrict the semantics of AAN (Section~\ref{sec:AAN} on page~\pageref{sec:AAN}).
+We allow only state changes of one step size ($|j-k|=1$ in the Definition of restricted AAN below) and presume that there is no need to leave and return to certain local state in order to achieve certain reachability.
+These modifications assure that there is only one path going from the target local state and its corresponding initial state, \textit{e.g.} from state $1$ to $3$, the only path is $1\to 2\to 3$.
+
+\begin{definition}[Restricted AAN]\label{def:resAAN}
+A restricted AAN is a tuple $\mathbb{A} = (\Sigma,T)$, where:
+\begin{itemize}
+\item $\Sigma\triangleq\{a,b,\ldots\}$ is the finite set of automata with every automaton having a discrete state.
+The max discrete level of $a$ is denoted $l_a$ and this level is $1$ by default (Boolean) and omitted in the notation;
+\item The states of $\mathbb{A}$ can then be defined: $LS\triangleq \underset{a\in \Sigma}{\cup} \{a_0,\ldots,a_{l_a}\}$ is the set of all \textit{local states}, $L\triangleq \underset{a\in \Sigma'}{\times} \{a_0,\ldots,a_{l_a}\}$ is the set of \textit{joint states} where $\Sigma'\subseteq\Sigma$. Particularly, if $\Sigma'=\Sigma$, $L$ is the set of \textit{global states}. 
+%\item $T=\{A\to b_j\Rsh b_k\mid b\in \Sigma \land (b_j,b_k)\in L_b\times L_b\land |j-k|=1\land \forall a \in \Sigma,\ |A\cap L_a|\leq 1 \land A\cap L_b=\varnothing\}$ is the finite set of transitions, which defines the regulations and dynamics of the restricted AAN: $A$, $b_j$, $b_k$ are denoted $hitter(h)$, $target(h)$ and $bounce(h)$ respectively of the transition $t=A\to b_j\Rsh b_k$.
+\item $T=\{A\to b_k\mid A\in L,\ b\in \Sigma,\ k\in[1,l_b]\land \text{if } l_b>1,\ \exists b_j\in A,\ j\in[1,l_b],\ |j-k|=1, \text{ else } \nexists b_j\in A\}$ is the finite set of transitions, which defines the regulations and dynamics of the restricted AAN: $A$, $b_k$ are denoted $head(h)$, $body(h)$ respectively of the transition $tr=A\to b_k$.
+\end{itemize}
+\end{definition}
+
+By putting the affected state into the condition of transition, we can distinguish on which state the transition functions for multi-valued automata.
+Affected states are regarded as equivalent conditions as other states in the SLCG for restricted AAN.
+The only difference is that when encountered a multi-valued automaton, SLCG seeks to find only the transitions in the direction from the wanted state towards the initial state. 
+This preference avoids the appearance of cycles due to returning to a given local state.
+
+\begin{definition}[Extended over-approximate SLCG]\label{def:SLCGR}
+Given an ABAN $\mathbb{A} = (\Sigma,T)$, a global initial state $\alpha$ and a target local state $\omega$, SLCG $l= (V_{\mathrm{state}},V_{\mathrm{sol}},E)$ is the smallest recursive structure with $E \subseteq (V_{\mathrm{state}}\times V_{\mathrm{sol}})\cap (V_{\mathrm{sol}}\times V_{\mathrm{state}})$ which satisfies:
+\begin{eqnarray*}
+    \omega\in V_{\mathrm{state}} &\&& \exists a_j\in \alpha \\
+    a_i\in V_{\mathrm{state}} &\Leftrightarrow& \{ (a_i, A\to a_i)\mid \text{if } l_a>1,\ a_k \in A,\\
+    &&\text{where } k= i+1\times sgn(i-j)  \}\subseteq E\\
+    A\to a_i\in V_{\mathrm{sol}}&\Leftrightarrow& \{ (A\to a_i,X)\mid X= \varnothing \text{ if } i=j,\\
+    &&\text{else } \forall b_m\in A,\ X= b_m\}\subseteq E
+\end{eqnarray*}
+where $V_{\mathrm{state}}\subseteq LS$ is a set of local states, $V_{\mathrm{sol}}\subseteq T$ is the set of solutions and $X$ is one of the required local states of $A\to a_i$.
+\end{definition}
+
+\begin{example}
+Restricted AAN $\mathbb{A}=(\Sigma,T)$
+\begin{figure}
+    \centering
+    \input{figures/extendedSLCG.tex}
+    \caption{Extended SLCG}
+    \label{fig:ExtendedSLCG}
+\end{figure}
+\end{example}
 
 \section{R\'esum\'e}
 In this chapter, we formally (re)defined the modeling framework used for static analysis: Asynchronous Binary Automata Network and some terminology.

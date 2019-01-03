@@ -3,6 +3,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsthm}
+\usepackage{mathtools}
 \usepackage{algorithm}
 \usepackage{algcompatible}
 \usepackage[noend]{algpseudocode}
@@ -69,6 +70,9 @@
 \newcommand{\dv}[2]{\dfrac{{\rm d}#1}{{\rm d}#2}}
 \newcommand{\ddv}[2]{\frac{{\rm d}#1}{{\rm d}#2}}
 
+\DeclarePairedDelimiter{\round}{\lfloor}{\rfloor}
+\DeclarePairedDelimiter{\ceiling}{\lceil}{\rceil}
+\DeclarePairedDelimiter{\init}{\langle}{\rangle}
 \theoremstyle{definition}
 
 \newtheorem{definition}{Definition}[chapter]

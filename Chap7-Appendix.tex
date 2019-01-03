@@ -181,77 +181,8 @@ PermReach and ASPReach can also be applied to multivalued Logic Programs.
 \caption{Pseudo-reachability $reach'$}\label{algPseudo}
 \end{algorithm}
 
-%\begin{algorithm}[ht]
-%\begin{algorithmic}
-%\State Input: an SLCG $l=(V_{\mathrm{state}},V_{\mathrm{sol}}, E)$, initial state $\alpha$, target state $\omega$, an integer $k$
-%\State Output: reachability $r$
-%\State \textcolor{gray}{// 1) Try to break cycles}%\label{delete_cycle_begin}
-%\For{each $ scc=(V'_{\mathrm{state}},V'_{\mathrm{sol}}) \in \mathrm{SCC}(l)$ with $V'_{\mathrm{state}} \subseteq V_{\mathrm{state}},V'_{\mathrm{sol}}\subseteq V_{\mathrm{sol}}$}
-%    \If{$scc$ has less than one incoming edge}
-%        \For{each $v \in V'_{\mathrm{state}}$}
-%            \If {$\exists(v,v')\in E, v' \in (V_{\mathrm{sol}} \setminus V'_{\mathrm{sol}})$}
-%                \State $E\gets E\setminus \{(v,v'')|v''\in V'_{\mathrm{sol}},(v,v'')\in E\}$
-%            \EndIf
-%        \EndFor
-%    \EndIf
-%\EndFor %\label{delete_cycle_end}
-%\State{\textcolor{gray}{// 2) Remove useless nodes/edges}} %\label{prune_begin}
-%\State pruned = true
-%\While{pruned}
-%    \State pruned = false
-%    \For {$v \in V_{\mathrm{state}}$}
-%        \If{$\not\exists(v,v')\in E$}
-%            \State $V_{\mathrm{state}} \gets V_{\mathrm{state}}\setminus \{v\}$; $E\gets E\setminus \{ (v'',v)\in E\}$
-%            \State $E\gets E\setminus \{ (v'',sol)\in E | sol \in \{sol = (A \rightarrow a) \in V_{\mathrm{sol}} | v \in A\}\}$
-%            \State $V_{\mathrm{sol}} \gets V_{\mathrm{sol}}\setminus \{sol = (A \rightarrow a) \in V_{\mathrm{sol}} | v \in A\}$
-%            \State pruned = true
-%        \EndIf
-%    \EndFor \label{prune_end}
-%\EndWhile
-%\State \textcolor{gray}{// 3) Check pseudo-reachability} %\label{pseudo_reach_begin}
-%\If {PSEUDOREACH$(l)=\textbf{False}$}
-%    \State \Return $\mathbf{False}$
-%\EndIf %\label{pseudo_reach_end}
-%
-%\State \textcolor{gray}{// 4) main search loop} %\label{main_loop_begin}
-%\For{each $i$ in $1\ldots k$}
-%    \State $l'=(V'_{\mathrm{state}}, V'_{\mathrm{sol}},E')\gets(V_{\mathrm{state}}, V_{\mathrm{sol}},E)$
-%    \For{$v \in V'_{state}$} \textcolor{gray}{// Treat each OR gates}
-%        \State pick a random element $(v,v') \in E'$
-%        \State $E'\gets E' \setminus  \{(v,v'') \in E'| v''\neq v'\}$
-%    \EndFor
-%    \If{$l'$ contains cycles}
-%        \State \textbf{Continue}
-%    \EndIf
-%    %\State $(r,t)\gets\mathrm{ASPsolve}(l')$
-%    \State Obtain simple \textbf{AND gates} $simp$ from $l'$
-%    \While{$simp\neq \varnothing$}
-%        \State $re\gets\mathbf{False}$ \textcolor{gray}{// check the reachability of $simp$, if true, update initial state}
-%        \For{$i \in perm(simp)$} 
-%            \If{$REACH(i)=\mathbf{True}$}
-%                \State $re\gets\mathbf{True}$
-%                \State \textbf{break}
-%            \EndIf
-%        \EndFor
-%        \If{$re=\textbf{True}$}
-%            \State update $\alpha$ by firing transitions in $simp$
-%            \State $V'_{\mathrm{sol}}\gets V'_{\mathrm{sol}} \setminus simp$
-%        \Else
-%            \State \textbf{break}
-%        \EndIf
-%        \State Obtain simple \textbf{AND gates} $simp$ from $l'$
-%    \EndWhile
-%    \If{$re=\textbf{True}$}
-%        \State\Return{$\mathbf{True}$}
-%    \EndIf
-%\EndFor %\label{main_loop_end}
-%\State \Return{$\mathbf{Inconclusive}$}
-%\end{algorithmic}
-%\caption{PermReach}%\label{algOverall}
-%\end{algorithm}
-
 \begin{algorithm}\caption{PermReach}\label{alg:perm}
-\begin{algorithmic}[1]
+\begin{algorithmic}
     \State Input: an SLCG $l=(V_{\mathrm{state}},V_{\mathrm{sol}}, E)$, an initial state $\alpha$, a target state $\omega$, an integer $k$
     \State Output: reachability $r(\alpha,\omega)$
     \State \textcolor{gray}{// 1) Try to break cycles}%\label{delete_cycle_begin}
@@ -306,7 +237,8 @@ PermReach and ASPReach can also be applied to multivalued Logic Programs.
         %\State $(r,t)\gets\mathrm{ASPsolve}(l')$
         \State Obtain simple \textbf{AND gates} $simp$ from $l'$
         \While{$simp\neq \varnothing$}
-            \State $re\gets\mathbf{False}$ \textcolor{gray}{// check the reachability of $simp$, if true, update initial state}
+            \State $re\gets\mathbf{False}$ 
+            \State\textcolor{gray}{// check the reachability of $simp$, if true, update initial state}
             \For{$i \in perm(simp)$} 
                 \If{$REACH(i)=\mathbf{True}$}
                     \State $re\gets\mathbf{True}$
@@ -329,8 +261,8 @@ PermReach and ASPReach can also be applied to multivalued Logic Programs.
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}[htb]
-\begin{algorithmic}[1]
+\begin{algorithm}[ht]
+\begin{algorithmic}
     \State Input: SLCG $l=(V_{\mathrm{state}},V_{\mathrm{sol}}, E)$, an integer $k$
     \State Output: reachability $r$ and a trajectory $t$
     \State Compute SCCs, classify them into $\mathrm{SCC1}(l)$ with at most 1 incoming edge and $\mathrm{SCC2}(l)$ otherwise
@@ -522,53 +454,6 @@ PermReach and ASPReach can also be applied to multivalued Logic Programs.
 \end{algorithmic}
 \caption{Generalization}\label{alg:generalization}
 \end{algorithm}
-%\begin{algorithm}[htb]
-%\begin{algorithmic}[1]
-%\State Input: LCG $l=(V_{\mathrm{state}},V_{\mathrm{sol}}, E)$, an integer $k$
-%\State Output: reachability $r$ and a trajectory $t$
-%\State Compute SCCs, classify them into $\mathrm{SCC1}(l)$ with at most 1 incoming edge and $\mathrm{SCC2}(l)$ otherwise
-%\State \textcolor{gray}{// 1) Break all cycles and prune useless branches}%\label{delete_cycle_begin}
-%\For{each $(V'_{\mathrm{state}} \subseteq V_{\mathrm{state}},V'_{\mathrm{sol}} \subseteq V_{\mathrm{sol}}) \in \mathrm{SCC1}(l)$}
-%    \For{each $v \in V'_{\mathrm{state}}$}
-%    \If {$\exists(v,v')\in E, v' \in (V_{\mathrm{sol}} \setminus V'_{\mathrm{sol}})$}
-%        \State $E\gets E\backslash \{(v,v'')|v''\in V'_{\mathrm{sol}},(v,v'')\in E\}$
-%    \EndIf
-%\EndFor
-%\EndFor %\label{delete_cycle_end}
-%\State{\textcolor{gray}{// 2) remove useless nodes/edges}} %\label{prune_begin}
-%\State pruned = \textbf{True}
-%\While{pruned}
-%    \State pruned = \textbf{False}
-%    \For {$v \in V_{\mathrm{state}}$}
-%        \If{$\not\exists(v,v')\in E$}
-%            \State $V_{\mathrm{state}} \gets V_{\mathrm{state}}\backslash \{v\}$; $E\gets E\backslash \{ (v'',v)\in E\}$
-%            \State $E\gets E\backslash \{ (v'',sol)\in E | sol \in \{sol = (A \rightarrow a) \in V_{\mathrm{sol}} | v \in A\}\}$
-%            \State $V_{\mathrm{sol}} \gets V_{\mathrm{sol}}\backslash \{sol = (A \rightarrow a) \in V_{\mathrm{sol}} | v \in A\}$
-%            \State pruned = \textbf{True}
-%        \EndIf
-%    \EndFor %\label{prune_end}
-%\EndWhile
-%\State \textcolor{gray}{// 3) Check pseudo-reachability} %\label{pseudo_reach_begin}
-%\If {$pseudoReach(l)=\textbf{False}$}
-%    \State \Return $(\mathbf{False},\varnothing)$
-%\EndIf %\label{pseudo_reach_end}
-%
-%\State \textcolor{gray}{// 4) main search loop} %\label{main_loop_begin}
-%\For{each $i$ in $1\ldots k$}
-%    \State $l'=(V'_{\mathrm{state}}, V'_{\mathrm{sol}},E')\gets(V_{\mathrm{state}}, V_{\mathrm{sol}},E)$ 
-%    \For{$v \in V'_{state}$} \textcolor{gray}{// Treat each OR gates}
-%        \State pick a random element $(v,v') \in E'$
-%        \State $E'\gets E' \backslash  \{(v,v'') \in E'| v''\neq v'\}$ with $\nexists i\in \mathrm{SCC2}(l)$ and $i\in E'$
-%    \EndFor
-%    \State $(r,t)\gets\mathrm{ASPsolve}(l')$
-%    \If{$r=\textbf{True}$}
-%        \State\Return{$(\mathbf{True},t)$}
-%    \EndIf
-%\EndFor %\label{main_loop_end}
-%\State \Return{$(\mathbf{Inconclusive},\varnothing)$}
-%\end{algorithmic}
-%\caption{ASPReach}%\label{algOverall}
-%\end{algorithm}
 
 \chapter{Proofs}\label{sec:proof}
 \begin{theorem}[Change rate of sigmoid function]
@@ -581,27 +466,31 @@ PermReach and ASPReach can also be applied to multivalued Logic Programs.
 \end{theorem}
 
 \begin{theorem}[Future states of synchronous semantics]
-    There are at most $C_n^m$ possible future states for a system of synchronous update scheme, where $n$ is the number of fireable transitions and $m$ is the number of different variables in all the heads of fireable transitions. 
+    There are at most $O(3^m)$ possible future states for a system of synchronous update scheme if the number of total states of all the variables is fixed, where $m$ is the number of different variables in all the heads of fireable transitions and $x$ is the max number of qualitative levels in the system. 
     \begin{proof}
-        \textbf{To do}
+         For every variable, there are at most $x$ future states and the sum number of states of all variables is constant $xm=C$.
+         
+         The amount of future states is $f(x)=x^{\frac{C}{x}}$, $f'(x)=\frac{C}{x}(1-\ln x)$, $f(x)$ takes its maximum at $x=e$.
+         As $x$ is integer, we take the nearest value $x=3$.
+         Considering that $C$ is integer, the maximum of $f(x)$ is $3^{\round{\frac{C}{3}}}(C-3\ceiling{\frac{C}{3}}+1)$ which is of $O(3^m)$.
     \end{proof}
 \end{theorem}
 
 \begin{theorem}[Termination and correctness of ASPReach] ~
     Let $l=(V_{\mathrm{state}}, V_{\mathrm{sol}}, E)$ be an SLCG with initial state $\alpha$ and target local state $\omega$ and $k > 0$ be an integer.
     The call \textit{ASPReach(l,k)} terminates.\\
-    $ASPReach(l,k)$=$(\mathbf{False},\varnothing)$ only if $\nexists t$ a trajectory in $l$ from $\alpha$ to $\omega$.\\
+    $ASPReach(l,k)$=$(\mathbf{False},\varnothing)$ if $\nexists t$ a trajectory in $l$ from $\alpha$ to $\omega$.\\
     $ASPReach(l,k)$=$(\mathbf{True},t)$ only if $\exists t$ a trajectory in $l$ from $\alpha$ to $\omega$.
     \begin{proof}
     
         1: The algorithm starts by breaking all cycles of the SLCG and according to Theorem~\ref{th:break_cycle} it terminates and does not affect the reachability of $\alpha$ in $l$.
         
-        2: Then all nodes of $V_{\mathrm{state}}$ and (resp. ${\mathrm{sol}}$) with no (resp. missing) outgoing edges are removed.
+        2: Then all nodes of $V_{\mathrm{state}}$ and (resp. $V_{\mathrm{sol}}$) with no (resp. missing) outgoing edges are removed.
         Such nodes cannot be part of a trajectory leading to initial state $\alpha$ and thus this operation does not affect the reachability of $\alpha$ in $l$.
         The internal for loop of this operation iterates over $V_{\mathrm{state}}$ which is finite.
         To continue looping, it requires one state deletion thus this operation will terminate at least when $V_{\mathrm{state}}$ becomes $\varnothing$.
         
-        Conclusion 1: $ASPReach(l,k)=\mathbf{False}$ only if $\nexists t$ a trajectory in $l$ from $\alpha$ to $v \in V_{\mathrm{sol}}$.
+        Conclusion 1: $ASPReach(l,k)=\mathbf{False}$ if $\nexists t$ a trajectory in $l$ from $\alpha$ to $v \in V_{\mathrm{sol}}$.
         
         Conclusion 2: the call \textit{ASPReach(l,k)} terminates.
         
@@ -611,7 +500,7 @@ PermReach and ASPReach can also be applied to multivalued Logic Programs.
         Conclusion 4: Stochastic search follows by randomly reducing each OR gate of $l$ to one of its edges to form $l'$.
         This operation is run a finite time $k$ and iterates over $V_{\mathrm{state}}$ which is finite and thus it terminates.
         This operation does not create new edges, i.e. $E' \subseteq E$.
-        $ASPsolve(l')$ generates all possible trajectories of $l'$ leading to $\alpha$.
+        $ASPsolve(l')$ generates all the possible trajectories of $l'$ leading to $\alpha$.
         The number of possible trajectory is finite and thus $ASPsolve(l')$ terminates.
         
         Furthermore when $ASPsolve(l')=(\mathbf{True},t)$, t is a trajectory of $l$ proving reachability of $\alpha$ in $l$ and it is the only possibility for ASPReach to output $\mathbf{True}$.
@@ -625,16 +514,16 @@ PermReach and ASPReach can also be applied to multivalued Logic Programs.
     Let $s=|V_{\mathrm{sol}}|$ be the number of target state of $l$.
     Let $v = |V_{\mathrm{state}}|$ be the number of vertices of $l$.
     Let $e=|E|$ be the number of edges of $l$.
-    The complexity of $ASPReach(l,k)$ is $O(v + s + e + (v+s) / 2 \times v \times e \times s + v^{2} \times e + v \times e + k \times (v \times e^{2} + 2^{v}))$ which is bound by $O(k \times 2^{v})$.
+    The complexity of $ASPReach(l,k)$ is $O(v + s + e + (v+s) / 2 \times v \times e \times s + v^{2} \times e + v \times e + k \times (v \times e^{2} + 2^{v}))$ which is bounded by $O(k \times 2^{v})$.
     \begin{proof}
     
-        1: computing $SCC(l)$ has a complexity of $O(v + s + e)$.
-        In worst case $|SCC(l)| = (v+s) / 2$ and breaking one cycle of $SCC(l)$ is $O(v \times e \times s)$, thus complexity of removing cycle is $op1=O(v+ e + s + (v+s) / 2 \times v \times e \times s)$
+        1: The computation of $SCC(l)$ has a complexity of $O(v + s + e)$.
+        In the worst case $|SCC(l)| = (v+s) / 2$ and breaking one cycle of $SCC(l)$ is $O(v \times e \times s)$, thus complexity of removing cycle is $op1=O(v+ e + s + (v+s) / 2 \times v \times e \times s)$
         
-        2: To remove useless nodes ASPReach iterates over all states and checking if one state has no successor in $l$ requires to iterates over all edges.
-        In worst case all states will be removed one by one and thus the complexity of this operation is $op2=O(v \times (v+s) \times e)$.
+        2: To remove useless nodes, ASPReach iterates over all local states and checking if one local state has no successor in $l$ requires to iterates over all edges.
+        In the worst case, all states will be removed one by one and thus the complexity of this operation is $op2=O(v \times (v+s) \times e)$.
         
-        3: Computing pseudo reachability over $l$ which have no loop correspond to perform a depth first search on all branch of a tree and thus bound to $op3=O((v+s) \times e)$.
+        3: Computing pseudo reachability over $l$ which has no loop corresponds to performing a depth-first search on all branches of a tree and thus is bounded by $op3=O((v+s) \times e)$.
         
         4: the stochastic search iterates atmost $k$ times.
         Treating each OR gate to form $l'$ have a cost of $O(v \times e \times e)$
@@ -642,11 +531,11 @@ PermReach and ASPReach can also be applied to multivalued Logic Programs.
         Each trajectory is a sequence where each element of $|V_{\mathrm{state}}|$ appears exactly once.
         It correspond to the number of total order of $|V_{\mathrm{state}}|$ which is $2^{v}$.
         % TODO: the asp program never produce two times the same sequence ?
-        Thus $ASPsolve(l')$ is bound by $O(2^{v})$ and the whole stochastic search by $op4=O(k \times (v \times e^{2} + 2^{v}))$.
+        Thus $ASPsolve(l')$ is bounded by $O(2^{v})$ and the whole stochastic search by $op4=O(k \times (v \times e^{2} + 2^{v}))$.
         
         Conclusion 1: The complexity of $ASPReach(l,k)$ is $O(op1 + op2 + op3 + op4) = O(v + e + s + (v+s) / 2  \times v \times e \times s + v \times (v+s) \times e + v \times e + k \times (v \times e^{2} + 2^{v}))$.
         
-        Conclusion 2: The complexity of $ASPReach(l,k)$ is bounded by $O(k \times 2^{v})$
+        Conclusion 2: The complexity of $ASPReach(l,k)$ is bounded by $O(k \times 2^{v})$.
     \end{proof}
 \end{theorem}
 

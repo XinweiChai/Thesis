@@ -209,7 +209,7 @@ We are going to run a tiny example on the mechanics of cut set.
 
 \begin{example}\label{example:cutset}
 Figure~\ref{fig:cut} shows an ABAN and its under approximate SLCG of $a_1$.
-The ABAN has transitions $T=\{\acm{b_1,c_1}{}{a_1},\acm{a_1}{}{c_1},\acm{b_0}{}{a_1},\acm{d_1}{}{b_0},\acm{b_1}{}{d_1}\}$, and initial state $\alpha= \langle a_0, ,b_1,c_1,d_0\rangle$, the target state is $\omega=a_1$.
+The ABAN has transitions $T=\{\acm{b_1,c_1}{}{a_1},\acm{a_1}{}{c_1},\acm{b_0}{}{a_1},\acm{d_1}{}{b_0},\acm{b_1}{}{d_1}\}$, and initial state $\alpha= \init{a_0,b_1,c_1,d_0}$, the target state is $\omega=a_1$.
 
 
 Table~\ref{tab:cutset} shows the steps to obtain a saturated valuation.
@@ -294,7 +294,7 @@ Thus over-approximation is a necessary condition of the reachability.
 
 Figure~\ref{CompOv} gives a first impression of the idea.
 The visualization of the set of candidate regulations $R=\{(a,b,+),(c,a,-)\}$ is on the left.
-On the right, the initial ABAN has only three Boolean variables $\Sigma=\{a,b,c\}$ and initial state $\langle a_0,b_0,c_0\rangle$, with transitions $T=\{\acm{a_1}{b_0}{b_1}\}$.
+On the right, the initial ABAN has only three Boolean variables $\Sigma=\{a,b,c\}$ and initial state $\init{a_0,b_0,c_0}$, with transitions $T=\{\acm{a_1}{b_0}{b_1}\}$.
 $b_1$ is not reachable because of the unreachability of $a_1$.
 As $(c,a,-)\in R$, consistent transition \ac{c_0}{a_0}{a_1} is added then $a_1$ becomes reachable which makes $b_1$ also reachable.
 $T'=\{\acm{a_1}{b_0}{b_1},\acm{c_0}{a_0}{a_1}\}$, $CS=\{\acm{c_0}{a_0}{a_1}\}$.
@@ -310,7 +310,7 @@ Algorithm~\ref{algComOver} in Appendix shows the detailed algorithm of the compl
 Over-approximation is only a necessary condition of reachability.
 If one wants the guarantee of the reachability even at the price of redundant transitions, he may consider the completion by under-approximation.
 
-Under-approximation is another reasoning of SLCG. 
+Under-approximation is a variation of SLCG reasoning. 
 It associates the local states and the transitions with the initial state and \textit{all the states which may appear}.
 This association covers all the orders of occurrence (proof is given in Theorem~\ref{th:underapprox} of Appendix).
 Similar to over-approximation, in the SLCG of under-approximation, if there is a pathway between target local state and the initial state, this target state \textit{should} be reachable.
@@ -329,11 +329,7 @@ Given ABAN $\mathbb{A} = (\Sigma,T)$, a global initial state $\alpha$ and a targ
     \omega&\in& V_{\mathrm{state}} \\
     a_i\in V_{\mathrm{state}} &\Leftrightarrow& \{ (a_i, A\to a_i)\}\subseteq E \\
     A\to a_i\in V_{\mathrm{sol}}&\Leftrightarrow& \{ (A\to a_i,X)\mid X= \varnothing \text{ \rm if } a_i\in \alpha\land a_{1-i}\not\in V_{\mathrm{state}},\\
-    &&\text{else }  X= b_j, \forall b_j\in A\}\subseteq E
-%    \omega&\in& V_{\mathrm{state}} \\
-%    a_i\in V_{\mathrm{state}} &\Leftrightarrow& \{ (a_i, sol_{a_i}| head(sol_{a_i})=a_i)\}\subseteq E \\
-%    sol_{a_i}\in V_{\mathrm{sol}}&\Leftrightarrow& \{ (sol_{a_i},\mathbf{V}(sol_{a_i}))| \mathbf{V}(sol_{a_i})=\varnothing \text{ \rm if } a_i\in \alpha\land a_{1-i}\not\in V_{\mathrm{state}},\\
-%    &&\text{ \rm else }\mathbf{V}(sol_{a_i})\in body(sol_{a_i}) \}\subseteq E
+    &&\text{else } \forall b_j\in A,\ X= b_j\}\subseteq E
 \end{eqnarray*}
 where $V_{\mathrm{state}}\subseteq LS$ is a set of local states, $V_{\mathrm{sol}}\subseteq T$ is the set of solutions and $X$ is one of the required local states of $A\to a_i$. 
 \end{definition}
@@ -350,7 +346,7 @@ Local states in the initial state may have other successors besides $\bigcirc$.
 For example in Figure~\ref{Under2}, $d_0$ is in the initial state, but the reasoning continues because $d_1$ appears in another branch.
 
 \begin{example}
-Given ABAN $\mathbb{A}=(\Sigma,T)$ in Figure~\ref{ExUnder} with $\Sigma= \{a,b,c,d\}$, $T=\{\acm{b_1,c_1}{a_0}{a_1}, \acm{b_1}{d_0}{d_1}, \acm{d_0}{b_0}{b_1}\}$, the initial state $\langle a_0,b_0,c_0,d_0\rangle$.
+Given ABAN $\mathbb{A}=(\Sigma,T)$ in Figure~\ref{ExUnder} with $\Sigma= \{a,b,c,d\}$, $T=\{\acm{b_1,c_1}{a_0}{a_1}, \acm{b_1}{d_0}{d_1}, \acm{d_0}{b_0}{b_1}\}$, the initial state $\init{a_0,b_0,c_0,d_0}$.
 With candidate regulations $R=\{(d,c,-),(c,d,-)\}$, Figure~\ref{Under1}, Figure~\ref{Under2} and Figure~\ref{Under3} show the procedures of completion by under-approximation: after two additions of actions and one update, the SLCG becomes stable and $a_1$ becomes reachable.
 $T'=\{\acm{b_1,c_1}{a_0}{a_1}, \acm{b_1}{d_0}{d_1}, \acm{d_0}{b_0}{b_1},\acm{d_1}{c_0}{c_1}, \acm{c_1}{d_1}{d_0}\}$, $CS=\{\acm{d_1}{c_0}{c_1}, \acm{c_1}{d_1}{d_0}\}$.
 
@@ -361,7 +357,7 @@ $T'=\{\acm{b_1,c_1}{a_0}{a_1}, \acm{b_1}{d_0}{d_1}, \acm{d_0}{b_0}{b_1},\acm{d_1
 \end{figure}
 
 Figure~\ref{Under1} shows the under-approximate SLCG of the reachability $a_1$.
-\fbox{$c_1$} is unreachable then the joint state $\langle b_1, c_1\rangle$ is not reachable, $a_1$ is not reachable.
+\fbox{$c_1$} is unreachable then the joint state $\init{b_1, c_1}$ is not reachable, $a_1$ is not reachable.
 
 \begin{figure}[ht]
 \centering
@@ -1081,7 +1077,7 @@ In the next section, we propose an algorithm exploiting the SLCG structure to re
 After introducing the algorithms, we are going to show how they work in a minimum toy example.
 
 \begin{example}
-Let us consider a logic program $P$ with rules: $a_1\gets b_1$, $a_1\gets d_1 \land c_0$, $b_1\gets c_0$, $c_1\gets b_0$ and initial state: $\alpha=\langle a_0,b_0,c_0,d_0\rangle$.
+Let us consider a logic program $P$ with rules: $a_1\gets b_1$, $a_1\gets d_1 \land c_0$, $b_1\gets c_0$, $c_1\gets b_0$ and initial state: $\alpha=\init{a_0,b_0,c_0,d_0}$.
 Reachability properties to be verified: $Un=\{(\alpha,b_1),(\alpha,d_1)\}$ and $Re=\{(\alpha,a_1)\}$.
 Figure~\ref{fig:toyExampleM2RIT} shows the SLCG of $a_1$.
 

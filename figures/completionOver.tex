@@ -1,19 +1,12 @@
-\begin{minipage}{0.5\linewidth}
+\def\dist{1.9}
+\begin{minipage}{0.45\linewidth}
 \centering
 \begin{tikzpicture}
-\coordinate (P1) at (0,0);
-\node at (P1) {{\Large c}};
-\coordinate (P2) at (2,0);
-\node at (P2) {{\Large a}};
-\coordinate (P3) at (4,0);
-\node at (P3) {{\Large b}};
-\coordinate (P4) at ($(P2)+(150:0.6)$);
-\draw (P1) circle(0.4) ;
-\draw (P2) circle(0.4);
-\draw (P3) circle(0.4);
-\draw [line width=1pt](30:0.5) .. controls  (1,0.7) .. (P4);
-\draw [->, line width=1pt]($(P2)+(30:0.5)$) .. controls  (3,0.7) .. ($(P3)+(150:0.55)$);
-\draw [line width=1pt]($(P4)+(45:0.15)$) -- ($(P4)-(45:0.15)$);
+\node (c) [draw,circle] at (0,0) {$c$};
+\node (a) [draw,circle] at (\dist,0) {$a$};
+\node (b) [draw,circle] at (2*\dist,0) {$b$};
+\draw[->, line width = 1pt, shorten >=1pt] (a) to [bend left] (b);
+\draw [-Bar,line width = 1pt,shorten >=1pt] (c) to [bend left] (a);
 \end{tikzpicture}
 \end{minipage}
 \hfill
@@ -21,8 +14,8 @@
 \centering
 \begin{tikzpicture}
 \TSort{(0,0)}{c}{2}{l}
-\TSort{(2,0)}{a}{2}{r}
-\TSort{(4,0)}{b}{2}{r}
+\TSort{(\dist,0)}{a}{2}{r}
+\TSort{(2*\dist,0)}{b}{2}{r}
 \THit{a_1}{}{b_0}{.west}{b_1}
 \THit{c_0}{dashed,thick,color=red}{a_0}{.west}{a_1}
 

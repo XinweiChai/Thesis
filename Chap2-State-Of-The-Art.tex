@@ -210,7 +210,7 @@ A $PH$ consists of a tuple $(\Sigma, L, H)$:
 \end{definition}
 
 \begin{example}
-Figure~\ref{fig:PH} shows a PH constituting of four sorts $a$, $b$, $c$, $d$ with initial state $\langle a_1,b_0,c_0,d_1\rangle$. 
+Figure~\ref{fig:PH} shows a PH constituting of four sorts $a$, $b$, $c$, $d$ with initial state $\init{a_1,b_0,c_0,d_1}$. 
 It has actions $H=\{\acmph{a_0}{c_0}{c_1},\ \acmph{a_1}{b_1}{b_0},\ \acmph{c_1}{b_0}{b_1},\ \acmph{b_1}{a_0}{a_1},\ \acmph{b_0}{d_0}{d_1},\ \acmph{d_1}{b_0}{b_2},\ \acmph{c_1}{d_1}{d_0}\}$. 
 e.g. \acph{a_0}{c_0}{c_1} means if sort $a$ is at level 0, it allows sort $c$ to jump from level 0 to level 1.
 \end{example}
@@ -229,7 +229,7 @@ To overcome this drawback, it is needed to introduce a cooperative sort $bc$ to 
 However, the size of this representation grows exponentially with the size of the conjunction and the behavior of cooperative sorts are not equivalent to that of BN. 
 Also, this encoding introduces extra reactions, producing a temporal shift between the presence of the reactants and the playability of the reaction.
 
-\subsection{Asynchronous Automata Network (AAN)}
+\subsection{Asynchronous Automata Network (AAN)}\label{sec:AAN}
 Facing the drawback of PH, i.e. only cooperative sorts can encode reactions with conjunctions in the \textit{hitters}, Asynchronous Automata Network (AAN) is introduced by Folschette \textit{et al.}~\cite{folschette2015}.
 AAN allows one to naturally model cooperations by defining several requisites for a transition.
 Moreover, such automata networks are still compatible with the notion of priority, that can also be used to model different reaction rates in the model.
@@ -240,7 +240,7 @@ Sorts in PH are called automata in AAN.
 Also, the definition of $H$ becomes
 
 \begin{itemize}
-    \item $H=\{A\to b_j\Rsh b_k\mid b\in \Sigma \land (b_j,b_k)\in L_b\times L_b\land b_j\neq b_k\land \forall a \in \Sigma,\ |a\cap L_a|\leq 1 \land A\cap L_b=\varnothing\}$ is the finite set of actions, which defines the regulations and dynamics of the AAN: $A$, $b_j$, $b_k$ are denoted $hitter(h)$, $target(h)$ and $bounce(h)$ respectively of the action $h=A\to b_j\Rsh b_k$.
+    \item $H=\{A\to b_j\Rsh b_k\mid b\in \Sigma \land (b_j,b_k)\in L_b\times L_b\land b_j\neq b_k\land \forall a \in \Sigma,\ |A\cap L_a|\leq 1 \land A\cap L_b=\varnothing\}$ is the finite set of actions, which defines the regulations and dynamics of the AAN: $A$, $b_j$, $b_k$ are denoted $hitter(h)$, $target(h)$ and $bounce(h)$ respectively of the action $h=A\to b_j\Rsh b_k$.
 \end{itemize}
 
 With the new definition of $H$, we can now define actions needing multiple local states as condition.
@@ -289,8 +289,8 @@ However, when there are multiple fireable transition for one variable, there are
 \begin{example}\label{example:counterSynchronous}
 Given an NLP with rules $var_3^1\gets var_1^1$ and $var_3^2 \gets var_2^1$
 %$c_1\gets a_1$ and $c_2\gets b_1$ 
-and initial state $\langle var_1^1, var_2^1, var_3^0\rangle$,
-%$\langle a_1,b_1,c_0\rangle$
+and initial state $\init{var_1^1, var_2^1, var_3^0}$,
+%$\init{a_1,b_1,c_0}$
 these two rules are in conflict.
 Even though the semantics is synchronous, a choice is need to be made between these transitions.
 \end{example}
@@ -343,7 +343,7 @@ Our solution is to discretize timeline according to the moments when variables c
 In Figure~\ref{fig:discretization}, let us consider a dense enough time-series data (quasi-continuous) with two variables $x=\cos(t)$ and $y=\sin(t)$.
 The thresholds for both variables are set to 0.5.
 The left diagram shows equi-temporal discretization of step size $0.5\pi$, while the right diagram discrete time at the moment when $x$ and $y$ reach the threshold, \textit{i.e.} $\pi/6,\pi/3,5\pi/6,5\pi/3$.
-The latter discretization has no conflict with asynchronous update scheme, as there are at most one variable changing its value at each time point. \textbf{Maybe put in Appendix?}
+The latter discretization has no conflict with asynchronous update scheme, as there are at most one variable changing its value at each time point. 
 \end{example}
 
 \begin{figure}[ht]
@@ -370,10 +370,10 @@ To sum up, Table~\ref{tab:semantics} shows the difference of those three update 
 
 For synchronous update scheme, $m$ is the number of different variables in all the heads of rule.
 The formal definition $m$ is as follows:
-let $R$ be the set of rules and current state be $S=\langle var_0^{val_0},\cdots, var_n^{val_n}\rangle$. 
+let $R$ be the set of rules and current state be $S=\init{var_0^{val_0},\cdots, var_n^{val_n}}$. 
 $V=\{head(r)\mid \exists r\in R, body(r)\subseteq S\}$, then $m=|V|$.
 
-For synchronous cases we can consider the possible future states is of $O(1)$ as it is little probable that many rules are in conflict even though one can create an extreme counterexample making the number of possible future states reach its theoretical limit $C_n^m$ (the proof is given in Appendix~\ref{sec:proof}).
+For synchronous cases we can consider the possible future states is of $O(1)$ as it is little probable that many rules are in conflict even though one can create an extreme counterexample making the number of possible future states reach its theoretical limit $O(3^m)$ if the number of total states of all the variables is fixed (the proof is given in Appendix~\ref{sec:proof}).
 The possible future states is polynomial for asynchronous cases.
 However generalized update scheme has to consider the combinatorial results of the fireable transitions.
 
@@ -405,7 +405,7 @@ The benchmark part of~\cite{ribeiro2018learning} shows the complexity of general
         \hline
         nb of transitions \textit{will} be fired&$m$&$\min(1,m)$&$[0,m]$\\
         \hline
-        nb of possible future states&$[1,C_n^m]$&$m$&$[2^m,2^n]$
+        nb of possible future states& at most $O(3^m)$&$m$&$[2^m,2^n]$
     \end{tabular}
     \caption[Update schemes]{Numbers of fireable transitions in different updating scheme, where $m$ stands for the number of different variables in all the heads of fireable rule.}
     \label{tab:semantics}
