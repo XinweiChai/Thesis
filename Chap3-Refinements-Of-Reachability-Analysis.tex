@@ -460,6 +460,8 @@ As we have seen in the last section, PermReach is more conclusive than pure stat
 
 To deal with the inconclusiveness left by PermReach, we use an ASP-based method (Answer Set Programming)~\cite{baral2003knowledge} instead of the search in permutation to analyze the preprocessed SLCG with only \textbf{AND gates}.
 
+Also, Ben Abdallah \textit{et al.} \cite{abdallah2015exhaustive} have shown that pure ASP approach is costly (See Section~\ref{sec:pureASP} in Appendix) which suggests a hybrid solution.
+
 ASP is a Prolog-like declarative programming paradigm.
 It uses the description and the constraints of the problem (called rule) instead of imperative orders.
 ASP solvers tackle problems by generating all the possibilities respecting the constraints. 
@@ -696,7 +698,7 @@ We allow only state changes of one step size ($|j-k|=1$ in the Definition of res
 These modifications assure that there is only one path going from the target local state and its corresponding initial state, \textit{e.g.} from state $1$ to $3$, the only path is $1\to 2\to 3$.
 
 \begin{definition}[Restricted AAN]\label{def:resAAN}
-A restricted AAN is a tuple $\mathbb{A} = (\Sigma,T)$, where:
+A restricted Asynchronous Automata Network is a tuple $\mathbb{A} = (\Sigma,T)$, where:
 \begin{itemize}
 \item $\Sigma\triangleq\{a,b,\ldots\}$ is the finite set of automata with every automaton having a discrete state.
 The max discrete level of $a$ is denoted $l_a$ and this level is $1$ by default (Boolean) and omitted in the notation;
@@ -722,16 +724,41 @@ Given an ABAN $\mathbb{A} = (\Sigma,T)$, a global initial state $\alpha$ and a t
 \end{eqnarray*}
 where $V_{\mathrm{state}}\subseteq LS$ is a set of local states, $V_{\mathrm{sol}}\subseteq T$ is the set of solutions and $X$ is one of the required local states of $A\to a_i$.
 \end{definition}
+Example~\ref{example:ExtendedSLCG} shows that SLCG succeeds to find a trajectory jumping multiple qualitative levels ($a_0$ to $a_2$).
+\begin{example}\label{example:ExtendedSLCG}
+The left of Figure~\ref{fig:ExtendedSLCG} shows a restricted AAN $\mathbb{A}=(\Sigma,T)$ where $\Sigma=\{a,b,c\} $ with $l_a=2, l_c=2$ and $T=\{\acm{a_1,b_1}{}{a_2},\acm{a_0,c_1}{}{a_1},\acm{c_2}{}{b_1},\acm{c_1,b_0}{}{c_2}\}$.
+The initial state is $\init{a_0,b_0,c_1}$.
+An extended SLCG for computing the reachability of $a_2$ is on the right.
 
-\begin{example}
-Restricted AAN $\mathbb{A}=(\Sigma,T)$
-\begin{figure}
+\begin{figure}[ht]
     \centering
     \input{figures/extendedSLCG.tex}
-    \caption{Extended SLCG}
+    \caption[Restricted AAN and extended SLCG]{Restricted AAN and extended SLCG}
     \label{fig:ExtendedSLCG}
 \end{figure}
+
+PermReach or ASPReach can be applied to analyze the real reachability of $a_2$ (reachable \textit{via} $a_0\to a_1\to a_2$).
 \end{example}
+
+However, this extension is limited enough because we do not consider the possibility to leave and return to certain local state.
+In multi-valued situation, certain local states with different direction to the target state need to be reached to ``unlock'' the condition of certain transitions.
+Example~\ref{example:ExtendedSLCGCounterExample} shows a counterexample suggesting under certain conditions, it is necessary to leave and return to some local state ($a_2$ is reached to ``unlock'' $b_1$) and SLCG does not cover all the needed transitions.
+\begin{figure}[ht]
+    \centering
+    \input{figures/extendedCounterExample.tex}
+    \caption[Counterexample of extended SLCG]{Restricted AAN and extended SLCG, dashed arrows represent the transition actually used but it does not appear in the extended SLCG.}
+    \label{fig:ExtendedSLCGCounterExample}
+\end{figure}
+\begin{example}\label{example:ExtendedSLCGCounterExample}
+The left of Figure~\ref{fig:ExtendedSLCGCounterExample} shows a restricted AAN $\mathbb{A}=(\Sigma,T)$ where $\Sigma=\{a,b,c\} $ with $l_a=2$ and $T=\{\acm{a_1,b_1}{}{a_0},\acm{a_1,b_0}{}{a_2},\acm{a_2,c_1}{}{a_1},\acm{a_2}{}{b_1}\}$.
+The initial state is $\init{a_1,b_0,c_1}$.
+An extended SLCG for computing the reachability of $a_0$ is on the right.
+As $a_2$ appears in the extended SLCG, it needs to be reached.
+However $a_1$ is no longer reachable with the only help of the transitions in the extended SLCG.
+$a_0$ is in fact reachable \textit{via} $\acm{a_1,b_0}{}{a_2}::\acm{a_2}{}{b_1}::\acm{a_2,c_1}{}{a_1}::\acm{a_1,b_1}{}{a_0}$ and the state change of $a$ is $a_1\to a_2\to a_1\to a_0$.
+\end{example}
+
+Even though this extension is not a complete method, it remains to be a heuristics to discover certain trajectories if there exist such.
 
 \section{R\'esum\'e}
 In this chapter, we formally (re)defined the modeling framework used for static analysis: Asynchronous Binary Automata Network and some terminology.
@@ -743,6 +770,8 @@ PermReach relies on a complete search on the permutations of \textbf{AND gates}.
 However, permutations do not cover all the possible trajectories but PermReach is very efficient .
 
 ASPReach does a finer work than PermReach, searching all the possible trajectories of a preprocessed ABAN (without cycles and \textbf{OR gates}).
+
+An extension of the above reachability analysis to multi-valued models (restricted AAN and extented SLCG) allows one to partly discover the solutions but it appears to be also an interesting heuristics. 
 
 The experimental results are in Chapter~\ref{chap:test} Benchmark showing these two approaches can deal with more problems than pure static analysis.
 

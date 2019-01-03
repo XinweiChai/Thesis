@@ -14,10 +14,10 @@ $f(a)=(b\land d)\lor(b\land e)\lor(c\land d)\lor(c\land e)$, and $\lnot f(a)=(\l
 The equivalent ABAN is then constructed: 5 automata $\mathbf{\Sigma}=\{a,b,c,d,e\}$, with transitions: $\mathbf{T}=\{\acm{b_1,d_1}{a_0}{a_1},\ \acm{b_1,e_1}{a_0}{a_1},\ \acm{c_1,d_1}{a_0}{a_1},\ \acm{c_1,e_1}{a_0}{a_1},\ \acm{b_0,c_0}{a_1}{a_0},\ \acm{d_0,e_0}{a_1}{a_0}\}$.
 \end{example}
 
-\section{Multivalued Logic Program}
-PermReach and ASPReach can also be applied to multivalued Logic Programs.
+%\section{Multivalued Logic Program}
+%PermReach and ASPReach can also be applied to multivalued Logic Programs.
 
-\textbf{To be continued}
+%\textbf{To be continued}
 
 \chapter{Algorithms}\label{chap:algo}
 
@@ -539,10 +539,6 @@ PermReach and ASPReach can also be applied to multivalued Logic Programs.
     \end{proof}
 \end{theorem}
 
-\begin{theorem}[Coverage of under-approximation]\label{th:underapprox}
-    \begin{proof}
-    \end{proof}
-\end{theorem}
 
 \begin{definition}[Rank in digraphs]\label{def:rank}
 Given a digraph $G=(V,E)$, the rank of 
@@ -551,9 +547,9 @@ Given a digraph $G=(V,E)$, the rank of
 
 
 \chapter{Pure ASP reachability analyzer}
-\section{ASP Implementation}
-\section{Runtime Comparison}
-\cite{abdallah2015exhaustive}
+\section{Pure ASP Implementation}\label{sec:pureASP}
+Ben Abdallah \textit{et al.} \cite{abdallah2015exhaustive} have implemented reachability analysis using pure ASP approach (brute force search) and have done the comparison between the state-of-the-art methods of 2015.
+
 \begin{table}[ht]
     \centering
     \footnotesize
@@ -571,3 +567,5 @@ Given a digraph $G=(V,E)$, the rank of
     \caption[Performance of pure ASP method]{Compared performances of Rocca et al. method~\cite{rocca2014asp} denoted by ASP-Th, Pint, libddd, GINsim and our new iterative method ASP-PH}
     \label{tab:pureAsp}
 \end{table}
+
+Table \ref{tab:pureAsp} shows pure ASP style methods (ASP-Th and ASPi-PH) are still costly compared to PermReach and ASPReach.

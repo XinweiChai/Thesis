@@ -312,8 +312,9 @@ If one wants the guarantee of the reachability even at the price of redundant tr
 
 Under-approximation is a variation of SLCG reasoning. 
 It associates the local states and the transitions with the initial state and \textit{all the states which may appear}.
-This association covers all the orders of occurrence (proof is given in Theorem~\ref{th:underapprox} of Appendix).
-Similar to over-approximation, in the SLCG of under-approximation, if there is a pathway between target local state and the initial state, this target state \textit{should} be reachable.
+This association covers more orders of occurrence than over-approximation as it takes into account the mutual reachability between local Boolean states if both are appeared in the SLCG.
+%if there is no cycle in the SLCG, proven by Paulev\'e \textit{et al.} \cite{pauleve2012}.  % (proof is given in Theorem~\ref{th:underapprox} of Appendix).
+Similar to over-approximation, in the SLCG of under-approximation, if there is a pathway between target local state and the initial state, this target state might be reachable.
 
 However, all the orders of occurrence do not necessarily appear during the simulation, which suggest that this approach ``under-approximates'' the reachability.
 

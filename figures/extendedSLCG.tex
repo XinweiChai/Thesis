@@ -21,7 +21,7 @@
 \centering
 \begin{tikzpicture}[aS]  
   	
-  	\startl{a_2};
+  	\node[Aproc] (a_2){$a_2$};
   	\node[Asol,above of = a_2] (a_2s){};
   	\node[Aproc,above right of = a_2s] (b_1){$b_1$};
   	\node[Asol,right of = b_1] (b_1s){};
@@ -29,7 +29,8 @@
   	\link{c_2}{b_0};
   	\node[Asol,right of = b_0] (b_0s){};
   	\node[Assol,below of = b_0s] (b_0ed){$\varnothing$};
-  	\link{a_2}{a_1};
+  	\node[Aproc,right of = a_2s] (a_1){$a_1$};
+  	\node[Asol,right of = a_1] (a_1s){};
   	\specl{below}{a_1}{a_0};
   	\edl{a_0};
   	\link{a_1}{c_1};
@@ -38,10 +39,11 @@
   	(c_2s) edge (c_1)
   	(a_2) edge (a_2s)
   	(a_2s) edge (b_1)
+  	(a_2s) edge (a_1)
+  	(a_1) edge (a_1s)
   	(b_1) edge (b_1s)
   	(b_0) edge (b_0s)
   	(b_0s) edge (b_0ed)
   	;
-  	%\node[right = 0.1cm of c_1s] {AND};
     \end{tikzpicture}
 \end{minipage}
