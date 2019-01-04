@@ -417,7 +417,7 @@ In Example~\ref{example:order}, $REACH(\alpha,a_1::b_1::c_1)=\true$ and $REACH(\
 As the firing order matters, we come to verify all the possible sequential reachabilities of certain joint state to verify its reachability.
 
 \begin{proposition}\label{theoperm}
-Given joint state $s=\{ls_1,\ldots,ls_n\}$, with all the local states in $s$ are reachable: $reach(\alpha,ls_i)=\true,\ \forall i\in[1,n]$.
+Given joint state $s=\{ls_1,\ldots,ls_n\}$, with all the local states in $s$ are reachable: $reach(\alpha,ls_i)=\true,\ \forall i\in[1;n]$.
 The set of all the permutations of $s$ is denoted $Perm(s)=\{(ls_1::ls_2,::\ldots ::ls_n),\ \cdots,\ (ls_n::ls_{n-1}::\ldots,::ls_1)\}$.
 $\bigvee_{j\in Perm(s)} REACH(\alpha,j)=\true$ is a sufficient condition of $REACH(\alpha,s)=\true$.
 \end{proposition}
@@ -726,7 +726,7 @@ A restricted Asynchronous Automata Network is a tuple $\mathbb{A} = (\Sigma,T)$,
 The max discrete level of $a$ is denoted $l_a$ and this level is $1$ by default (Boolean) and omitted in the notation;
 \item The states of $\mathbb{A}$ can then be defined: $LS\triangleq \underset{a\in \Sigma}{\bigcup} \{a_0,\ldots,a_{l_a}\}$ is the set of all \textit{local states}, $L\triangleq \underset{a\in \Sigma'}{\times} \{a_0,\ldots,a_{l_a}\}$ is the set of \textit{joint states} where $\Sigma'\subseteq\Sigma$. Particularly, if $\Sigma'=\Sigma$, $L$ is the set of \textit{global states}. 
 %\item $T=\{A\to b_j\Rsh b_k\mid b\in \Sigma \land (b_j,b_k)\in L_b\times L_b\land |j-k|=1\land \forall a \in \Sigma,\ |A\cap L_a|\leq 1 \land A\cap L_b=\varnothing\}$ is the finite set of transitions, which defines the regulations and dynamics of the restricted AAN: $A$, $b_j$, $b_k$ are denoted $hitter(h)$, $target(h)$ and $bounce(h)$ respectively of the transition $t=A\to b_j\Rsh b_k$.
-\item $T=\{A\to b_k\mid A\in L,\ b\in \Sigma,\ k\in[1,l_b]\land \text{if } l_b>1,\ \exists b_j\in A,\ j\in[1,l_b],\ |j-k|=1, \text{ else } \nexists b_j\in A\}$ is the finite set of transitions, which defines the regulations and dynamics of the restricted AAN: $A$, $b_k$ are denoted $head(h)$, $body(h)$ respectively of the transition $tr=A\to b_k$.
+\item $T=\{A\to b_k\mid A\in L,\ b\in \Sigma,\ k\in[1;l_b]\land \text{if } l_b>1,\ \exists b_j\in A,\ j\in[1;l_b],\ |j-k|=1, \text{ else } \nexists b_j\in A\}$ is the finite set of transitions, which defines the regulations and dynamics of the restricted AAN: $A$, $b_k$ are denoted $head(h)$, $body(h)$ respectively of the transition $tr=A\to b_k$.
 \end{itemize}
 \end{definition}
 

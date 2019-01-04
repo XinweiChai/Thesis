@@ -379,22 +379,6 @@ However generalized update scheme has to consider the combinatorial results of t
 
 The benchmark part of~\cite{ribeiro2018learning} shows the complexity of generalized semantics, where the model inference fails with 12 components in the model. 
 
-%\begin{table}[ht]
-%    \centering
-%    \begin{tabular}{c|c|c}
-%            &nb of fireable transitions &nb of transitions \textit{will} be fired\\
-%            \hline
-%         Synchronous & \multirow{3}{*}{$n$} & $\min(m,n)$\\%, at most $n$\\
-%         \cline{1-1} \cline{3-3}
-%            
-%         Asynchronous & & $\min(1,n)$\\ \cline{1-1} \cline{3-3}
-%            
-%         Generalized &  & $[0,m]$
-%    \end{tabular}
-%    \caption[Update schemes]{Numbers of fireable transitions in different updating scheme, where $m$ stands for the number of different variables in all the heads of fireable rule.}
-%    \label{tab:semantics}
-%\end{table}
-
 \begin{table}[ht]
     \centering
     \small
@@ -403,9 +387,9 @@ The benchmark part of~\cite{ribeiro2018learning} shows the complexity of general
         \hline
         nb of fireable transitions&\multicolumn{3}{c}{$n$}\\
         \hline
-        nb of transitions \textit{will} be fired&$m$&$\min(1,m)$&$[0,m]$\\
+        nb of transitions \textit{will} be fired&$m$&$\min(1,m)$&$[0;m]$\\
         \hline
-        nb of possible future states& at most $O(3^m)$&$m$&$[2^m,2^n]$
+        nb of possible future states& at most $O(3^m)$&$m$&$[2^m;2^n]$
     \end{tabular}
     \caption[Update schemes]{Numbers of fireable transitions in different updating scheme, where $m$ stands for the number of different variables in all the heads of fireable rule.}
     \label{tab:semantics}

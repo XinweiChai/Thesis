@@ -172,7 +172,7 @@ $\mathbb{V}_0$ refers to the initial valuation s.t $\forall n \in V_{\mathrm{sta
             \zeta^N(\{\{\omega\}\}\cup\prod_{m\in n.next}\mathbb{V}(m))&\text{if }n=\omega\\
       \end{cases}
 \end{equation}
-where $\zeta^N(\{e_1,\ldots,e_n\})\triangleq\{e_i\mid i\in[1,n]\land |e_i|\leq N\land\nexists j\in[1,n],j\neq i,e_j\subset e_i\}$, $e_i$ being sets, $\forall i\in[1,n]$.
+where $\zeta^N(\{e_1,\ldots,e_n\})\triangleq\{e_i\mid i\in[1;n]\land |e_i|\leq N\land\nexists j\in[1;n],j\neq i,e_j\subset e_i\}$, $e_i$ being sets, $\forall i\in[1;n]$.
 \end{definition}
 
 Algorithm~\ref{alg:cut} describes the whole process, where $rk(n)$ refers to the rank of $n$ in the SLCG (See Definition~\ref{def:rank} in Appendix), characterizing the parent-child relations between nodes where a node with lower rank cannot be the parent of a node with higher rank.
@@ -191,7 +191,7 @@ The algorithm terminates when valuation $\mathbb{V}$ becomes saturated, \textit{
 		\State $\mathcal{M}\gets\mathcal{M}\miset{n}$
 		\State $\mathbb{V}'\gets\mathsf{update}(\mathbb{V},n)$
 		\If{$\mathbb{V}'(n)\neq\mathbb{V}(n)$}
-		    \State $\mathcal{M}\gets\mathcal{M}\cup(n.pred)$
+		    \State $\mathcal{M}\gets\mathcal{M}\cup n.pred$
 		\EndIf
 		\State $\mathbb{V}\gets\mathbb{V}'$
 \EndWhile
@@ -403,7 +403,7 @@ Here we introduce a method to generate candidate regulations to be verified from
 
 In the previous contents, only the systems consisting of transitions with delay of 1 time unit are discussed (BN, ABAN, etc.), i.e. the influence done by variables will take place at the next time point (immediately).
 However, in biological context, some reactions have a long duration, and some even need a whole observation period to take place.
-For this reason, we require approaches to reveal transitions of different delays: for an observation of period $T$, possible delays lie in $[1,T-1]$.
+For this reason, we require approaches to reveal transitions of different delays: for an observation of period $T$, possible delays lie in $[1;T-1]$.
 
 \subsection{Preliminaries}
 In Definition~\ref{def:RN} on page \pageref{def:RN}, the definition of regulatory network (RN) is originally related to a set of approximated ordinary differential equations (ODEs)~\cite{khalis2009smbionet} (continuous modeling):
@@ -594,7 +594,7 @@ In this way, regulations of $b,c,d$ on $a$ are then evaluated by PPCC or PSCC (s
 With the matrices $A'^k$, we can compute the matrix containing the correlation information of all the variable pairs.
 
 \begin{definition}[Correlation matrix]\label{def:corrMatrix}
-    Let $A'^k$ be the regrouped matrices of time-series data matrix $A$ with $k\in [1,n]$ and $\Sigma$ be the set of all the variables, the $n\times n$ correlation matrix is defined:
+    Let $A'^k$ be the regrouped matrices of time-series data matrix $A$ with $k\in [1;n]$ and $\Sigma$ be the set of all the variables, the $n\times n$ correlation matrix is defined:
     $$\mathcal{R}_{ij}=pr_{ij,\Sigma\miset{i,j}}$$ 
     where the original data for computing $pr_{ij,\Sigma\miset{i,j}}$ come from $A'^i$.
     As we do not study self-regulation in this thesis, we set $pr_{ij,\Sigma\miset{i,j}}=\mathrm N/A$.
@@ -613,11 +613,11 @@ To obtain a result in ABAN form, variable reconstruction is necessary.
 \begin{definition}[Variable Reconstruction]
     Let $x(t)$ be a variable in time series data with $l$ levels from $0$ to $l-1$, the corresponding intervals are $[0,x_0],[x_0,x_1],\cdots,[x_{l-2},x_{l-1}]$, with $x_i$ the thresholds. 
     The reconstructed variable of $x$ are:
-        $x_i'(t)=x(t)$ with their domain in $\{t|x(t)\in [x_{i-2},x_{i-1}]\}$ and $i\in [0,l-1]$.
+        $x_i'(t)=x(t)$ with their domain in $\{t|x(t)\in [x_{i-2},x_{i-1}]\}$ and $i\in [0;l-1]$.
 \end{definition}
 
 \begin{example}
-In Figure~\ref{varRec}, with the Boolean discretization on the threshold, variable $a(t)=0.8\sin t+1\ (t\in [0,7])$ is split into 2 variables $a_0'(t)=0.8\sin t+1\ (t\in (\pi,2\pi))$ (dark gray) and $a_1'(t)=0.8\sin t+1(t\in [0,\pi]\cup[2\pi,7])$ (light gray) with different domains according to the qualitative threshold.
+In Figure~\ref{varRec}, with the Boolean discretization on the threshold, variable $a(t)=0.8\sin t+1\ (t\in [0;7])$ is split into 2 variables $a_0'(t)=0.8\sin t+1\ (t\in (\pi,2\pi))$ (dark gray) and $a_1'(t)=0.8\sin t+1(t\in [0,\pi]\cup[2\pi,7])$ (light gray) with different domains according to the qualitative threshold.
 \end{example}
 
 \begin{figure}[ht]
