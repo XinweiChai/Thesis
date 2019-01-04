@@ -135,7 +135,7 @@ Transition interpretation table (C) and state transition graph (D) are straightf
 \end{itemize}
 One set of transition interpretations or one state transition graph could correspond to multiple set of Boolean functions.
 
-In term of expressivity, BNs can be translated to Normal Logic Programs (NLP)~\cite{inoue2011logic}.
+In term of expressiveness, BNs can be translated to Normal Logic Programs (NLP)~\cite{inoue2011logic}.
 NLP provides a more dynamical representation and also for applying SAT techniques in the computation of point attractors of both synchronous and asynchronous semantics~\cite{dubrova2011sat,harvey1997time}.
 
 \subsection{Normal Logic Program (NLP)}\label{sec:logicProgram}
@@ -193,7 +193,7 @@ In PH, the corresponding meaning becomes the interaction between different compo
 Process Hitting is an asynchronous automata network, i.e. allowing at most one transition fired simultaneously. 
 PH is more expressive than Asynchronous Thomas' model~\cite{thomas1978} or Asynchronous BN. 
 Actions in Process Hitting are more capable of describing various transitions than Boolean functions or attractors as it specifies the regulating and regulated components and their quantitative levels.
-Also it expresses explicitly cooperations between several components and stochastic features using $\pi$-calculus which are not detailed in this report~\cite{pauleve2014}.
+Also it expresses explicitly the cooperation between several components and stochastic features using $\pi$-calculus which are not detailed in this report~\cite{pauleve2014}.
 
 Moreover, in order to define efficient analysis techniques that avoid to build the whole state space of the model causing state space explosion (in Thomas' model and Boolean network), various abstract structures have been introduced, and one of them is graph of causality, which allows a reasoning of the reachability of local states instead of traverse of global states.
 
@@ -415,7 +415,7 @@ The benchmark part of~\cite{ribeiro2018learning} shows the complexity of general
 Model Checking is an automatic verification technique for large state transition systems and was independently developed by Clarke and Emerson~\cite{clarke1981design} and by Queille and Sifakis~\cite{queille1982specification} in the early 1980s. It was originally developed for reasoning about finite-state concurrent systems.
 Typically, a model checker has three basic components: a modeling formalism adopted to encode a state machine representing the system to be verified, a specification language based on Temporal Logic, and a verification algorithm~\cite{clarke20142} which employs an exhaustive searching of the entire state space to determine whether the specification holds or not.
 
-In this thesis we focus on reachability (\textbf{EF} in Temporal Logic) as most temporal properties can be reduced to reachability problems due to the expresiveness of hybrid modeling frameworks.
+In this thesis we focus on reachability (\textbf{EF} in Temporal Logic) as most temporal properties can be reduced to reachability problems due to the expressiveness of hybrid modeling frameworks.
 
 \subsection{Exact Model Checkers}
 At first, Model Checking was done by the search in the state transition graphs, which are encoded in adjacent lists~\cite{clarke1981design}.
@@ -429,7 +429,7 @@ However, the performance is still not enough to analyze problems in systems biol
 Model Checkers are widely applied to hardware and software.
 Especially when applied to software, algorithmic verification techniques have
 to deal with software’s infinite state space, requiring abstraction techniques to make problems tractable.
-SPIN~\cite{holzmann1997model} and Goanna~\cite{fehnker2006goanna} are designed as source code analyzers, by verifying a set of over-approximative conditions, they managed to check the safety/liveness properties of a program or whether certain program behaves as expected. 
+SPIN~\cite{holzmann1997model} and Goanna~\cite{fehnker2006goanna} are designed as source code analyzers, by verifying a set of over-approximate conditions, they managed to check the safety/liveness properties of a program or whether certain program behaves as expected. 
 However, the static code analyzers only determine run-time properties of programs by examining the code structure, which may produce false-positive and false-negative results~\cite{vorobyov2010comparing}.
 
 Inspired by these ideas, Pint~\cite{Pint} takes the initiative to apply pure static analysis, combine over-approximation and under-approximation~\cite{pauleve2012} to squeeze the state space in order to try to solve the original reachability problem of a PH or an AAN (See Figure~\ref{fig:vennDiagram}).

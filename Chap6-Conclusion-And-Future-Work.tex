@@ -57,7 +57,10 @@ They are based on heuristic methods and pure static analysis:
 PermReach and ASPReach perform normally on models with $1000$ components while traditional model checkers fail to compute and static analyzer Pint also fails to give conclusive results on certain instances (Section~\ref{sec:compReachAnalyzers}).
 Moreover, ASPReach is more conclusive than PermReach but need extra runtime.
 
-Next, with the unsatisfied properties detected by model checkers, we need a way to correct the model in order to make the system consistent withall the wanted properties (Chapter~\ref{chap:modelInference}).
+As a tentative, we tried to extend the application of PermReach and ASPReach to multi-valued models (restricted AAN).
+However, this extension requires a presumption which is not realistic enough in biological systems but remains to be an interesting heuristics when the requirement is to find only one reachable trajectory instead of a global solution (Section~\ref{sec:extentionMultiValue}).
+
+Next, with the unsatisfied properties detected by our model checkers, we need a way to correct the model in order to make the system consistent withall the wanted properties (Chapter~\ref{chap:modelInference}).
 
 Two model learning/revision techniques based on reachability analysis, covering the incapability of taking background knowledge into account.
 

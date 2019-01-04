@@ -67,7 +67,7 @@ These properties do not hold in multi-valued models (See Section~\ref{sec:SLCG})
 An ABAN is a tuple $\mathbb{A} = (\Sigma,T)$, where:
 \begin{itemize}
 \item $\Sigma\triangleq\{a,b,\ldots\}$ is the finite set of automata with every automaton having a Boolean state;
-\item The states of $\mathbb{A}$ can then be defined: $LS\triangleq \underset{a\in \Sigma}{\cup} \{a_0,a_1\}$ is the set of all \textit{local states}, $L\triangleq \underset{a\in \Sigma'}{\times} \{a_0,a_1\}$ is the set of \textit{joint states} where $\Sigma'\subseteq\Sigma$. Particularly, if $\Sigma'=\Sigma$, $L$ is the set of \textit{global states}. 
+\item The states of $\mathbb{A}$ can then be defined: $LS\triangleq \underset{a\in \Sigma}{\bigcup} \{a_0,a_1\}$ is the set of all \textit{local states}, $L\triangleq \underset{a\in \Sigma'}{\times} \{a_0,a_1\}$ is the set of \textit{joint states} where $\Sigma'\subseteq\Sigma$. Particularly, if $\Sigma'=\Sigma$, $L$ is the set of \textit{global states}. 
 \item $T\triangleq \{A\rightarrow b_i\mid b\in \Sigma \land A\in L\}$ is the set of transitions.
 For transition $tr=A\to b_i$, $A$ (called head, noted $head(tr)$) is the set of required state(s), which allows to flip $b_{1-i}$ to $b_i$ (called body, noted $body(tr)$). In other words, transition $tr$ is said fireable iff $A\subseteq s$, where $s$ is the current global state. 
 \end{itemize}
@@ -86,7 +86,7 @@ To conclude, joint state is the most general case, when $|\Sigma'|=1$, it become
 when $\Sigma'=\Sigma$, it becomes a global state.
 
 \begin{definition}[Dynamics]\label{def:ABANdynamics}
-    From current global state $s$, the global state after firing transition $tr=A\to b_j$ is denoted $s \cdot tr = s \setminus \{b_i\} \cup \{b_j\}, b_i \in s$.
+    From current global state $s$, the global state after firing transition $tr=A\to b_j$ is denoted $s \cdot tr = s \miset{b_i} \addset {b_j}, b_i \in s$.
     If there does not exist fireable transition, $s$ remains unchanged.
     The state of a certain automaton $a$ is noted $(s\cdot tr)[a]$.
 \end{definition}
@@ -139,17 +139,17 @@ One can define various dynamical properties by using reachability, \textit{e.g.}
 Moreover, Proposition~\ref{def:transformReach} explains the reachability of a joint state even a global state can be transformed to that of a local state.
 
 \begin{proposition}[Transformation of reachability]\label{def:transformReach}
-Given an ABAN $\mathbb{A}=(\Sigma,T)$ and a joint reachability problem $REACH(\alpha,\Omega)$, there exists an ABAN $\mathbb{A}'=(\Sigma,T')$ with $\Sigma'=\Sigma\cup\{x\}$ and $T'=T\cup\{\Omega\to x_1\}$ s.t. the local reachability problem in $\mathbb{A}'$ $reach(\alpha', x_1)$ with $\alpha'=\alpha\cup\{x_0\}$ is equivalent to $REACH(\alpha,\Omega)$ in $\mathbb{A}$.
+Given an ABAN $\mathbb{A}=(\Sigma,T)$ and a joint reachability problem $REACH(\alpha,\Omega)$, there exists an ABAN $\mathbb{A}'=(\Sigma,T')$ with $\Sigma'=\Sigma\addset{x}$ and $T'=T\addset{\Omega\to x_1}$ s.t. the local reachability problem in $\mathbb{A}'$ $reach(\alpha', x_1)$ with $\alpha'=\alpha\addset{x_0}$ is equivalent to $REACH(\alpha,\Omega)$ in $\mathbb{A}$.
 \end{proposition}
 
 \begin{proof}
-If $REACH(\alpha,\Omega)=\mathbf{True}$, there must exists a trajectory $t$ satisfying $\alpha\cdot t=\Omega$.
+If $REACH(\alpha,\Omega)=\true$, there must exists a trajectory $t$ satisfying $\alpha\cdot t=\Omega$.
 $t$ is consistent with $\mathbb{A}'$ with initial state $\alpha'$ as $\mathbb{A}'$ contains all the elements in $\mathbb{A}$ and $\alpha\subset\alpha'$.
-After firing all the transitions in $t$, the global state becomes $\Omega\cup\{x_0\}$, transition $\Omega\to x_1$ is fireable and $x_1$ is reachable from $\alpha'$ \textit{via} $t'=t::\Omega\to x_1$, thus $reach(\alpha', x_1)=\mathbf{True}$. 
+After firing all the transitions in $t$, the global state becomes $\Omega\addset{x_0}$, transition $\Omega\to x_1$ is fireable and $x_1$ is reachable from $\alpha'$ \textit{via} $t'=t::\Omega\to x_1$, thus $reach(\alpha', x_1)=\true$. 
 
-If $REACH(\alpha,\Omega)=\mathbf{False}$, there does not exist a trajectory $t$ satisfying $\alpha\cdot t=\Omega$.
+If $REACH(\alpha,\Omega)=\false$, there does not exist a trajectory $t$ satisfying $\alpha\cdot t=\Omega$.
 In $\mathbb{A}'$, this conclusion remains true as the only added transition $\Omega\to x_1$ is useless in the reachability of $\Omega$.
-The only pathway towards $x_1$ is through $\Omega\to x_1$, as $\Omega$ is not reachable, $x_1$ is not reachable, $reach(\alpha', x_1)=\mathbf{False}$.
+The only pathway towards $x_1$ is through $\Omega\to x_1$, as $\Omega$ is not reachable, $x_1$ is not reachable, $reach(\alpha', x_1)=\false$.
 
 Similarly, we can prove the global reachability from local one.
 \end{proof}
@@ -168,8 +168,8 @@ LCG abstracts the original problem through an over-approximation (necessary cond
 It is a very efficient tool as there is no global search and all the operations are bounded in polynomial complexity.
 However LCG does not guarantee to obtain a result, i.e. some inconclusive instances satisfy the necessary condition but fail sufficient conditions, thus one has no clue about the reachability of these instances.
 
-In this thesis, we make use of the LCG by removing objective nodes needed only in multivalued networks, naming it SLCG (Simplified LCG), then we try to analyze it more deeply to solve inconclusive cases of binary valued systems.
-In fact, Didier \textit{et al.}~\cite{didier2011mapping} have shown a technique to transform multivalued networks to Boolean networks, which broadened the applicability to multivalued networks.
+In this thesis, we make use of the LCG by removing objective nodes needed only in multi-valued networks, naming it SLCG (Simplified LCG), then we try to analyze it more deeply to solve inconclusive cases of binary valued systems.
+In fact, Didier \textit{et al.}~\cite{didier2011mapping} have shown a technique to transform multi-valued networks to Boolean networks, which broadened the applicability to multi-valued networks.
 
 SLCG is aimed at studying the reachability of a target state while given an ABAN and a global initial state.
 SLCG is a goal-oriented method.
@@ -179,24 +179,24 @@ This process terminates because the local states are finite, of size $O(n)$, whe
 In the worst case, SLCG contains all the local states of the ABAN.
 
 \begin{definition}[Over-approximate SLCG]\label{defSLCG}
-Given an ABAN $\mathbb{A} = (\Sigma,T)$, a global initial state $\alpha$ and a target local state $\omega$, SLCG $l= (V_{\mathrm{state}},V_{\mathrm{sol}},E)$ is the smallest recursive structure with $E \subseteq (V_{\mathrm{state}}\times V_{\mathrm{sol}})\cap (V_{\mathrm{sol}}\times V_{\mathrm{state}})$ which satisfies:
+Given an ABAN $\mathbb{A} = (\Sigma,T)$, a global initial state $\alpha$ and a target local state $\omega$, SLCG $l= (V_\st,V_\sol,E)$ is the smallest recursive structure with $E \subseteq (V_\st\times V_\sol)\cap (V_\sol\times V_\st)$ which satisfies:
 \begin{eqnarray*}
-    \omega&\in& V_{\mathrm{state}} \\
-    a_i\in V_{\mathrm{state}} &\Leftrightarrow& \{ (a_i, A\to a_i)\}\subseteq E \\
-    A\to a_i\in V_{\mathrm{sol}}&\Leftrightarrow& \{ (A\to a_i,X)\mid X= \varnothing \text{ \rm if } a_i\in \alpha,\\
+    \omega&\in& V_\st \\
+    a_i\in V_\st &\Leftrightarrow& \{ (a_i, A\to a_i)\}\subseteq E \\
+    A\to a_i\in V_\sol&\Leftrightarrow& \{ (A\to a_i,X)\mid X= \varnothing \text{ if } a_i\in \alpha,\\
     &&\text{else }\forall b_j\in A,\ X= b_j\}\subseteq E
 \end{eqnarray*}
-where $V_{\mathrm{state}}\subseteq LS$ is a set of local states, $V_{\mathrm{sol}}\subseteq T$ is the set of solutions and $X$ is one of the required local states of $A\to a_i$.
+where $V_\st\subseteq LS$ is a set of local states, $V_\sol\subseteq T$ is the set of solutions and $X$ is one of the required local states of $A\to a_i$.
 \end{definition}
 
-It is worth noticing that every state node in $V_{\mathrm{state}}$ forms an \textbf{OR gate} as a local state $a$ is reachable if there exists one fireable transition with body $a$.
-Similarly, every solution node in $V_{\mathrm{sol}}$ forms an \textbf{AND gate} as a transition is fireable only if all the local states in its head are reachable.
+It is worth noticing that every state node in $V_\st$ forms an \textbf{OR gate} as a local state $a$ is reachable if there exists one fireable transition with body $a$.
+Similarly, every solution node in $V_\sol$ forms an \textbf{AND gate} as a transition is fireable only if all the local states in its head are reachable.
 
 \begin{remark}\label{remark:SLCG}
-Original LCGs consist of three kinds of nodes: \textbf{state nodes} corresponding to the local states of automata {\rm($V_{\mathrm{state}}$)}, \textbf{objective nodes} corresponding to the state transition paths within one automata {\rm($V_{\mathrm{objective}}$)}, \textbf{solution nodes} corresponding to the transitions to be used for each state transition path {\rm($V_{\mathrm{sol}}$)}.
+Original LCGs consist of three kinds of nodes: \textbf{state nodes} corresponding to the local states of automata ($V_\st$), \textbf{objective nodes} corresponding to the state transition paths within one automata {\rm($V_{\mathrm{objective}}$)}, \textbf{solution nodes} corresponding to the transitions to be used for each state transition path ($V_\sol$).
 However, under the circumstance of ABAN, objective nodes are no longer needed.
 Because for one state $a_i$ to be reached, the only possible path is $a_{1-i}\to a_i$ ($0\to1 $ or $1\to 0$).
-Unlike multi-valued case, for example, if one wants to reach $a_1$ from $a_0$ (suppose possible states for $a$ are 0,1,2), there are in fact infinite possibile paths: $0\to 1,\ 0\to 2 \to 1,\ 0 \to 2 \to 0 \to 1,\ \ldots$
+Unlike multi-valued case, for example, if one wants to reach $a_1$ from $a_0$ (suppose possible states for $a$ are 0,1,2), there are in fact infinite possible paths: $0\to 1,\ 0\to 2 \to 1,\ 0 \to 2 \to 0 \to 1,\ \ldots$
 This simplification in fact reduces the searching space and reinforces the conclusiveness.
 \end{remark}
 
@@ -218,7 +218,7 @@ Starting from  a given target local state $\omega$, one can find all the transit
 Then we find all the heads $A$ of $T_s$ and add edges $T_s \to A$ and replace $Ls$ with $A$ (recursion).
 Finally, we update the structure until $Ls\subseteq \alpha$ or there is no transition with body in $Ls$.
 
-Intuitively, when the recursive construction is complete, SLCG is in fact a digraph with state nodes $V_{\mathrm{state}}$ and solution nodes $V_{\mathrm{sol}}$. 
+Intuitively, when the recursive construction is complete, SLCG is in fact a digraph with state nodes $V_\st$ and solution nodes $V_\sol$. 
 $E$ consists of the edges between local state nodes and solution nodes. 
 To access certain local states, at least one of its successor solutions (corresponding transitions from solution nodes) needs to be fired; to make one solution node fireable, all of its successor local states need to be satisfied. 
 A recursive reasoning of reachability tries to explore a pathway.
@@ -231,7 +231,7 @@ Pseudo-reachability is a procedure computing the existence of such pathway by co
 However, pseudo-reachability is named ``pseudo'' because it is only an over-approximation of the reachability, i.e. it verifies a necessary condition of the reachability.
 
 \begin{definition}[Pseudo-reachability]\label{defPseudoReach}
-Given an SLCG $l=(V_{\mathrm{state}},V_{\mathrm{sol}},E)$ with global initial state $\alpha$, the pseudo-reachability of node $v\in V_{\mathrm{state}}$ is defined as
+Given an SLCG $l=(V_\st,V_\sol,E)$ with global initial state $\alpha$, the pseudo-reachability of node $v\in V_\st$ is defined as
 \begin{equation}
 \nonumber
     reach'(\alpha,v)=
@@ -332,9 +332,9 @@ Given a cycle, if it contains no edge towards outside of the cycle, all the loca
 \begin{proof}
 Suppose an arbitrary cycle $C=a_i\to \cdots b_j\to\cdots \to a_i$, with $\to$ an edge in the SLCG.
 Note that $reach'(\alpha,a_i)\implies reach'(\alpha,b_j)\implies reach'(\alpha,b_j.next)\implies \cdots\implies reach'(\alpha,a_i)$.
-According to the definition of $reach'$, $reach'(\alpha,a)=\mathbf{True}$ only if $\exists c_k\in C$ and $c_k\in \alpha$.
+According to the definition of $reach'$, $reach'(\alpha,a)=\true$ only if $\exists c_k\in C$ and $c_k\in \alpha$.
 If there exists such $c_k$, $C$ should not exist as the reasoning stops at $c_k$ and does not form a cycle, contradiction.
-$reach'(\alpha,a_i)=reach'(\alpha,b_j)=\cdots =\mathbf{False}$.
+$reach'(\alpha,a_i)=reach'(\alpha,b_j)=\cdots =\false$.
 \end{proof}
 
     \begin{figure}[ht]
@@ -401,29 +401,29 @@ If such joint state is reachable, the corresponding transition can be fired.
 However in the Example~\ref{example:order}, $c_1$ can be reached only in \textit{certain order}. This order cannot be retrieved by SLCG, as SLCG works statically.  
 The following contents are contributed to retrieve an admissible order to reach a joint state.
 
-%In Figure~\ref{fig:unreach}, $s=\{b_1,c_1\}$ is a joint state, when $s$ is reached, transition \ac{b_1,c_1}{a_0}{a_1} is fireable.
 The reachability of a joint state can be formulated as sequential reachability:
+
 \begin{definition}[Sequential reachability]
 Let $s=\{ls_1,\ldots,ls_n\}$ be a joint state, $p_1,\ldots ,p_n$ be a permutation of $1,\ldots ,n$ and $seq=ls_{p_1}::\ldots::ls_{p_n}$ be a sequence.
 The sequential reachability of $seq$ is defined as %$reach(\alpha,seq)=reach(\alpha,ls_{p_1})::\ldots::reach(\alpha,ls_{p_n})$.
-$REACH(\alpha,seq)=reach(s_1,ls_{p_1})::\ldots::reach(s_n,ls_{p_n})$, where $s_1=\alpha$, $s_i=s_{i-1}\setminus\{\lnot ls_{p_{i-1}}\}\cup\{ls_{p_{i-1}}\}$.
-For a local state $a_j$, $\lnot a_j=a_{1-j}$.
-$REACH(\alpha,seq) = \mathbf{True}$ if from an initial state $\alpha$, $s$ is reached by the ordered state changes in $seq$, otherwise $REACH(\alpha,seq) = \mathbf{False}$.
+$REACH(\alpha,seq)=reach(s_1,ls_{p_1})::\ldots::reach(s_n,ls_{p_n})$, where $s_1=\alpha$ and for $i>1$, $s_i=s_{i-1}\miset{\lnot ls_{p_{i-1}}}\addset{ls_{p_{i-1}}}$.
+For a Boolean local state $a_j$, we abuse the notation by $\lnot a_j=a_{1-j}$.
+$REACH(\alpha,seq) = \true$ if from an initial state $\alpha$, $s$ is reached by the ordered state changes in $seq$, otherwise $REACH(\alpha,seq) = \false$.
 \end{definition}
 
-In Example~\ref{example:order}, $REACH(\alpha,a_1::b_1::c_1)=\mathbf{True}$ and $REACH(\alpha,b_1::a_1::c_1)=\mathbf{False}$.
+In Example~\ref{example:order}, $REACH(\alpha,a_1::b_1::c_1)=\true$ and $REACH(\alpha,b_1::a_1::c_1)=\false$.
 
 
 As the firing order matters, we come to verify all the possible sequential reachabilities of certain joint state to verify its reachability.
 
 \begin{proposition}\label{theoperm}
-Given joint state $s=\{ls_1,\ldots,ls_n\}$, with all the local states in $s$ are reachable: $reach(\alpha,ls_i)=\mathbf{True},\ \forall i\in[1,n]$.
+Given joint state $s=\{ls_1,\ldots,ls_n\}$, with all the local states in $s$ are reachable: $reach(\alpha,ls_i)=\true,\ \forall i\in[1,n]$.
 The set of all the permutations of $s$ is denoted $Perm(s)=\{(ls_1::ls_2,::\ldots ::ls_n),\ \cdots,\ (ls_n::ls_{n-1}::\ldots,::ls_1)\}$.
-$\bigvee_{j\in Perm(s)} REACH(\alpha,j)=\mathbf{True}$ is a sufficient condition of $REACH(\alpha,s)=\mathbf{True}$.
+$\bigvee_{j\in Perm(s)} REACH(\alpha,j)=\true$ is a sufficient condition of $REACH(\alpha,s)=\true$.
 \end{proposition}
 
 \begin{proof}
-If $\exists perm_i\in Perm(s)$ s.t. $REACH(\alpha,perm_i)=\mathbf{True}$, $s$ can be reached according to the order in $perm_i$.
+If $\exists perm_i\in Perm(s)$ s.t. $REACH(\alpha,perm_i)=\true$, $s$ can be reached according to the order in $perm_i$.
 To reach $s$, every local state in the SLCG of $s$ is mandatory to be reached. 
 Because the definition of SLCG suggests it is the smallest structure which contains all the needed local states and transitions for the target state.
 As long as there is no \textbf{OR gates}, all the transitions in the SLCG must be fired to reach the target state.
@@ -452,7 +452,27 @@ $reach(\alpha,a_1)$=\textbf{True} but \textbf{Inconclusive} is given by PermReac
 }\label{FigConflictInForks}
 \end{figure}
 
-\textcolor{red}{Some algorithmic properties of PermReach}
+We state here several algorithmic properties of PermReach.
+
+\begin{theorem}[Termination and correctness of PermReach]~
+    Let $l=(V_\st, V_\sol, E)$ be an SLCG with initial state $\alpha$ and target local state $\omega$ and $k > 0$ be an integer.
+    \begin{itemize}
+        \item The call $PermReach(l,k)$ terminates.
+        \item $PermReach(l,k)=(\false,\varnothing)$ if $\nexists t$ a trajectory in $l$ from $\alpha$ to $\omega$.
+    \end{itemize}
+    
+    The proof is given in Theorem~\ref{th:PermReachCorrectness} in Appendix.
+\end{theorem}
+
+\begin{theorem}[Complexity of PermReach]
+    Let $l=(V_\st,V_\sol, E)$ be an SLCG with initial state $\alpha$ and $k > 0$ be an integer.
+    Let $s=|V_\sol|$ be the number of target state of $l$.
+    Let $v = |V_\st|$ be the number of vertices of $l$.
+    Let $e=|E|$ be the number of edges of $l$.
+    The complexity of $PermReach(l,k)$ is $O(v + s + e + (v+s) / 2 \times v \times e \times s + v^{2} \times e + v \times e + k \times (v \times e^{2} + \frac{v}{2}!))$ which is bounded by $O(k \times \frac{v}{2}!)$.
+    
+    The proof is given in Theorem~\ref{th:PermReachComplexity} in Appendix.
+\end{theorem}
 
 \subsection{Reachability via Answer Set Programming}\label{sec:aspreach}
 
@@ -567,12 +587,10 @@ Rule 1 gives $b_0\rhd a_1$, $a_1\rhd c_1$, $a_0\rhd b_1$, $b_1\rhd c_1$; Rule 2 
 $c_1$ is unreachable.
 \end{example}
 
-
 If we find a state sequence consistent with all the order constraints, we can obtain its corresponding trajectory, thus we are sure that the target state is reachable.
 \subsubsection{Reachability Analyzer ASPReach}
 In this section, we integrate the ASP code into our analyzer \textbf{ASPReach}: an algorithm for checking the reachability of a target local state $\omega$ from a global initial state $\alpha$ (which can also be partial) in a given ABAN.
 However, exhaustive search leads to heavy computation and huge need of memory (tests in Chapter~\ref{chap:test} shows pure ASP method is time and memory-consuming).
-
 
 The algorithm proposed below tries to overcome those shortcomings by combining static analysis and stochastic search into the following hybrid approach.
 First, we try to use only SLCG to solve the reachability problem, SLCG illustrates the causality between necessary transitions to be fired to reach the target state.
@@ -590,14 +608,14 @@ The ASP part searches thoroughly the result but does not traverse the whole stat
 
 \begin{itemize}
     \item Input: An ABAN $\mathbb{A}$, an initial state $\alpha$, a target state $\omega$ and a max number of iterations $k$
-    \item Output: $reach(\omega)\in\{\mathbf{False},\mathbf{True},\mathbf{Inconclusive}\}$
+    \item Output: $reach(\omega)\in\{\false,\true,\mathbf{Inconclusive}\}$
 \end{itemize}
 \begin{enumerate}
     \item Construct the SLCG $l=SLCG(\mathbb{A},\alpha,\omega)$
     \item Try to remove all cycles and prune useless edges from $l$
     \item Try to prove unreachability of $\omega$ in $l$ using $reach'(l,\omega)$ 
     
-    Return $\mathbf{False}$ if $reach'(l,\omega)=\textbf{False}$
+    Return $\false$ if $reach'(l,\omega)=\textbf{False}$
     \item Try at most $k$ times
     \begin{itemize}
     \item $l'\gets l$
@@ -609,7 +627,7 @@ The ASP part searches thoroughly the result but does not traverse the whole stat
         \end{itemize}
     \item Generate all trajectory that starts with $\alpha$ in $l'$ using ASP
     \begin{itemize}
-        \item If a trajectory $t$ ending with $\omega$ is found, return $\mathbf{True}$
+        \item If a trajectory $t$ ending with $\omega$ is found, return $\true$
     \end{itemize}
     \end{itemize}
     \item return $\mathbf{Inconclusive}$
@@ -632,7 +650,7 @@ Now $l$ is pruned and might be cycle-free.
 Static analysis of $l$ can then be used as heuristics to check pseudo-reachability (Definition~\ref{defPseudoReach}) in order to detect some unreachability cases (Lines~\ref{pseudo_reach_begin}-\ref{pseudo_reach_end}) which may conclude before searching.
 SLCG shows the dependencies between local states and transitions. 
 A pathway in SLCG suggests a possible trajectory of reaching the target state. 
-If $pseudoReach(l,\omega)=\textbf{False}$, we can ensure that $\omega$ is unreachable, as pseudo-reachability checks a necessary condition of reachability.
+If $reach'(l,\omega)=\textbf{False}$, we can ensure that $\omega$ is unreachable, as pseudo-reachability checks a necessary condition of reachability.
 If $reach'(l,\omega)=\textbf{True}$, static analysis is not sufficient for reachability analysis. 
 % St
 
@@ -663,33 +681,37 @@ At the end, the program will return \textbf{Inconclusive} due to the limit of it
 
 There is a tricky way to deal with this issue when $\mathbf{|OR\ gates|}$ is not big: we set a limit $n$, if $\mathbf{|OR\ gates|}<n$, we shift the heuristics on the assignment of \textbf{OR gates} to the enumeration of all possible assignments.
 This ``hack'' can deal with the inconclusive cases with small size, including the one in Example~\ref{ex:counterex}.
-In the benchmarks in the next section, inconclusive instances appear neither in biological examples nor in random generated tests.
+In the benchmarks in Chapter~\ref{chap:test}, inconclusive instances appear neither in biological examples nor in random generated tests.
 
 At last, we are going to show some algorithmic properties of ASPReach which are important for a model checker.
 A model checker must terminate for any input like the standard for any algorithm; also, its complexity is crucial for its wider applicability and scalability.
 
-\begin{theorem}[The termination and correctness of ASPReach]
-
-    Let $l=(V_{\mathrm{state}}, V_{\mathrm{sol}}, E)$ be an SLCG with initial state $\alpha$ and target local state $\omega$ and $k > 0$ be an integer.
-    The call \textit{ASPReach(l,k)} terminates.\\
-    $ASPReach(l,k)$=$(\mathbf{False},\varnothing)$ only if $\nexists t$ a trajectory in $l$ from $\alpha$ to $\omega$.\\
-    $ASPReach(l,k)$=$(\mathbf{True},t)$ only if $\exists t$ a trajectory in $l$ from $\alpha$ to $\omega$.
-    The proof is given in appendix~\ref{sec:proof}.
+\begin{theorem}[Termination and correctness of ASPReach]~
+    Let $l=(V_\st, V_\sol, E)$ be an SLCG with initial state $\alpha$ and target local state $\omega$ and $k > 0$ be an integer.
+    \begin{itemize}
+        \item The call $ASPReach(l,k)$ terminates.
+        \item $ASPReach(l,k)=(\false,\varnothing)$ if $\nexists t$ a trajectory in $l$ from $\alpha$ to $\omega$.
+        \item $ASPReach(l,k)=(\true,t)$ only if $\exists t$ a trajectory in $l$ from $\alpha$ to $\omega$.
+    \end{itemize}
+    
+    The proof is given in Theorem~\ref{th:ASPReachCorrectness} in Appendix.
 \end{theorem}
 
-\begin{theorem}[The complexity of ASPReach]
-    Let $l=(V_{\mathrm{state}}, V_{\mathrm{sol}}, E)$ be an SLCG with initial state $\alpha$ and $k > 0$ be an integer.
-    Let $s=|V_{\mathrm{sol}}|$ be the number of target state of $l$.
-    Let $v = |V_{\mathrm{state}}|$ be the number of vertices of $l$.
+\begin{theorem}[Complexity of ASPReach] ~
+    Let $l=(V_\st,V_\sol, E)$ be an SLCG with initial state $\alpha$ and $k > 0$ be an integer.
+    Let $s=|V_\sol|$ be the number of target state of $l$.
+    Let $v = |V_\st|$ be the number of vertices of $l$.
     Let $e=|E|$ be the number of edges of $l$.
-    The complexity of $\textit{ASPReach(l,k)}$ is $O(v + e + v/2 \times v \times e \times s + v^{2} \times e + v \times e + k \times (v \times e^{2} + 2^{v}))$ which is bound by $O(k \times 2^{v})$.
-    The proof is given in Appendix~\ref{sec:proof}.
+    Assume that ASP solver is equivalent to a pure enumerator.
+    The complexity of $ASPReach(l,k)$ is $O(v + s + e + (v+s) / 2 \times v \times e \times s + v^{2} \times e + v \times e + k \times (v \times e^{2} + \frac{v}{2}!))$ which is bounded by $O(k \times \frac{v}{2}!)$.
+    
+    The proof is given in Theorem~\ref{th:ASPReachComplexity} in Appendix.
 \end{theorem}
 
-In the worst case, ASPReach has an exponential complexity due the exhaustive search of admissible order by ASP solver.
-However random tests in Chapter~\ref{chap:test} shows even when the number of automata increases to 1000, the runtime is still acceptable.
+ASPReach has an factorial complexity due the exhaustive search of admissible order by ASP solver.
+However ASP solver is a black-box system, random tests in Chapter~\ref{chap:test} shows even when the number of automata increases to 1000, the runtime is still acceptable (several seconds).
 
-\section{Extension to Multi-valued Models}
+\section{Extension to Multi-valued Models}\label{sec:extentionMultiValue}
 
 The use of either pseudo-reachability, PermReach or ASPReach can be extended to multi-valued models for wider applications.
 
@@ -702,7 +724,7 @@ A restricted Asynchronous Automata Network is a tuple $\mathbb{A} = (\Sigma,T)$,
 \begin{itemize}
 \item $\Sigma\triangleq\{a,b,\ldots\}$ is the finite set of automata with every automaton having a discrete state.
 The max discrete level of $a$ is denoted $l_a$ and this level is $1$ by default (Boolean) and omitted in the notation;
-\item The states of $\mathbb{A}$ can then be defined: $LS\triangleq \underset{a\in \Sigma}{\cup} \{a_0,\ldots,a_{l_a}\}$ is the set of all \textit{local states}, $L\triangleq \underset{a\in \Sigma'}{\times} \{a_0,\ldots,a_{l_a}\}$ is the set of \textit{joint states} where $\Sigma'\subseteq\Sigma$. Particularly, if $\Sigma'=\Sigma$, $L$ is the set of \textit{global states}. 
+\item The states of $\mathbb{A}$ can then be defined: $LS\triangleq \underset{a\in \Sigma}{\bigcup} \{a_0,\ldots,a_{l_a}\}$ is the set of all \textit{local states}, $L\triangleq \underset{a\in \Sigma'}{\times} \{a_0,\ldots,a_{l_a}\}$ is the set of \textit{joint states} where $\Sigma'\subseteq\Sigma$. Particularly, if $\Sigma'=\Sigma$, $L$ is the set of \textit{global states}. 
 %\item $T=\{A\to b_j\Rsh b_k\mid b\in \Sigma \land (b_j,b_k)\in L_b\times L_b\land |j-k|=1\land \forall a \in \Sigma,\ |A\cap L_a|\leq 1 \land A\cap L_b=\varnothing\}$ is the finite set of transitions, which defines the regulations and dynamics of the restricted AAN: $A$, $b_j$, $b_k$ are denoted $hitter(h)$, $target(h)$ and $bounce(h)$ respectively of the transition $t=A\to b_j\Rsh b_k$.
 \item $T=\{A\to b_k\mid A\in L,\ b\in \Sigma,\ k\in[1,l_b]\land \text{if } l_b>1,\ \exists b_j\in A,\ j\in[1,l_b],\ |j-k|=1, \text{ else } \nexists b_j\in A\}$ is the finite set of transitions, which defines the regulations and dynamics of the restricted AAN: $A$, $b_k$ are denoted $head(h)$, $body(h)$ respectively of the transition $tr=A\to b_k$.
 \end{itemize}
@@ -714,15 +736,15 @@ The only difference is that when encountered a multi-valued automaton, SLCG seek
 This preference avoids the appearance of cycles due to returning to a given local state.
 
 \begin{definition}[Extended over-approximate SLCG]\label{def:SLCGR}
-Given an ABAN $\mathbb{A} = (\Sigma,T)$, a global initial state $\alpha$ and a target local state $\omega$, SLCG $l= (V_{\mathrm{state}},V_{\mathrm{sol}},E)$ is the smallest recursive structure with $E \subseteq (V_{\mathrm{state}}\times V_{\mathrm{sol}})\cap (V_{\mathrm{sol}}\times V_{\mathrm{state}})$ which satisfies:
+Given an ABAN $\mathbb{A} = (\Sigma,T)$, a global initial state $\alpha$ and a target local state $\omega$, SLCG $l= (V_\st,V_\sol,E)$ is the smallest recursive structure with $E \subseteq (V_\st\times V_\sol)\cap (V_\sol\times V_\st)$ which satisfies:
 \begin{eqnarray*}
-    \omega\in V_{\mathrm{state}} &\&& \exists a_j\in \alpha \\
-    a_i\in V_{\mathrm{state}} &\Leftrightarrow& \{ (a_i, A\to a_i)\mid \text{if } l_a>1,\ a_k \in A,\\
+    \omega\in V_\st &\&& \exists a_j\in \alpha \\
+    a_i\in V_\st &\Leftrightarrow& \{ (a_i, A\to a_i)\mid \text{if } l_a>1,\ a_k \in A,\\
     &&\text{where } k= i+1\times sgn(i-j)  \}\subseteq E\\
-    A\to a_i\in V_{\mathrm{sol}}&\Leftrightarrow& \{ (A\to a_i,X)\mid X= \varnothing \text{ if } i=j,\\
+    A\to a_i\in V_\sol&\Leftrightarrow& \{ (A\to a_i,X)\mid X= \varnothing \text{ if } i=j,\\
     &&\text{else } \forall b_m\in A,\ X= b_m\}\subseteq E
 \end{eqnarray*}
-where $V_{\mathrm{state}}\subseteq LS$ is a set of local states, $V_{\mathrm{sol}}\subseteq T$ is the set of solutions and $X$ is one of the required local states of $A\to a_i$.
+where $V_\st\subseteq LS$ is a set of local states, $V_\sol\subseteq T$ is the set of solutions and $X$ is one of the required local states of $A\to a_i$.
 \end{definition}
 Example~\ref{example:ExtendedSLCG} shows that SLCG succeeds to find a trajectory jumping multiple qualitative levels ($a_0$ to $a_2$).
 \begin{example}\label{example:ExtendedSLCG}
@@ -771,7 +793,7 @@ However, permutations do not cover all the possible trajectories but PermReach i
 
 ASPReach does a finer work than PermReach, searching all the possible trajectories of a preprocessed ABAN (without cycles and \textbf{OR gates}).
 
-An extension of the above reachability analysis to multi-valued models (restricted AAN and extented SLCG) allows one to partly discover the solutions but it appears to be also an interesting heuristics. 
+An extension of the above reachability analysis to multi-valued models (restricted AAN and extended SLCG) allows one to partly discover the solutions but it appears to be also an interesting heuristics. 
 
 The experimental results are in Chapter~\ref{chap:test} Benchmark showing these two approaches can deal with more problems than pure static analysis.
 

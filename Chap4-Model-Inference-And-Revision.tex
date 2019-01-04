@@ -168,14 +168,15 @@ $\mathbb{V}_0$ refers to the initial valuation s.t $\forall n \in V_{\mathrm{sta
 \mathsf{update}(\mathbb{V},n)\triangleq 
       \begin{cases}
             \zeta^N(\bigcup_{m\in n.next}\mathbb{V}(m))&\text{if } n\in\mathbf{Sol}\\
-            \zeta^N(\prod_{m\in n.next}\mathbb{V}(m))&\text{if } n\in\mathbf{LS}\setminus\{\omega\}\\
+            \zeta^N(\prod_{m\in n.next}\mathbb{V}(m))&\text{if } n\in\mathbf{LS}\miset{\omega}\\
             \zeta^N(\{\{\omega\}\}\cup\prod_{m\in n.next}\mathbb{V}(m))&\text{if }n=\omega\\
       \end{cases}
 \end{equation}
 where $\zeta^N(\{e_1,\ldots,e_n\})\triangleq\{e_i\mid i\in[1,n]\land |e_i|\leq N\land\nexists j\in[1,n],j\neq i,e_j\subset e_i\}$, $e_i$ being sets, $\forall i\in[1,n]$.
 \end{definition}
 
-Algorithm~\ref{alg:cut} describes the whole process, where $\mathsf{rank}(n)$ refers to the rank of $n$ in the SLCG.
+Algorithm~\ref{alg:cut} describes the whole process, where $rk(n)$ refers to the rank of $n$ in the SLCG (See Definition~\ref{def:rank} in Appendix), characterizing the parent-child relations between nodes where a node with lower rank cannot be the parent of a node with higher rank.
+
 We associate a first valuation with the nodes of low rank, check if it changes the valuation of its parent node.
 If yes, we have to add the unsaturated node back to the set to be updated ($\mathcal{M}$).
 The algorithm terminates when valuation $\mathbb{V}$ becomes saturated, \textit{i.e.} the valuation becomes the cut set.
@@ -186,8 +187,8 @@ The algorithm terminates when valuation $\mathbb{V}$ becomes saturated, \textit{
 \State Output: cut set $\mathbb{V}$
 \State Initialization: $\mathcal{M}\gets V_{\mathrm{state}}\cap V_{\mathrm{sol}}$, $\mathbb{V}\gets\mathbb{V}_0=\varnothing$
 \While{$\mathcal{M}\neq\varnothing$}
-        \State $n\gets\mathrm{argmin}_{m\in\mathcal{M}}\{\mathsf{rank}(m)\}$
-		\State $\mathcal{M}\gets\mathcal{M}\setminus\{n\}$
+        \State $n\gets\mathrm{argmin}_{m\in\mathcal{M}}\{rk(m)\}$
+		\State $\mathcal{M}\gets\mathcal{M}\miset{n}$
 		\State $\mathbb{V}'\gets\mathsf{update}(\mathbb{V},n)$
 		\If{$\mathbb{V}'(n)\neq\mathbb{V}(n)$}
 		    \State $\mathcal{M}\gets\mathcal{M}\cup(n.pred)$
@@ -221,7 +222,7 @@ The cut set is $\{\{a_3\},\{b_1\},\{b_3,c_2\},\{c_2,d_2\}\}$, meaning that by in
 \centering
 \begin{tabular}{|c|c|l|}
  \hline 
- Node & $\mathsf{rank}$ & $\mathbb{V}$ \\ 
+ Node & Rank & $\mathbb{V}$ \\ 
  \hline 
  $\varnothing$ (of $b_1$) & 1 & $\varnothing$ \\ 
  \hline 
@@ -266,13 +267,13 @@ The last step is to delete identical sets.
 \State Initialization: $\mathbb{V}_t\gets \varnothing$
 \For{$S\in \mathbb{V}$}
     \If{$S=\{\omega\}$}
-        \State $\mathbb{V}\gets \mathbb{V}\setminus \{\omega\}$
+        \State $\mathbb{V}\gets \mathbb{V}\miset{\omega}$
     \EndIf
     \State $S_t\gets \textbf{new } set(\varnothing)$
     \For{$ls\in S$}
-        \State $S_t\gets S_t\cup \{ls.pred\}$
+        \State $S_t\gets S_t\addset{ls.pred}$
     \EndFor
-    \State $\mathbb{V}_t\gets \mathbb{V}_t\cup \{S_t\}$
+    \State $\mathbb{V}_t\gets \mathbb{V}_t\addset{S_t}$
 \EndFor
 \State Delete identical elements in $\mathbb{V}_t$
 \State \Return{$\mathbb{V}_t$}
@@ -508,7 +509,7 @@ Partial correlation coefficients are denoted $pr$.
 
 \begin{definition}[Partial Pearson correlation coefficient (PPCC)]\label{def:PPCC}
     $pr_{xy\cdot \mathbf {z}}$ is the partial Pearson correlation coefficient of $x$ and $y$ ignoring the influence by $\mathbf {z}$.
-    $$pr _{xy\cdot \mathbf {z} }={\frac {pr _{xy\cdot \mathbf {z} \setminus \{z_{0}\}}-pr _{xz_{0}\cdot \mathbf {z} \setminus \{z_{0}\}}pr _{z_{0}y\cdot \mathbf {z} \setminus \{z_{0}\}}}{{\sqrt {1-pr _{xz_{0}\cdot \mathbf {z} \setminus \{z_{0}\}}^{2}}}{\sqrt {1-pr _{z_{0}y\cdot \mathbf {z} \setminus \{z_{0}\}}^{2}}}}}$$
+    $$pr _{xy\cdot \mathbf {z} }={\frac {pr _{xy\cdot \mathbf {z} \miset{z_{0}}}-pr _{xz_{0}\cdot \mathbf {z} \miset{z_{0}}}pr _{z_{0}y\cdot \mathbf {z} \miset{z_{0}}}}{{\sqrt {1-pr _{xz_{0}\cdot \mathbf {z} \miset{z_{0}}}^{2}}}{\sqrt {1-pr _{z_{0}y\cdot \mathbf {z} \miset{z_{0}}}^{2}}}}}$$
     Where $x,y$ are variables, $\mathbf {z}$ is a set of variables, $z_0$ is an arbitrary element in $z$. 
     Particularly, if $\mathbf {z}$ has only one element $z_0$, the formula becomes
     $$pr_{x,y\cdot \{z_0\}}={\frac {r _{x,y}-r _{x,z_0}r _{z_0,y}}{{\sqrt {1-r _{x,z_0}^{2}}}{\sqrt {1-r _{z_0,y}^{2}}}}}$$
@@ -594,11 +595,11 @@ With the matrices $A'^k$, we can compute the matrix containing the correlation i
 
 \begin{definition}[Correlation matrix]\label{def:corrMatrix}
     Let $A'^k$ be the regrouped matrices of time-series data matrix $A$ with $k\in [1,n]$ and $\Sigma$ be the set of all the variables, the $n\times n$ correlation matrix is defined:
-    $$\mathcal{R}_{ij}=pr_{ij,\Sigma\setminus\{i,j\}}$$ 
-    where the original data for computing $pr_{ij,\Sigma\setminus\{i,j\}}$ come from $A'^i$.
-    As we do not study self-regulation in this thesis, we set $pr_{ij,\Sigma\setminus\{i,j\}}=\mathrm N/A$.
+    $$\mathcal{R}_{ij}=pr_{ij,\Sigma\miset{i,j}}$$ 
+    where the original data for computing $pr_{ij,\Sigma\miset{i,j}}$ come from $A'^i$.
+    As we do not study self-regulation in this thesis, we set $pr_{ij,\Sigma\miset{i,j}}=\mathrm N/A$.
     Also, $pr$ (PPCC) can be replaced by $prs$ (PSCC).
-    In the following, we abuse the simplification of the notation $pr_{ij,\Sigma\setminus\{i,j\}}$ by $r_{ij}$.
+    In the following, we abuse the simplification of the notation $pr_{ij,\Sigma\miset{i,j}}$ by $r_{ij}$.
 \end{definition}
 
 To expand the applicability, matrices $A'^k$ and $\mathcal{R}$ representing different delays can be formed analogously by only changing the value of $\delta$.
@@ -847,7 +848,7 @@ Similarly, program realization describes that all the state transitions can be e
 	Let $I$ be the current state of an asynchronous system represented by a set of multi-valued rules $S$.
 	Let $T_P(I,S) = \{h(R) | R \in S, b(R) \subseteq I\}$.
 	The successors of $I$ according to $S$ is
-	$$T_P^{as}(I,S) = \{I \setminus \{v^{val'}\} \cup \{v^{val}\} | v^{val'} \in I, v^{val} \in T_P(I,S)\} \cup \{I|T_P(I,S) = \varnothing\}$$ % Self loop only for non attractor point 
+	$$T_P^{as}(I,S) = \{I \miset{v^{val'}} \addset{v^{val}} | v^{val'} \in I, v^{val} \in T_P(I,S)\} \addset{I|T_P(I,S) = \varnothing}$$ % Self loop only for non attractor point 
 \end{definition}
 
 Like the definition of ABAN dynamics (Definition~\ref{def:ABANdynamics} on page \pageref{def:ABANdynamics}), here asynchronous successors defines formally system dynamics of logic programs.
@@ -904,19 +905,19 @@ Specializing a rule is to add elements in the body of a rule,
 thus to make the condition of a rule more difficult to be satisfied (in a more specialized situation) as the condition of firing becomes more strict.
 
 \begin{definition}[Least specialization of a rule]
-	Let $R$ be a rule, a least specialization of $R$ is a rule $R' \in ls(R) := \{h(R) \leftarrow b(R) \cup \{var^{val}\}, \nexists var^{val'} \in b(R)\}$.
+	Let $R$ be a rule, a least specialization of $R$ is a rule $R' \in ls(R) := \{h(R) \leftarrow b(R) \addset{var^{val}}, \nexists var^{val'} \in b(R)\}$.
 	If $b(R)$ contains already all the variables in the logic program $P$, the only way to specialize $R$ is to remove $R$ from $P$ as there is no more available variables to be added in $b(R)$.
 \end{definition}
 
     Similarly, generalization of a rule is to remove certain elements in the body of a rule, thus to make the condition of a rule easier to be satisfied.
 
 \begin{definition}[Least generalization of a rule]
-	Let $R$ be a rule, a least generalization of $R$ is a rule $R' \in lg(R) := \{h(R) \leftarrow b(R) \setminus \{x\},  x \in b(R)\}$.
+	Let $R$ be a rule, a least generalization of $R$ is a rule $R' \in lg(R) := \{h(R) \leftarrow b(R) \miset{x},  x \in b(R)\}$.
 \end{definition}
 
 \begin{definition}[Revisable]\label{def:revisable}
 	A logic program $P$ is said revisable w.r.t. a reachability (resp. unreachability) property if:
-	$\exists P' \in \{(P \setminus R_P) \cup \{R' \mid R \in R_P, R' \in ls(R) \cup lg(R)\} \} \mid R_P \subseteq P\}$.
+	$\exists P' \in \{(P \setminus R_P) \addset{R' \mid R \in R_P, R' \in ls(R) \cup lg(R)} \} \mid R_P \subseteq P\}$.
 	$P$ is revisable w.r.t. a set of property $S$:
 	if their exists an ordering $S'$ of the elements of $S$ such that each $i$-th revision, $0 \leq i \leq |S'|$, ($P$ being the $0$-th revision) is revisable w.r.t. the $(i+1)$-th property.
 \end{definition} 
@@ -945,19 +946,19 @@ In the next section, we propose an algorithm exploiting the SLCG structure to re
     \textbf{Specialization algorithm}:
     
     \begin{itemize}
-        \item \textbf{Input}: a logic program $P$, an unsatisfied element $reach(\alpha,\omega)=\mathbf{False}$, a satisfied reachable set $Re$%, a maximum addable variables $k$
+        \item \textbf{Input}: a logic program $P$, an unsatisfied element $reach(\alpha,\omega)=\false$, a satisfied reachable set $Re$%, a maximum addable variables $k$
         \item \textbf{Output}: modified logic program $P$ or $\varnothing$ if not revisable
     \end{itemize}
     \begin{enumerate}
         \item $Rev\gets\{\omega\}$
-        \item \textbf{For} each $R$ s.t. $h(R)=Rev$, \textbf{for} each $R'\in ls(R)$ and $P\cup\{R'\}\setminus\{R\}$ is consistent with $E$
+        \item \textbf{For} each $R$ s.t. $h(R)=Rev$, \textbf{for} each $R'\in ls(R)$ and $P\addset{R'}\miset{R}$ is consistent with $E$
         
-        (The consistency can be verified by $\nexists (I,J)\in E$ s.t. $\nexists R'\in P\cup \{R''\}\setminus \{R\}, h(R'')\in J, b(R'')\subseteq I\}$)
+        (This consistency can be verified by the condition $\nexists (I,J)\in E$ s.t. $\nexists R'\in P\addset{R''}\miset{R}$, $h(R'')\in J, b(R'')\subseteq I\}$)
         \begin{itemize}
-            \item \textbf{If} $P' \gets P \setminus \{R\} \cup \{R'\}$, $reach(\alpha,\omega)=\mathbf{False}$ for $P'$ and $P'$ satisfies $Re$, \textbf{return} $P'$
+            \item \textbf{If} $P' \gets P \miset{R} \addset{R'}$, $reach(\alpha,\omega)=\false$ for $P'$ and $P'$ satisfies $Re$, \textbf{return} $P'$
         \end{itemize}
         \item $Rev\gets b(R)$ with $h(R)=Rev$ and back to step 2
-        \item There is no revision for $reach(\alpha,\omega)=\mathbf{False}$, \textbf{return} $\varnothing$
+        \item There is no revision for $reach(\alpha,\omega)=\false$, \textbf{return} $\varnothing$
     \end{enumerate}
     
      Generalization is similar but without the constraint of the observation, as the observation is partial, $P$ may describe some state transitions never observed.
@@ -965,17 +966,17 @@ In the next section, we propose an algorithm exploiting the SLCG structure to re
     \textbf{Generalization algorithm}:
     
     \begin{itemize}
-        \item \textbf{Input}: a logic program $P$, an unsatisfied element $reach(\alpha,\omega)=\mathbf{True}$, a satisfied unreachable set $Un$
+        \item \textbf{Input}: a logic program $P$, an unsatisfied element $reach(\alpha,\omega)=\true$, a satisfied unreachable set $Un$
         \item \textbf{Output}: modified logic program $P$ or $\varnothing$ if not revisable
     \end{itemize}
     \begin{enumerate}
         \item $Rev\gets\{\omega\}$
         \item \textbf{For} each $R$ s.t. $h(R)=Rev$, \textbf{for} each $R'\in lg(R)$
         \begin{itemize}
-            \item \textbf{If} $P' \gets P \setminus \{R\} \cup \{R'\}$, $reach(\alpha,\omega)=\mathbf{True}$ for $P'$and $P'$ satisfies $Un$, \textbf{return} $P'$
+            \item \textbf{If} $P' \gets P \miset{R} \addset{R'}$, $reach(\alpha,\omega)=\true$ for $P'$and $P'$ satisfies $Un$, \textbf{return} $P'$
         \end{itemize}
         \item $Rev\gets b(R)$ with $h(R)=Rev$ and back to step 2
-        \item There is no revision for $reach(\alpha,\omega)=\mathbf{True}$, \textbf{return} $\varnothing$
+        \item There is no revision for $reach(\alpha,\omega)=\true$, \textbf{return} $\varnothing$
     \end{enumerate}
     
     The main revision algorithm starts with constructing the SLCGs to verify $Re$ and $Un$ in order to ensure the reachability/unreachability properties to be satisfied.
@@ -1003,76 +1004,15 @@ In the next section, we propose an algorithm exploiting the SLCG structure to re
         \item \textbf{If} $l_i\cap (Re'\cup Un')\neq\varnothing$, \label{step:check}
         \begin{enumerate}
             \item Reconstruct the SLCG for $i$
-            \item \textbf{If} $l_i$ becomes consistent because of former revision, $L\gets L\setminus \{l_i\}$ and back to step 4
+            \item \textbf{If} $l_i$ becomes consistent because of former revision, $L\gets L\miset{l_i}$ and back to step 4
         \end{enumerate}
         \item \textbf{If} $i\in Un'$, specialize $P$ to make $i$ unreachable, \textbf{if} not revisable, \textbf{return} $\varnothing$ \label{step:specialize}
         \item Otherwise generalize $P$ to make $i$ reachable, \textbf{if} it is not revisable, \textbf{return} $\varnothing$ \label{step:generalize}
         
-        \item $L\gets L\setminus\{l_i\}$ \label{step:update}
+        \item $L\gets L\miset{l_i}$ \label{step:update}
         \item \textbf{If} $L\neq\varnothing$ , back to step 1 \label{step:recheck}
         \item \textbf{Return} $P$
     \end{enumerate} 
-%        \noindent
-%    \begin{minipage}{\linewidth}
-%    Specialization:
-%    \begin{itemize}
-%        \item \textbf{Input}: a logic program $P$, an unsatisfied element $(\alpha,\omega)$, a reachable set $Re$, an unreachable set $Un$%, a maximum addable variables $k$
-%        \item \textbf{Output}: modified logic program $P$ or $\varnothing$ if not revisable
-%    \end{itemize}
-%    \begin{enumerate}
-%        \item $Rev\gets\{\omega\}$
-%        \item \textbf{For} each $R$ s.t. $h(R)=Rev$, for each $R'\in\{R''|R''\in ls(R)\land \nexists (I,J)\in E, \text{ s.t. } \nexists R'''\in P\cup \{R''\}\setminus \{R\}, h(R''')\in J, b(R''')\in I\}$
-%        \begin{itemize}
-%            \item \textbf{If} $P' \gets P \setminus \{R\} \cup \{R'\}$, $unreachable(P',\alpha,\omega$) and $P'$ satisfies all previous properties, \textbf{return} $P'$
-%        \end{itemize}
-%        \item $Rev\gets b(R)$ with $h(R)=Rev$ and back to step 2
-%        \item There is no revision for $(\alpha,\omega)$, \textbf{return} $\varnothing$
-%    \end{enumerate}
-%    \end{minipage}
-%    \noindent
-%    \begin{minipage}{\linewidth}
-%    Generalization:
-%    \begin{itemize}
-%        \item \textbf{Input}: a logic program $P$, an unsatisfied element $(\alpha,\omega)$, a reachable set $Re$, an unreachable set $Un$
-%        \item \textbf{Output}: modified logic program $P$ or $\varnothing$ if not revisable
-%    \end{itemize}
-%    \begin{enumerate}
-%        \item $Rev\gets\{\omega\}$
-%        \item \textbf{For} each $R$ s.t. $h(R)=Rev$, for each $R'\in lg(R)$
-%        \begin{itemize}
-%            \item \textbf{If} $P' \gets P \setminus \{R\} \cup \{R'\}$, $reachable(P',\alpha,\omega$) and $P'$ satisfies all previous properties, \textbf{return} $P'$
-%        \end{itemize}
-%        \item $Rev\gets b(R)$ with $h(R)=Rev$ and back to step 2
-%        \item There is no revision for $(\alpha,\omega)$, \textbf{return} $\varnothing$
-%    \end{enumerate}
-%    \end{minipage}
-%    \noindent
-%    \begin{minipage}{\linewidth}
-%    Complete revision:
-%    \begin{itemize}
-%        \item \textbf{Input}: a logic program $P$, a reachable set $Re$ and an unreachable set $Un$
-%        \item \textbf{Output}: revised logic program $P$ or $\varnothing$ if not revisable
-%    \end{itemize}
-%    \begin{enumerate}
-%        \item Construct the cycle-free SLCGs for the elements in $Re$ and $Un$ and compute unsatisfied sets $Re'\subseteq Re$ and $Un'\subseteq Un$ which are to be revised
-%        \item \textbf{If} $Re'=\varnothing$ and $Un'=\varnothing$, \textbf{return} $P$
-%        \item Let $L=\{l_i,\ldots\}$ with $i\in Re' \cup Un'$, $l_i=\{j,\ldots\}$, with $j=(\alpha,\omega)$, $\omega \in SLCG(i)$ and $ j\in Re\cup Un$ \label{step:dependency}
-%        \item Pick one of $l_i\in L$ of the smallest cardinality: $\nexists l_i'$, $|l_i'| < |l_i|$ \label{step:cardinality}
-%        \item \textbf{If} $l_i\cap (Re'\cup Un')\neq\varnothing$, \label{step:check}
-%        \begin{enumerate}
-%            \item Reconstruct the SLCG for $i$
-%            \item \textbf{If} $l_i$ becomes consistent because of former revision, $L\gets L\setminus \{l_i\}$ and back to step 4
-%        \end{enumerate}
-%        \item \textbf{If} $i\in Un'$, specialize $P$ to make $i$ unreachable, \textbf{if} not revisable, \textbf{return} $\varnothing$ \label{step:specialize}
-%        \item Otherwise generalize $P$ to make $i$ reachable, \textbf{if} it is not revisable, \textbf{return} $\varnothing$ \label{step:generalize}
-%        
-%        \item $L\gets L\setminus\{l_i\}$ \label{step:update}
-%        \item \textbf{If} $L\neq\varnothing$ , back to step 1 \label{step:recheck}
-%        \item \textbf{Return} $P$
-%    \end{enumerate} 
-%    \end{minipage}
-      
-
     
 \subsection{Toy Example}    
 After introducing the algorithms, we are going to show how they work in a minimum toy example.
