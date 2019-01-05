@@ -462,9 +462,15 @@ The equivalent ABAN is then constructed: 5 automata $\mathbf{\Sigma}=\{a,b,c,d,e
     \begin{proof}
          For every variable, there are at most $x$ future states and the sum number of states of all variables is constant $xm=C$.
          
-         The amount of future states is $f(x)=x^{\frac{C}{x}}$, $f'(x)=\frac{C}{x}(1-\ln x)$, $f(x)$ takes its maximum at $x=e$.
+         The amount of future states is $f(x)=x^{\frac{C}{x}}$, $f'(x)=\frac{C}{x}(1-\ln x)$, for $x>0$, $f(x)$ takes its maximum at $x=e$.
          As $x$ is integer, we take the nearest value $x=3$.
-         Considering that $C$ is integer, the maximum of $f(x)$ is $3^{\round{\frac{C}{3}}}(C-3\ceiling{\frac{C}{3}}+1)$ which is of $O(3^m)$.
+         Considering that $C$ is also integer, the maximum of $f(x)$ is
+         $
+         \begin{cases}
+         3^{\round{\frac{C}{3}}}&\text{ if } C\equiv 0 \pmod 3\\
+         3^{\round{\frac{C}{3}}-1}\times 4&\text{ if } C\equiv 1 \pmod 3\\
+         3^{\round{\frac{C}{3}}}\times 2&\text{ if } C\equiv 2 \pmod 3
+         \end{cases}$
     \end{proof}
 \end{theorem}
 
@@ -583,8 +589,8 @@ The equivalent ABAN is then constructed: 5 automata $\mathbf{\Sigma}=\{a,b,c,d,e
 Given a digraph $G=(V,E)$, $\forall v\in V$ is associated with a rank $rk(v)\in \mathbb{N}$ s.t. $\forall v_1,v_2\in V$, if $rk(v_1)<rk(v_2)$, $\nexists (v_1,v_2)\in E$, and if $rk(v_1)=rk(v_2)$, there exist paths $\gamma(v_1,v_2)$ and $\gamma(v_2,v_1)$.
 \end{definition}
 \begin{remark}
-There does not necessarily exist a path starting from a node with higher rank to a node with lower rank.
-Ranks only offers one possibility of traversing the whole graph without violating a unified direction.
+There does not necessarily exist a path starting from a node with higher rank to another node with lower rank.
+The rank of digraphs is a numbering that only offers possibilities of traversing the whole graph without violating a unified direction.
 \end{remark}
 
 
