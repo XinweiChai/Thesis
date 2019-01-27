@@ -158,21 +158,21 @@ In addition, if $a_i=\omega$, $\{a_i\}$ is added to the set of its cut sets.
 \end{itemize}
 
 \begin{definition}[Valuation]\label{def:valuation}
-Given an SLCG $l= (V_{\mathrm{state}},V_{\mathrm{sol}},E)$, its valuation $\mathbb{V}$ is a mapping from each node of $V_{\mathrm{state}}\cap V_{\mathrm{sol}}$ to a set of sets of local states.
+Given an SLCG $l= (V_{\mathrm{state}},V_{\mathrm{sol}},E)$, its valuation $\mathbb{V}$ is a mapping from each node of $V_{\mathrm{state}}\cup V_{\mathrm{sol}}$ to a set of sets of local states.
 $\mathbb{V}_0$ refers to the initial valuation s.t $\forall n \in V_{\mathrm{state}}\cap V_{\mathrm{sol}}, \mathbb{V}_0(n)=\varnothing$.
 \end{definition}
 
 
 \begin{definition}[$\mathsf{update}$]
 \begin{equation}  
-\mathsf{update}(\mathbb{V},n)\triangleq 
+\mathsf{update}(\mathbb{V},n)= 
       \begin{cases}
             \zeta^N(\bigcup_{m\in n.next}\mathbb{V}(m))&\text{if } n\in\mathbf{Sol}\\
             \zeta^N(\prod_{m\in n.next}\mathbb{V}(m))&\text{if } n\in\mathbf{LS}\miset{\omega}\\
             \zeta^N(\{\{\omega\}\}\cup\prod_{m\in n.next}\mathbb{V}(m))&\text{if }n=\omega\\
       \end{cases}
 \end{equation}
-where $\zeta^N(\{e_1,\ldots,e_n\})\triangleq\{e_i\mid i\in[1;n]\land |e_i|\leq N\land\nexists j\in[1;n],j\neq i,e_j\subset e_i\}$, $e_i$ being sets, $\forall i\in[1;n]$.
+where $\zeta^N(\{e_1,\ldots,e_n\})=\{e_i\mid i\in[1;n]\land |e_i|\leq N\land\nexists j\in[1;n],j\neq i,e_j\subset e_i\}$, $e_i$ being sets.
 \end{definition}
 
 Algorithm~\ref{alg:cut} describes the whole process, where $rk(n)$ refers to the rank of $n$ in the SLCG (See Definition~\ref{def:rank} in Appendix), characterizing the parent-child relations between nodes where a node with lower rank cannot be the parent of a node with higher rank.
@@ -185,7 +185,7 @@ The algorithm terminates when valuation $\mathbb{V}$ becomes saturated, \textit{
 \begin{algorithmic}
 \State Input: an SLCG $l= (V_{\mathrm{state}},V_{\mathrm{sol}},E)$
 \State Output: cut set $\mathbb{V}$
-\State Initialization: $\mathcal{M}\gets V_{\mathrm{state}}\cap V_{\mathrm{sol}}$, $\mathbb{V}\gets\mathbb{V}_0=\varnothing$
+\State Initialization: $\mathcal{M}\gets V_{\mathrm{state}}\cup V_{\mathrm{sol}}$, $\mathbb{V}\gets\mathbb{V}_0=\varnothing$
 \While{$\mathcal{M}\neq\varnothing$}
         \State $n\gets\mathrm{argmin}_{m\in\mathcal{M}}\{rk(m)\}$
 		\State $\mathcal{M}\gets\mathcal{M}\miset{n}$
@@ -250,7 +250,7 @@ The cut set is $\{\{a_3\},\{b_1\},\{b_3,c_2\},\{c_2,d_2\}\}$, meaning that by in
  \hline 
  \end{tabular}
  \caption[Example of cut set]{Result of Algorithm~\ref{alg:cut} on the LCG in Figure~\ref{fig:cut}.
- In column of $\mathbb{V}$, it is sufficient to prevent the local states $\{\{a_3\},\{b_1\},\{b_3,c_2\},\{c_2,d_2\}\}$ in order to inhibit the reachability of $a_1$.}\label{tab:cutset}
+ In column of $\mathbb{V}$, it is sufficient to prevent the local states $\{\{a_1\},\{b_1\},\{b_0,c_1\},\{c_1,d_1\}\}$ in order to inhibit the reachability of $a_1$.}\label{tab:cutset}
 \end{table}
 
 Cut set inhibits certain \textit{local states} to prevent the reachability.
@@ -326,7 +326,7 @@ Update does not stop until the set of associated local states becomes stable.
 
 
 \begin{definition}[Under-approximate SLCG]
-Given ABAN $\mathbb{A} = (\Sigma,T)$, a global initial state $\alpha$ and a target local state $\omega$, under-approximate SLCG $l= (V_{\mathrm{state}},V_{\mathrm{sol}},E)$ is the smallest recursive structure with $E \subseteq (V_{\mathrm{state}}\times V_{\mathrm{sol}})\cap (V_{\mathrm{sol}}\times V_{\mathrm{state}})$ which satisfies:
+Given ABAN $\mathbb{A} = (\Sigma,T)$, a global initial state $\alpha$ and a target local state $\omega$, under-approximate SLCG $l= (V_{\mathrm{state}},V_{\mathrm{sol}},E)$ is the smallest recursive structure with $E \subseteq (V_{\mathrm{state}}\times V_{\mathrm{sol}})\cup (V_{\mathrm{sol}}\times V_{\mathrm{state}})$ which satisfies:
 \begin{eqnarray*}
     \omega&\in& V_{\mathrm{state}} \\
     a_i\in V_{\mathrm{state}} &\Leftrightarrow& \{ (a_i, A\to a_i)\}\subseteq E \\
@@ -761,7 +761,7 @@ When modeling a real system, instead of causality, one usually require to assess
 Whenever it is not the case, it typically means that the designed Boolean functions do not model the given system correctly and thus should be revised before further model analysis.
 
 Inoue~\cite{inoue2011logic} has shown that Boolean networks can be represented by logic programs.
-In this paper, we provide an approach to revise a logic program to fit temporal properties regarding reachability of partial states.
+In this section, we provide an approach to revise a logic program to fit temporal properties regarding reachability of partial states.
 %
 Such logic program can be learned from observations of state transition using LFIT algorithm in~\cite{ribeiro2015learning}, but the approach restricts the model to only synchronous update scheme.
 One of the benefits of synchronous modeling is computational tractability, while classical state space exploration algorithms fail on asynchronous ones.
@@ -807,8 +807,8 @@ By modifying rules of the program using logic generalization/specialization oper
 		var^{val} \leftarrow var_1^{val_1} \wedge \cdots \wedge var_n^{val_n}
 	\end{equation}
 	where $var^{val}$ and $var_i^{val_i}$ are atoms $(n \geq 1)$.
-	For any rule $R$ of the form~(\ref{multi_value}), left part of $\leftarrow$ is called the {\it head\/} of $R$ and is denoted as $h(R)$,
-	and the conjunction to the right of $\leftarrow$ is called the {\it body\/} of $R$.  
+	For any rule $R$ of the form~(\ref{multi_value}), left part of $\leftarrow$ is called the \textit{head} of $R$ and is denoted as $h(R)$,
+	and the conjunction to the right of $\leftarrow$ is called the \textit{body} of $R$.  
 	We represent the set of literals in the body of $R$ of the form~(\ref{multi_value}) as $b(R)=\{var_1^{val_1},\ldots,var_n^{val_n}\}$. 
 	A rule $R$ of the form (\ref{multi_value}) is interpreted as follows:
 	the variable $var$ takes the value $val$ in the next state if all variables $var_i$ have the value $val_i$ in the current state.

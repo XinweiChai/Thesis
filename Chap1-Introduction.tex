@@ -16,7 +16,7 @@ The modeling frameworks discussed in this thesis are all designed for biological
 Models are supposed to represent the operations of a real system and help one to access, analyze and control the real system. 
 It is a tool to help people to understand the interaction of the components in real systems and the integral behavior of the systems.
 
-A good model is a model which
+A good model is a model which:
 
 \begin{itemize}
     \item is consistent with the corresponding real system
@@ -57,14 +57,14 @@ Their inner behaviors (\textit{e.g.} protein phosphorylation, activation/inhibit
 
 The values in models can be continuous or discrete which differentiate the modeling frameworks.
 
-Continue values correspond directly to the measurement and can be used in the models based on the family of Ordinary Differential Equation (ODE), e.g. Stochastic Differential Equation (SDE), Delay Differential Equation (DDE).
+Continue values correspond directly to the measurement and can be used in the models based on the family of Ordinary Differential Equation (ODE), for example Stochastic Differential Equation (SDE), Delay Differential Equation (DDE).
 
 Discrete values come from an approximation from sigmoid function to step functions. 
 Sigmoid function is a monotonic function and its change rate is high around a certain point (Proof in Appendix~\ref{sec:proof}).
 Many biological behaviors are similar with sigmoid functions: certain entity starts to influence the system if its value goes beyond a certain threshold.
 If the value is far from the threshold, it is either insufficient (low level) or saturated (high level)~\cite{kauffman1969,von2000segment}.
 This fact inspires scientists to study discrete models.
-One can encode low level as 0 and high level as 1 or even add additional levels to represent more behaviors.
+One can encode low level as $0$ and high level as $1$ or even add additional discrete levels to represent more behaviors.
 
 In the term of concurrency, synchronous models make components to evolve at the same time while asynchronous ones allow at most one component to evolve at one time.
 Due to the fuzziness of biological system, asynchronous models are compatible with more configurations of system parameters~\cite{bernot2009}.
@@ -75,9 +75,9 @@ To deal with such problem, Paulev\'e \textit{et al.} proposed the Process Hittin
 In this thesis, we mainly work on \textbf{asynchronous discrete models} based on the models above.
 
 \subsection{Model Checking}
-If one has an existing model, he might want to know what kind of properties this model satisfies, such as fixed points, safety, reachability \textit{etc.}
+If one has an existing model, he might want to know what kind of properties this model satisfies, such as fixed points, safety, reachability.
 
-As stated in the beginning of this chapter, the verification of such properties is costly in computation.
+As stated in the beginning of this chapter, the verification of such properties in a concurrent system is costly in computation (PSPACE-complete) \cite{harel2002complexity}.
 We have to make a compromise on either efficiency or precision: exact analyzers are precise but need to traverse big state space; abstract analyzers solve a simplified version of the original problem so that the solution is not equivalent to the that of the original problem.
 
 \subsection{Model Learning}
@@ -139,7 +139,7 @@ We are especially interested in Asynchronous Automata Network, reachability anal
 
 Chapter~\ref{chap:refinement} presents our modeling framework adapted from Automata Network and its relating reachability analyzers based on static analysis.
 We will focus on the inconclusive cases of pure static analysis and analyze the key components preventing from a direct solution.
-We then apply some different heuristics on the the key components to solve them dynamically in order to reach a conclusive result on the reachability problem.
+We then apply some different heuristics on the key components to solve them dynamically in order to reach a conclusive result on the reachability problem.
 
 Chapter~\ref{chap:modelInference} presents the methodology of model revision in this thesis and our model revisers mentioned above.
 These model revisers perform a model selection. 

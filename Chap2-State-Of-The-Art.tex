@@ -21,8 +21,8 @@ From the point of view of data type, models are classified into continuous ones,
 
 Continuous models are usually derived from real world data, as the data (no matter time-series data or static data) are obtained by measurement and can be used as input without preconditioning.
 Differential equations models~\cite{glass1973logical,snoussi1989qualitative,thomas1990biological} are based on the hypothesis that in biological systems, the change rate of variables is numerically related to the values of other variables. 
-Differential equations models deal with mainly the system dynamics, \textit{i.e.} biological regulations.
-Models based on Bayesian probability and Markov chain~\cite{huelsenbeck2001mrbayes,larget1999markov} study static topics, \textit{i.e.} phylogenetics.
+Differential equations models deal with mainly the system dynamics, \textit{e.g.} biological regulations.
+Models based on Bayesian probability and Markov chain~\cite{huelsenbeck2001mrbayes,larget1999markov} study static topics, \textit{e.g.} phylogenetics.
 
 However, the following difficulties usually arise in the analysis of continuous models:
 
@@ -64,7 +64,7 @@ At last we will be interested in the model learning and revising techniques whic
 \section{Discrete Modeling Frameworks}
 Original biological problems are usually difficult to be studied directly due to the uncertainty and the big scale of biological systems. 
 Modeling is a process of abstracting the real system into a more concise and more easily automatized system.
-To solve a certain problem, an appropriate modeling framework is crucial because different models have different bias from reality and have also different advantages in computation, e.g. fixed point, reachability etc.
+To solve a certain problem, an appropriate modeling framework is crucial because different models have different bias from reality and have also different advantages in computation, \textit{e.g.} fixed point, reachability.
 Here we are going to introduce several most frequenly applied modeling frameworks and analyze their advantages and disadvantages.
 
 \subsection{Regulatory Network}\label{sec:regNetwork}
@@ -85,7 +85,7 @@ Sharp arrows $\to$ stand for promotion while blunt arrows $\dashv$ stand for inh
 
 RN is a special instance among discrete modelings.
 It does not require a threshold setting for each variable.
-As a result, RN is usually applied to study static problems, e.g. model completion, finding fixed points~\cite{yamamoto2014completing}.
+As a result, RN is usually applied to study static problems, \textit{e.g.} model completion, finding fixed points~\cite{yamamoto2014completing}.
 Without quantitative representation, one can barely analyze the system dynamics because RN does not possess an update pattern which describes state transitions.
 
 \subsection{Bayesian Network}
@@ -106,8 +106,9 @@ However feedback loops appear very frequently in biology which narrow the applic
 
 \subsection{Boolean Network}
 Boolean Networks (BN) are a traditional framework studied for decades~\cite{kauffman1969}.
-They discretize every variable of the system into Boolean variables $0$ and $1$, presenting active/inactive, high/low concentration, \textit{etc}. 
-Transitions in BNs are defined by Boolean functions, here we will introduce its basic definition.
+They discretize every variable of the system into Boolean variables taking values $0$ or $1$, presenting active/inactive, high/low concentration, \textit{etc}. 
+Transitions in BNs are defined by Boolean functions.
+Here we introduce the basic definition of BN.
 
 \begin{definition}[Boolean Network (BN)]
 A Boolean Network $G(V,F)$ consists of a set of nodes $V=\{v_1,\cdots,v_n\}$ and a set of Boolean functions $F=\{f_1,\cdots,f_n\}$ where function $f_i$ decides the value of node $v_i$ of the next time point: $v_i(t+1)=f_i(v_1(t),\cdots,v_n(t))$.
@@ -190,36 +191,38 @@ If one wants to describes the dynamics more finely with reasonable memory use, P
 
 PH is inspired by $\pi$-calculus, which expresses the communication between canals. 
 In PH, the corresponding meaning becomes the interaction between different components.
-Process Hitting is an asynchronous automata network, i.e. allowing at most one transition fired simultaneously. 
+Process Hitting is an asynchronous automata network, \textit{i.e.} allowing at most one transition fired simultaneously. 
 PH is more expressive than Asynchronous Thomas' model~\cite{thomas1978} or Asynchronous BN. 
 Actions in Process Hitting are more capable of describing various transitions than Boolean functions or attractors as it specifies the regulating and regulated components and their quantitative levels.
-Also it expresses explicitly the cooperation between several components and stochastic features using $\pi$-calculus which are not detailed in this report~\cite{pauleve2014}.
+Also it expresses explicitly the cooperation between several components and stochastic features using $\pi$-calculus which are not detailed in this thesis~\cite{pauleve2014}.
 
 Moreover, in order to define efficient analysis techniques that avoid to build the whole state space of the model causing state space explosion (in Thomas' model and Boolean network), various abstract structures have been introduced, and one of them is graph of causality, which allows a reasoning of the reachability of local states instead of traverse of global states.
 
 It gathers a finite number of concurrent processes grouped into a finite set of sorts. A process belongs to one and only one sort and is denoted as $a_i$ where $a$ is the sort and $i$ the identifier of the process within the sort $a$.
-At any time, only one process of each sort is present, forming a state of the PH.
+At any time, only one process of each sort is present, forming a global state of the PH.
 
 \begin{definition}[Process Hitting (PH)]
 A $PH$ consists of a tuple $(\Sigma, L, H)$:
 \begin{itemize}
     \item $\Sigma=\{a,b,...\}$ is the finite set of sorts
-    \item $L=\prod_{a\in\Sigma}{L_a}$ is the set of states with $L_a=\{a_0,...a_{l_a}\}$ the finite and countable set of states of sort $a\in\Sigma$ and $l_a$ a positive integer with: $a\neq b\to \forall(a_i,b_j)\in L_a\times L_b,a_i\neq b_j$
+    \item $L=\prod_{a\in\Sigma}{L_a}$ is the set of states with $L_a=\{a_0,...,a_{l_a}\}$ the finite and countable set of states of sort $a\in\Sigma$ and $l_a$ a positive integer with: $a\neq b\to \forall(a_i,b_j)\in L_a\times L_b,a_i\neq b_j$
     \item $H=\{h=a_i\to b_j\Rsh b_k\mid(a,b)\in\Sigma^2, (a_i,b_j,b_k)\in L_a\times L_b\times L_b,b_j\neq b_k, a=b\to a_i=b_j\}$ is the finite set of actions, which defines the regulations and dynamics of the PH: $a_i$, $b_j$, $b_k$ are denoted $hitter(h)$, $target(h)$ and $bounce(h)$ respectively of the action $h=a_i\to b_j\Rsh b_k$.
 \end{itemize}
 \end{definition}
 
 \begin{example}
-Figure~\ref{fig:PH} shows a PH constituting of four sorts $a$, $b$, $c$, $d$ with initial state $\init{a_1,b_0,c_0,d_1}$. 
+Figure~\ref{fig:PH} shows a PH $PH=(\Sigma, L, H)$ constituting of four sorts $\Sigma=\{a,b,c,d\}$, and the possible states of each sort are $L_a=\{a_0,a_1\}$, $L_b=\{b_0,b_1,b_2\}$, $L_c=\{c_0,c_1\}$, $L_d=\{d_0,d_1,d_2\}$.
+The initial state of $PH$ is $\alpha=\init{a_1,b_0,c_0,d_1}$. 
 It has actions $H=\{\acmph{a_0}{c_0}{c_1},\ \acmph{a_1}{b_1}{b_0},\ \acmph{c_1}{b_0}{b_1},\ \acmph{b_1}{a_0}{a_1},\ \acmph{b_0}{d_0}{d_1},\ \acmph{d_1}{b_0}{b_2},\ \acmph{c_1}{d_1}{d_0}\}$. 
-e.g. \acph{a_0}{c_0}{c_1} means if sort $a$ is at level 0, it allows sort $c$ to jump from level 0 to level 1.
+For example \acph{a_0}{c_0}{c_1} means if sort $a$ is at level 0, it allows sort $c$ to jump from level 0 to level 1.
+
 \end{example}
 
 \begin{figure}[ht]
 \centering
 \input{processHitting.tex}
 \caption[Process Hitting]{Gray circles represent the initial state of sorts.
-Full arrows are regulations while the following dashed arrows are the actions under the condition of certain regulation.}\label{fig:PH}
+Full arrows are regulations while the following dashed arrows are the actions under the condition of the corresponding regulations.}\label{fig:PH}
 \end{figure}
 
 Nevertheless, PH cannot encode equivalently the conjunctions in Boolean functions like $f(a)=b\land c$.
@@ -230,12 +233,12 @@ However, the size of this representation grows exponentially with the size of th
 Also, this encoding introduces extra reactions, producing a temporal shift between the presence of the reactants and the playability of the reaction.
 
 \subsection{Asynchronous Automata Network (AAN)}\label{sec:AAN}
-Facing the drawback of PH, i.e. only cooperative sorts can encode reactions with conjunctions in the \textit{hitters}, Asynchronous Automata Network (AAN) is introduced by Folschette \textit{et al.}~\cite{folschette2015}.
+Facing the drawback of PH, \textit{i.e.} only cooperative sorts can encode reactions with conjunctions in the \textit{hitters}, Asynchronous Automata Network (AAN) is introduced by Folschette \textit{et al.}~\cite{folschette2015}.
 AAN allows one to naturally model cooperations by defining several requisites for a transition.
 Moreover, such automata networks are still compatible with the notion of priority, that can also be used to model different reaction rates in the model.
 AAN (and, a fortiori, their restriction, the PH framework) can be considered as a subset of Communicating Finite State Machines or safe Petri Nets~\cite{pauleve2012process}.
 
-Basically the main differences between PH and AAN are listed below. 
+Basically the main difference between PH and AAN is state below. 
 Sorts in PH are called automata in AAN.
 Also, the definition of $H$ becomes
 
@@ -243,6 +246,7 @@ Also, the definition of $H$ becomes
     \item $H=\{A\to b_j\Rsh b_k\mid b\in \Sigma \land (b_j,b_k)\in L_b\times L_b\land b_j\neq b_k\land \forall a \in \Sigma,\ |A\cap L_a|\leq 1 \land A\cap L_b=\varnothing\}$ is the finite set of actions, which defines the regulations and dynamics of the AAN: $A$, $b_j$, $b_k$ are denoted $hitter(h)$, $target(h)$ and $bounce(h)$ respectively of the action $h=A\to b_j\Rsh b_k$.
 \end{itemize}
 
+where the action conditions are no longer limited to the state of only one automaton.
 With the new definition of $H$, we can now define actions needing multiple local states as condition.
 
 In Chapter~\ref{chap:refinement}, we will make use of the definition of AAN by limiting the variables from multi-value ones to Boolean ones in order to obtain some interesting properties in the forthcoming reachability analysis.
@@ -257,7 +261,7 @@ The main difference lies on the relations of the number of transitions \textit{c
 
 
 \subsection{Synchronicity}
-Literally, synchronous update scheme implies that every fireable transition is fired simultaneously.
+Literally, synchronous update scheme implies that all fireable transitions are fired simultaneously.
 
 \begin{table}[ht]
     \centering
@@ -273,7 +277,7 @@ Literally, synchronous update scheme implies that every fireable transition is f
         1 & 1 & 0 & 1 \\
         2 & 1 & 2 & 1 \\
     \end{tabular}
-    \caption{Exemplary transition interpretation table}
+    \caption{Exemplary transition interpretation table indicating the tendency of system evolution from one state to another.}
     \label{tab:transTable}
 \end{table}
 
@@ -284,7 +288,7 @@ Taking the transition interpretation table in Table~\ref{tab:transTable} as the 
 
 
 Synchronous update scheme seems to be deterministic. 
-However, when there are multiple fireable transition for one variable, there are multiple possible future states which cannot be fired simultaneously. 
+However, when there are multiple fireable transitions available for one variable, there are multiple possible future states which cannot be fired simultaneously. 
 
 \begin{example}\label{example:counterSynchronous}
 Given an NLP with rules $var_3^1\gets var_1^1$ and $var_3^2 \gets var_2^1$
@@ -292,11 +296,11 @@ Given an NLP with rules $var_3^1\gets var_1^1$ and $var_3^2 \gets var_2^1$
 and initial state $\init{var_1^1, var_2^1, var_3^0}$,
 %$\init{a_1,b_1,c_0}$
 these two rules are in conflict.
-Even though the semantics is synchronous, a choice is need to be made between these transitions.
+Even though the semantics is synchronous, a choice is need to be made between these transitions to decide the next state of $var_3$ is $1$ or $2$.
 \end{example}
 
 To avoid the conflicts in Example~\ref{example:counterSynchronous}, one possible solution in Boolean NLP is to clarify the state transition metrics:
-for one variable, if it can change its value at the next time point, it cannot keep its current value.
+for one variable, if it \textit{can} change its value at the next time point, it cannot keep its current value the NLP is Boolean, there is only one choice for it.
 
 On the computational aspect, one of the benefits of the synchronous model is tractability, while classical state space exploration algorithms fail if there are multiple possible future states at each state transition.
 
@@ -405,9 +409,10 @@ In this thesis we focus on reachability (\textbf{EF} in Temporal Logic) as most 
 At first, Model Checking was done by the search in the state transition graphs, which are encoded in adjacent lists~\cite{clarke1981design}.
 This representation however requires a memory growing exponentially with the number of components.
 To avoid such explicit representation, state transition graphs were replaced by Boolean formulas.
-OBDD (Ordinary Binary Decision Diagram) based Model Checkers were developed, having reached $10^{120}$ states, e.g.
+OBDD-based (Ordinary Binary Decision Diagram) Model Checkers were developed, having reached $10^{120}$ states, \textit{e.g.}
 SMV~\cite{mcmillan1993symbolic}, NuSMV~\cite{cimatti2000nusmv}, and VIS~\cite{brayton1996vis}.
-However, the performance is still not enough to analyze problems in systems biology (time-memory out), which is illustrated in Chapter~\ref{chap:test}.  
+However, the performance is still not enough to analyze problems in systems biology due to its complexity (PSPACE-complete) \cite{harel2002complexity}.
+The tests are illustrated in Chapter~\ref{chap:test}.  
 
 \subsection{Static Analyzers}
 Model Checkers are widely applied to hardware and software.
@@ -445,7 +450,7 @@ All the modeling frameworks and model-checkers mentioned above are not effective
 Model learning is used to classify the original data into generalized topological knowledge of the system where the original data come from raw data after being discretized, normalized, denoised \textit{etc.}
 In this thesis we do not assess the quality of raw data as it is related to the results of biological experiments.
 
-Among the important contributions, Khalis\textit{et al.}~\cite{khalis2009smbionet} have studied parameter learning in a given model topology.
+Among the important contributions, Khalis \textit{et al.}~\cite{khalis2009smbionet} have studied parameter learning in a given model topology.
 Rodrigues \textit{et al.}~\cite{rodrigues2011active} have studied active learning of relational action model whose dynamics is however not compatible with BRNs.
 Bonneau \textit{et al.}~\cite{bonneau2006inferelator} have developed a learning algorithm based on regression but with the limit on the size of clusters.
 Opgen-Rhein \textit{et al.}~\cite{opgen2007correlation} have studied the learning using correlation coefficients, but their resulting regulatory networks are undirected. 

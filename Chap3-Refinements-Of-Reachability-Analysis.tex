@@ -66,9 +66,9 @@ These properties do not hold in multi-valued models (See Section~\ref{sec:SLCG})
 \begin{definition}[ABAN]\label{def:ABAN}
 An ABAN is a tuple $\mathbb{A} = (\Sigma,T)$, where:
 \begin{itemize}
-\item $\Sigma\triangleq\{a,b,\ldots\}$ is the finite set of automata with every automaton having a Boolean state;
-\item The states of $\mathbb{A}$ can then be defined: $LS\triangleq \underset{a\in \Sigma}{\bigcup} \{a_0,a_1\}$ is the set of all \textit{local states}, $L\triangleq \underset{a\in \Sigma'}{\times} \{a_0,a_1\}$ is the set of \textit{joint states} where $\Sigma'\subseteq\Sigma$. Particularly, if $\Sigma'=\Sigma$, $L$ is the set of \textit{global states}. 
-\item $T\triangleq \{A\rightarrow b_i\mid b\in \Sigma \land A\in L\}$ is the set of transitions.
+\item $\Sigma=\{a,b,\ldots\}$ is the finite set of automata with every automaton having a Boolean state;
+\item The states of $\mathbb{A}$ can then be defined: $LS= \underset{a\in \Sigma}{\bigcup} \{a_0,a_1\}$ is the set of all \textit{local states}, $L= \underset{a\in \Sigma'}{\times} \{a_0,a_1\}$ is the set of \textit{joint states} where $\Sigma'\subseteq\Sigma$. Particularly, if $\Sigma'=\Sigma$, $L$ is the set of \textit{global states}. 
+\item $T= \{A\rightarrow b_i\mid b\in \Sigma \land A\in L\}$ is the set of transitions.
 For transition $tr=A\to b_i$, $A$ (called head, noted $head(tr)$) is the set of required state(s), which allows to flip $b_{1-i}$ to $b_i$ (called body, noted $body(tr)$). In other words, transition $tr$ is said fireable iff $A\subseteq s$, where $s$ is the current global state. 
 \end{itemize}
 \end{definition}
@@ -139,7 +139,7 @@ One can define various dynamical properties by using reachability, \textit{e.g.}
 Moreover, Proposition~\ref{def:transformReach} explains the reachability of a joint state even a global state can be transformed to that of a local state.
 
 \begin{proposition}[Transformation of reachability]\label{def:transformReach}
-Given an ABAN $\mathbb{A}=(\Sigma,T)$ and a joint reachability problem $REACH(\alpha,\Omega)$, there exists an ABAN $\mathbb{A}'=(\Sigma,T')$ with $\Sigma'=\Sigma\addset{x}$ and $T'=T\addset{\Omega\to x_1}$ s.t. the local reachability problem in $\mathbb{A}'$ $reach(\alpha', x_1)$ with $\alpha'=\alpha\addset{x_0}$ is equivalent to $REACH(\alpha,\Omega)$ in $\mathbb{A}$.
+Given an ABAN $\mathbb{A}=(\Sigma,T)$ and a joint reachability problem $REACH(\alpha,\Omega)$, there exists an ABAN $\mathbb{A}'=(\Sigma,T')$ with $\Sigma'=\Sigma\addset{x}$ and $T'=T\addset{\Omega\to x_1}$ s.t. the local reachability problem in $\mathbb{A}'$, $reach(\alpha', x_1)$ with $\alpha'=\alpha\addset{x_0}$ is equivalent to $REACH(\alpha,\Omega)$ in $\mathbb{A}$.
 \end{proposition}
 
 \begin{proof}
@@ -179,7 +179,7 @@ This process terminates because the local states are finite, of size $O(n)$, whe
 In the worst case, SLCG contains all the local states of the ABAN.
 
 \begin{definition}[Over-approximate SLCG]\label{defSLCG}
-Given an ABAN $\mathbb{A} = (\Sigma,T)$, a global initial state $\alpha$ and a target local state $\omega$, SLCG $l= (V_\st,V_\sol,E)$ is the smallest recursive structure with $E \subseteq (V_\st\times V_\sol)\cap (V_\sol\times V_\st)$ which satisfies:
+Given an ABAN $\mathbb{A} = (\Sigma,T)$, a global initial state $\alpha$ and a target local state $\omega$, SLCG $l= (V_\st,V_\sol,E)$ is the smallest recursive structure with $E \subseteq (V_\st\times V_\sol)\cup (V_\sol\times V_\st)$ which satisfies:
 \begin{eqnarray*}
     \omega&\in& V_\st \\
     a_i\in V_\st &\Leftrightarrow& \{ (a_i, A\to a_i)\}\subseteq E \\
@@ -722,9 +722,9 @@ These modifications assure that there is only one path going from the target loc
 \begin{definition}[Restricted AAN]\label{def:resAAN}
 A restricted Asynchronous Automata Network is a tuple $\mathbb{A} = (\Sigma,T)$, where:
 \begin{itemize}
-\item $\Sigma\triangleq\{a,b,\ldots\}$ is the finite set of automata with every automaton having a discrete state.
+\item $\Sigma=\{a,b,\ldots\}$ is the finite set of automata with every automaton having a discrete state.
 The max discrete level of $a$ is denoted $l_a$ and this level is $1$ by default (Boolean) and omitted in the notation;
-\item The states of $\mathbb{A}$ can then be defined: $LS\triangleq \underset{a\in \Sigma}{\bigcup} \{a_0,\ldots,a_{l_a}\}$ is the set of all \textit{local states}, $L\triangleq \underset{a\in \Sigma'}{\times} \{a_0,\ldots,a_{l_a}\}$ is the set of \textit{joint states} where $\Sigma'\subseteq\Sigma$. Particularly, if $\Sigma'=\Sigma$, $L$ is the set of \textit{global states}. 
+\item The states of $\mathbb{A}$ can then be defined: $LS= \underset{a\in \Sigma}{\bigcup} \{a_0,\ldots,a_{l_a}\}$ is the set of all \textit{local states}, $L= \underset{a\in \Sigma'}{\times} \{a_0,\ldots,a_{l_a}\}$ is the set of \textit{joint states} where $\Sigma'\subseteq\Sigma$. Particularly, if $\Sigma'=\Sigma$, $L$ is the set of \textit{global states}. 
 %\item $T=\{A\to b_j\Rsh b_k\mid b\in \Sigma \land (b_j,b_k)\in L_b\times L_b\land |j-k|=1\land \forall a \in \Sigma,\ |A\cap L_a|\leq 1 \land A\cap L_b=\varnothing\}$ is the finite set of transitions, which defines the regulations and dynamics of the restricted AAN: $A$, $b_j$, $b_k$ are denoted $hitter(h)$, $target(h)$ and $bounce(h)$ respectively of the transition $t=A\to b_j\Rsh b_k$.
 \item $T=\{A\to b_k\mid A\in L,\ b\in \Sigma,\ k\in[1;l_b]\land \text{if } l_b>1,\ \exists b_j\in A,\ j\in[1;l_b],\ |j-k|=1, \text{ else } \nexists b_j\in A\}$ is the finite set of transitions, which defines the regulations and dynamics of the restricted AAN: $A$, $b_k$ are denoted $head(h)$, $body(h)$ respectively of the transition $tr=A\to b_k$.
 \end{itemize}
@@ -736,7 +736,7 @@ The only difference is that when encountered a multi-valued automaton, SLCG seek
 This preference avoids the appearance of cycles due to returning to a given local state.
 
 \begin{definition}[Extended over-approximate SLCG]\label{def:SLCGR}
-Given an ABAN $\mathbb{A} = (\Sigma,T)$, a global initial state $\alpha$ and a target local state $\omega$, SLCG $l= (V_\st,V_\sol,E)$ is the smallest recursive structure with $E \subseteq (V_\st\times V_\sol)\cap (V_\sol\times V_\st)$ which satisfies:
+Given an ABAN $\mathbb{A} = (\Sigma,T)$, a global initial state $\alpha$ and a target local state $\omega$, SLCG $l= (V_\st,V_\sol,E)$ is the smallest recursive structure with $E \subseteq (V_\st\times V_\sol)\cup (V_\sol\times V_\st)$ which satisfies:
 \begin{eqnarray*}
     \omega\in V_\st &\&& \exists a_j\in \alpha \\
     a_i\in V_\st &\Leftrightarrow& \{ (a_i, A\to a_i)\mid \text{if } l_a>1,\ a_k \in A,\\
