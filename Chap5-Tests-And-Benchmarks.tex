@@ -47,7 +47,7 @@ Theses cases are solvable by ASPReach.
 PermReach is not able to deal with the case where multiple states of one automaton appear in the branches of one \textbf{AND gate} ($d_0$ and $d_1$ in this example).
 There exists a consistent state sequence: $d_1::b_1::c_1::a_1$ corresponding to the trajectory $\acm{c_0}{d_0}{d_1}::\acm{d_0,a_0}{b_0}{b_1}::\acm{d_1,e_0}{c_0}{c_1}::\acm{b_1,c_1}{a_0}{a_1}$ which could be found by ASPReach.
 
-The whole approach is implemented in Python3\footnote{Code and testing data available at \url{https://github.com/XinweiChai/LCG-in-ASP}}.
+The whole approach is implemented in Python3\footnote{Code and testing data available at \url{https://github.com/XinweiChai/reach_and_revision}}.
 The call of ASP in Python is done by package \textit{pyasp}\footnote{\url{https://pypi.python.org/pypi/pyasp}}. 
 
 To evaluate the scalability in \textit{in silico} networks, we take T-cell Receptor model (TCR)~\cite{saez2007logical} and epidermal growth factor receptor model (EGFR)~\cite{samaga2009logic} as examples, with the former one containing $95$ automata and $206$ transitions and the latter one containing $104$ automata and $389$ transitions respectively. 
@@ -191,47 +191,88 @@ The runtime peak is at density 8, a possible explanation is that even the topolo
 \end{figure}
 
 \section{Implementation of CRAC and M2RIT}
-CRAC and M2RIT are algorithms for revising existed models using reachability information and sets of revisable candidate transitions.
+CRAC and M2RIT are algorithms for revising existed models using reachability information and sets of revisable candidate transitions, with the former adding and removing transitions and the latter revising exising transitions.\footnote{Code and testing data available at \url{https://github.com/XinweiChai/reach_and_revision}}.
 We suppose that the sets come from time-series data.
 
 \subsection{CRAC}
 CRAC is based on the hypothesis that time-series data is consistent with differential equations.
-We test it by first generate random differential equations.
+We test it by the following steps:
+\begin{enumerate}
+    \item Generate random differential equations $E$
+    \item Generate time-series data $tsd$ from $E$
+    \item Construct an ABAN $A=(\Sigma, T)$ consistent with $E$, compute its reachability information $Re$, $Un$ using ASPReach
+    \item Obtain a partial ABAN $A'=(\Sigma, T')$ with $T'\subset T$, compute its reachability information $Re'$ and $Un'$ using ASPReach
+    \item Infer candidate regulations $R$ from $E$
+    \item Construct an ABAN $A''=(\Sigma, T')$ based on $A'$, $Re$, $Un$, $Re'$, $Un'$ and $R$ s.t. $A''$ satisfies $Re$, $Un$ using CRAC
+\end{enumerate}
 
-Given the set of variables $\Sigma$, every differential equation associated to $x_v\in \Sigma$ is $\Delta x_v=\sum_{u\in \Sigma'}x_u k_{uv}$. 
+
+In step 1, given the set of variables $\Sigma$, every differential equation associated to $x_v\in \Sigma$ is $\Delta x_v=\sum_{u\in \Sigma'}x_u k_{uv}$. 
 To generate such equation, we generate first $\Sigma'\subseteq \Sigma\miset{v}$ randomly.
 The first element of $\Sigma'$ is randomly chosen from $\Sigma\miset{v}$.
 For $i>1$, if $(i-1)$-th element of $\Sigma'$ exists, we generate the $i$-th element with an 80\% probability, choosing from $\Sigma\setminus(\Sigma'\addset{v})$.
 For parameter $k_{uv}$, we choose a random number in $[-1,-0.5]\cup[0.5,1]$.
-Through a rough discretization, we obtain an ABAN from the random differential equations:
+%Through a rough discretization, we obtain an ABAN from the random differential equations:
 
-\textbf{How}
-
-With the ABAN, we generate a possible time-series.
-To make it consistent with differential equations (simultaneuous change), we choose the next state from synchronous successors.
+In step 2, we generate a possible time-series.
+To make it consistent with differential equations (simultaneous change), we choose the next state from synchronous successors.
 Every state change can be regarded as a composition of several asynchronous state changes without considering the orders.
 One of the drawbacks is that time is not taken into account.
 
-We then hide randomly a part of transitions (20\% of all the transitions), calculate the percentage of retrieval by CRAC and see even if the resulted trasitions are different, whether they can reproduce the time-series data.
+We then hide randomly a part of transitions (20\% of all the transitions) to obtain $T'$. %calculate the percentage of retrieval by CRAC and see even if the resulted transitions are different, whether they can reproduce the time-series data.
 
-Generate all the reachability instances, test how many CRAC/M2RIT need to retrieve all the missing transitions.
+From the running result, we discovered that CRAC is not able to retrieve all the transitions in $T$ but can satisfy the reachability properties.
+We noticed that the added transitions can be similar to the hidden transitions but with different logic operators, \textit{e.g.} \ac{b_1,c_1}{a_0}{a_1} could be replaced by \ac{b_1}{a_0}{a_1} and \ac{c_1}{a_0}{a_1}.
+
+The performance of CRAC also depends on the discretization  which can be a possible future topic.
+
+%Generate all the reachability instances, test how many CRAC/M2RIT need to retrieve all the missing transitions.
 
 \subsection{M2RIT}
-In the test of M2RIT, we generate a random ABAN like in Section~\ref{sec:compReachAnalyzers}.
-We choose the next state from asynchronous successors are generated by an equi-probable next state.
+The test of M2RIT is analogous,
+\begin{enumerate}
+    \item Generate random time-series data $tsd$
+    \item Obtain partial time-series data $tsd'\subset tsd$
+    \item Infer ABAN $A=(\Sigma, T)$ from $tsd$ using asynchronous LFIT, compute its reachability information $Re$ and $Un$ using ASPReach
+    \item Infer ABAN $A'=(\Sigma, T')$ from $tsd'$ using asynchronous LFIT, compute its reachability information $Re'$ and $Un'$ using ASPReach
+    \item Construct an ABAN $A''=(\Sigma, T')$ based on $A'$, $Re$, $Un$, $Re'$, $Un'$ s.t. $A''$ satisfies $Re$, $Un$ using M2RIT
+\end{enumerate}
+we generate a random ABAN like in Section~\ref{sec:compReachAnalyzers}.
+We then choose the next state from asynchronous successors are generated by an equi-probable next state.
 This operation allows us to obtain a time-series data matching perfectly asynchronous update scheme as there is at most one state change for all automata at each time point. 
 Hence, such time-series data fit perfectly asynchronous LFIT algorithm.
 However, they do not exist in real world as we cannot limit the number of state change at each observation.
 
-\textbf{A figure is needed here to illustrate the difference between normal and "asynchronous" time-series data.
-How to use global reachability in normal tsd.}
+$$A=\kbordermatrix{\mbox{\footnotesize$t$}&0&1&2&3\\
+a&\mathbf{0}&\mathbf{1}&1&1\\
+b&\mathbf{0}&\mathbf{1}&0&1\\
+c&\mathbf{1}&\mathbf{0}&1&1\\
+d&\mathbf{0}&\mathbf{0}&0&1
+}
+\hspace{2cm}
+A'=\kbordermatrix{\mbox{\footnotesize$t$}&0&1&2&3\\
+a&\mathbf{0}&\mathbf{1}&1&1\\
+b&0&\mathbf{0}&\mathbf{1}&1\\
+c&1&1&\mathbf{1}&\mathbf{0}\\
+d&0&0&0&0
+}
+$$
+The left matrix $A$ is an example of generalized time series data, where at each time point multiple variables can change their values.
+The right matrix $A'$ is an example of ``asynchronous'' time-series data, where at each time point at most one variable changes its value.
+From $t=0$ to $t=1$, $A$ shows a direct transition $(0,0,1,0)\to (1,1,0,0)$ where $A'$ interpret this transition in details (from $t=0$ to $t=3$) under the hypothesis that two variables cannot change their values exactly at the same time.
+
+Both can be used as input for CRAC but only the latter one is proper for M2RIT to fit asynchronous LFIT algorithm.
 
 Like in the last section, we hide 20\% of the transitions and offer a set of reachability information.
 
+From the running result, we discover that M2RIT is not able to retrieve all the transitions in $T$ but can construct a new ABAN $A''$ which simulates $A$ in the meaning of reachability.
+This behavior resembles that of LFIT algorithm, as it aims at obtaining a model that reproduces the time series data without considering if the model is identical to the real one. 
+
+Limited by the computing capacity of ASPReach, CRAC and M2RIT can deal with models with up to 1000 variables.
 
 \section{R\'esum\'e}
 
-In this chapter, we compared the performance of the tools using different approaches.
+In this chapter, we showed the performance of diverse algorithms in this thesis.
 Different results approved the properties of different methodologies shown in the previous chapters.
 
 The tests of PermReach and that of ASPReach shows that they are more conclusive than Pint, the former work of our laboratory.
@@ -239,4 +280,5 @@ They are also more efficient than traditional reachability analyzers.
 In between, there is a trade-off between conclusiveness and efficiency: 
 PermReach is more efficient than ASPReach but with less conclusiveness.
 
-The tests of CRAC and M2RIT shows that 
+The tests of CRAC and M2RIT shows that they can be applied to revise models with up to $1000$ variables if proper and sufficient reachability information is given.
+Unfortunately, there is no existing work that uses reachability properties to revise models, we cannot run a competition between CRAC and M2RIT and the state-of-the-art methods.
