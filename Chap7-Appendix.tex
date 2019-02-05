@@ -54,7 +54,7 @@ The equivalent ABAN is then constructed: 5 automata $\mathbf{\Sigma}=\{a,b,c,d,e
     \For{$R_c\in conflicts$}
         \For{$l \in b(R)$}
             \If{$l \not\in b(R_c)$ and $\lnot l \not\in b(R_c)$}
-                \State $R'_c=:= (h(R_c) \gets (b(R_c) \addset{\lnot l}))$
+                \State $R'_c:= (h(R_c) \gets (b(R_c) \addset{\lnot l}))$
                 \If{$P$ does not subsumes $R_c$}
                     \State $P := P \setminus$ all the rules subsumed by $R'_c$
                     \State $P := P \addset{ R'_c}$
