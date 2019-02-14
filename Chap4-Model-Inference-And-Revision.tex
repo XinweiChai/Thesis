@@ -163,7 +163,7 @@ $\mathbb{V}_0$ refers to the initial valuation s.t $\forall n \in V_{\mathrm{sta
 \end{definition}
 
 
-\begin{definition}[$\mathsf{update}$]
+\begin{definition}[\textsf{update}]
 \begin{equation}  
 \mathsf{update}(\mathbb{V},n)= 
       \begin{cases}
@@ -257,32 +257,72 @@ Cut set inhibits certain \textit{local states} to prevent the reachability.
 However, it mismatches the operations of revision in this thesis as revision aims at adding/deleting transitions to change the dynamics properties.
 
 Here, we introduce the cut set w.r.t transitions.
-Given a cut set, we delete first the element containing target state, then replace every local state with its parent node.
-The last step is to delete identical sets.
+We change the $\mathsf{update}$ definition to $\mathsf{update_{trans}}$ in order to capture the transitions needed for each local state.
+%Given a cut set, we delete first the element containing target state, then we replace every local state with its parent node.
+%If certain state node does not have such, we delete the corresponding cut set because this local state is always reachable and can provide pathways for the target state.
+%The last step is to delete identical sets.
 
-\begin{algorithm}[ht]
-\begin{algorithmic}
-\State Input: an SLCG $l= (V_{\mathrm{state}},V_{\mathrm{sol}},E)$, a cut set $\mathbb{V}$
-\State Output: cut set w.r.t transitions $\mathbb{V}_t$
-\State Initialization: $\mathbb{V}_t\gets \varnothing$
-\For{$S\in \mathbb{V}$}
-    \If{$S=\{\omega\}$}
-        \State $\mathbb{V}\gets \mathbb{V}\miset{\omega}$
-    \EndIf
-    \State $S_t\gets \textbf{new } set(\varnothing)$
-    \For{$ls\in S$}
-        \State $S_t\gets S_t\addset{ls.pred}$
-    \EndFor
-    \State $\mathbb{V}_t\gets \mathbb{V}_t\addset{S_t}$
-\EndFor
-\State Delete identical elements in $\mathbb{V}_t$
-\State \Return{$\mathbb{V}_t$}
-\end{algorithmic}
-\caption{Cut set w.r.t transitions}\label{alg:cutsetTr}
-\end{algorithm}
+\begin{definition}[$\mathsf{update_{trans}}$]
+\begin{equation}  
+\mathsf{update_{trans}}(\mathbb{V},n)= 
+      \begin{cases}
+            \zeta^N(\{\{n\}\}\cup\bigcup_{m\in n.next}\mathbb{V}(m))&\text{if } n\in\mathbf{Sol}\\
+            \zeta^N(\prod_{m\in n.next}\mathbb{V}(m))&\text{if } n\in\mathbf{LS}\\
+      \end{cases}
+\end{equation}
+\end{definition}
 
-If we apply this Algorithm~\ref{alg:cutsetTr} to the same example, Example~\ref{example:cutset} and its cut set, resulted cut set w.r.t transitions is $\mathbb{V}_t= \{\{\acm{b_1,c_1}{}{a_1},\acm{b_0}{}{a_1}\},\{\acm{b_1,c_1}{}{a_1},\acm{d_1}{}{b_0}\},\{\acm{b_1,c_1}{}{a_1},\acm{b_1}{}{d_1}\}\}$.
+%\begin{algorithm}[ht]
+%\begin{algorithmic}
+%\State Input: an SLCG $l= (V_{\mathrm{state}},V_{\mathrm{sol}},E)$, a cut set $\mathbb{V}$
+%\State Output: cut set w.r.t transitions $\mathbb{V}_t$
+%\State Initialization: $\mathbb{V}_t\gets \varnothing$
+%\For{$S\in \mathbb{V}$}
+%    \If{$S=\{\omega\}$}
+%        \State $\mathbb{V}\gets \mathbb{V}\miset{\omega}$
+%    \EndIf
+%    \State $S_t\gets \textbf{new } set(\varnothing)$
+%    \For{$ls\in S$}
+%%        \If{$ls.next=\varnothing$}
+%%            \State \textbf{break}
+%%        \EndIf
+%        \State $S_t\gets S_t\addset{ls.next}$
+%    \EndFor
+%    \State $\mathbb{V}_t\gets \mathbb{V}_t\addset{S_t}$
+%\EndFor
+%\State Remove identical elements in $\mathbb{V}_t$
+%\State \Return{$\mathbb{V}_t$}
+%\end{algorithmic}
+%\caption{Cut set w.r.t transitions}\label{alg:cutsetTr}
+%\end{algorithm}
+
+If we apply this $\mathsf{update_{trans}}$ 
+%Algorithm~\ref{alg:cutsetTr}
+to the same example, Example~\ref{example:cutset} and its cut set, resulted cut set w.r.t transitions is $\mathbb{V}_t= \{\{\acm{b_1,c_1}{}{a_1},\acm{b_0}{}{a_1}\},\{\acm{b_1,c_1}{}{a_1},\acm{d_1}{}{b_0}\},\{\acm{b_1,c_1}{}{a_1},\acm{b_1}{}{d_1}\}\}$.
 By deleting any set of transitions in the cut set w.r.t transitions, we can ensure the unreachability of $a_1$ if $a_1$ is not at initial state.
+
+\subsection{Completion Set}
+Likewise, for an SLCG with suggesting certain local state is unreachable, we can use an analogous algorithm to compute completion sets satisfying that if the elements one completion set are reachable, the target local state becomes reachable.
+
+\begin{definition}[\textsf{update for completion set}]
+\begin{equation}  
+\nonumber
+\mathsf{update'}(\mathbb{V},n)= 
+      \begin{cases}
+            \zeta^N(\prod_{m\in n.next}\mathbb{V}(m))&\text{if } n\in\mathbf{Sol}\\
+            %\zeta^N(\bigcup_{m\in n.next}\mathbb{V}(m))&\text{if } n\in\mathbf{LS}\miset{\omega}\\
+            \{\varnothing\}&\text{if }\bigcup_{m\in n.next}\mathbb{V}(m)=\{\varnothing\}\\
+            \zeta^N(\{\{n\}\}\cup\bigcup_{m\in n.next}\mathbb{V}(m))&\text{else}
+      \end{cases}
+\end{equation}
+\end{definition}
+
+Using the same definition of valuation, \textsf{update for completion set} assign every node with a completion set. 
+When the valuations are saturated, they stand for the completion sets of $\omega$.
+
+\begin{example}
+
+\end{example}
 
 \subsection{Completion by Over-Approximation}
 As stated in the previous chapter, verifying exact reachability is a hard task.
@@ -290,10 +330,10 @@ Here we use two metrics, over-approximation and under-approximation to replace a
 
 Over-approximation is the reasoning of pseudo-reachability in Definition~\ref{defPseudoReach} on page \pageref{defPseudoReach}. 
 It associates local states and transitions with the initial state according to the causalities: if there exists a reverse pathway from the target local state to the initial state, this target state can be reachable.
-Over-approximationdoes not take into consideration the order of transitions to be fired, which is the cause of inconclusiveness (literally it over-approximates the reachability).
+Over-approximation does not take into consideration the order of transitions to be fired, which is the cause of inconclusiveness (literally it over-approximates the reachability).
 Thus over-approximation is a necessary condition of the reachability.
 
-Figure~\ref{CompOv} gives a first impression of the idea.
+Figure~\ref{CompOv} gives a first impression of this method.
 The visualization of the set of candidate regulations $R=\{(a,b,+),(c,a,-)\}$ is on the left.
 On the right, the initial ABAN has only three Boolean variables $\Sigma=\{a,b,c\}$ and initial state $\init{a_0,b_0,c_0}$, with transitions $T=\{\acm{a_1}{b_0}{b_1}\}$.
 $b_1$ is not reachable because of the unreachability of $a_1$.
