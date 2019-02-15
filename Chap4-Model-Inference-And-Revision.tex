@@ -249,7 +249,7 @@ The cut set is $\{\{a_3\},\{b_1\},\{b_3,c_2\},\{c_2,d_2\}\}$, meaning that by in
  $\{a_1\}\to c_1$ & 9 & $\{\{a_1\},\{b_1\},\{b_0,c_1\},\{c_1,d_1\}\}$ \\ 
  \hline 
  \end{tabular}
- \caption[Example of cut set]{Result of Algorithm~\ref{alg:cut} on the LCG in Figure~\ref{fig:cut}.
+ \caption[Example of cut set]{Result of Algorithm~\ref{alg:cut} on the SLCG in Figure~\ref{fig:cut}.
  In column of $\mathbb{V}$, it is sufficient to prevent the local states $\{\{a_1\},\{b_1\},\{b_0,c_1\},\{c_1,d_1\}\}$ in order to inhibit the reachability of $a_1$.}\label{tab:cutset}
 \end{table}
 
@@ -321,8 +321,57 @@ Using the same definition of valuation, \textsf{update for completion set} assig
 When the valuations are saturated, they stand for the completion sets of $\omega$.
 
 \begin{example}
+Figure~\ref{fig:completionSet} shows an ABAN and its over approximate SLCG of $a_1$.
+The ABAN has transitions $T=\{\acm{b_1,c_0}{a_0}{a_1}, \acm{c_1, e_1}{a_0}{a_1}, \acm{d_1}{c_0}{c_1}\}$ and initial state $\alpha=\init{a_0,b_0,c_0,d_0}$, $\omega = a_1$.
 
+Table~\ref{tab:completionset} shows the steps to complete the graph like the procedures in cut set.
+
+\begin{figure}[ht]
+    \centering
+    \input{figures/completionSet.tex}
+    \caption[Completion set]{ABAN and SLCG for reachability of $a_1$}
+    \label{fig:completionSet}
+\end{figure}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|c|c|l|}
+ \hline 
+ Node & Rank & $\mathbb{V}$ \\ 
+ \hline 
+ $\perp$ (of $b_1$) & 1 & $\varnothing$ \\ 
+ \hline 
+ $b_1$ & 2 & $\{\{b_1\}\}$ \\ 
+ \hline 
+ $\varnothing$ (of $c_1$) & 3 & $\{\varnothing\}$ \\ 
+ \hline 
+ $c_1$ & 4 & $\{\varnothing\}$ \\ 
+ \hline 
+ $\{b_1,c_0\}\to a_1$ & 5 & $\{\{b_1\}\}$ \\ 
+ \hline 
+ $\perp$ (of $d_1$) & 6 & $\varnothing$ \\ 
+ \hline 
+ $d_1$ & 7 & $\{\{d_1\}\}$ \\ 
+ \hline 
+ $\{d_1\}\to c_1$ & 8 & $\{\{d_1\}\}$ \\ 
+ \hline 
+ $c_1$ & 9 & $\{\{c_1, d_1\}\}$ \\ 
+ \hline 
+ $\perp$ (of $e_1$) & 10 & $\varnothing$ \\ 
+ \hline 
+ $e_1$ & 11 & $\{\{e_1\}\}$ \\ 
+ \hline 
+ $\{c_1,e_1\}\to a_1$ & 12 & $\{\{c_1, e_1\}, \{d_1, e_1\}\}$ \\ 
+ \hline 
+ $a_1$ & 13 & $\{\{a_1\}, \{b_1\}, \{c_1, e_1\}, \{d_1, e_1\}\}$ \\ 
+ \hline 
+ \end{tabular}
+ \caption[Example of completion set]{Result of Algorithm~\ref{alg:cut} by replacing $\mathsf{update}$ with $\mathsf{update'}$ on the SLCG in Figure~\ref{fig:completionSet}.
+ In column $\mathbb{V}$, it is sufficient to make one of the sets of the local states $\{\{a_1\}, \{b_1\}, \{c_1, e_1\}, \{d_1, e_1\}\}$ reachable in order to reach $a_1$.}\label{tab:completionset}
+\end{table}
 \end{example}
+
+
 
 \subsection{Completion by Over-Approximation}
 As stated in the previous chapter, verifying exact reachability is a hard task.
