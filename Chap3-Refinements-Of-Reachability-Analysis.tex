@@ -1,21 +1,21 @@
 \chapter{Refined Reachability Analysis \textit{via} Heuristics}\label{chap:refinement}
 \begin{mybox}
-Several modeling frameworks and model checking techniques are introduced in Chapter~\ref{chap:stateOfTheArt}.
+Several modeling frameworks and model checking techniques \roux{are}{were} introduced in Chapter~\ref{chap:stateOfTheArt}.
 We noticed that even though there exist already exact model checkers and static analyzers for reachability problems, they are not sufficient.
-Exact model checkers face always the state space explosion problem when analyzing large models (of about 50 variables);
+Exact model checkers \roux{face always}{always face} the state space explosion problem when analyzing large models (of \roux{}{more than} about 50 variables);
 Static analyzer PINT, designed for Process Hitting/Automata Network is however, theoretically inconclusive, i.e. not able to provide a global solution to arbitrary input.
-This chapter is going to deepen into the reachability problem \textit{via} the following steps:
+This chapter is going to deepen into the reachability problem \roux{}{for Asynchronous Binary Automata Network} \textit{via} the following steps:
 
 \begin{itemize}
-    \item Why the inconclusiveness problem rises
-    \item What are the problematic structures
+    \item Why the inconclusiveness problem rises \roux{}{in our method}
+    \item What are the problematic structures \roux{}{in Automata Networks or in what ?}
     \item How to deal with such structures
 \end{itemize}
 
-As a result, we try to recover the consequence of the lost information due to non-exhaustive search of static analysis and construct a more close approximation of the real dynamics in order to gain a better conclusiveness.
+As a result, we try to recover the consequence of the lost \roux{}{of} information due to non-exhaustive search of static analysis and construct a more close approximation of the real dynamics in order to gain a better conclusiveness.
 \end{mybox}
 
-In this chapter, we are going to formally define the main modeling framework studied in this thesis, Asynchronous Binary Automata Network (ABAN) and its related static analyzer, Simplified Local Causality Graph (SLCG).
+In this chapter, we are going to formally define the main modeling framework studied in this thesis, Asynchronous Binary Automata Network (ABAN) and \roux{its}{the} related static analyzer \roux{}{we have specifically designed}, Simplified Local Causality Graph (SLCG).
 These two new definitions based on the one of Automata Network in order to adapt to our new reachability analyzers.
 
 Also, to deal with the inconclusiveness problem persisting in previous work~\cite{folschette2015}, we propose at first doing some preprocessings by simplifying the topology of the models in order to try to remove the parts leading to inconclusiveness.
@@ -173,7 +173,7 @@ In fact, Didier \textit{et al.}~\cite{didier2011mapping} have shown a technique 
 
 SLCG is aimed at studying the reachability of a target state while given an ABAN and a global initial state.
 SLCG is a goal-oriented method.
-It starts with the target state $\omega$, look for transitions reaching the target state, then replace $\omega$ with the bodies of these transitions.
+It starts with the target state $\omega$, \roux{look}{looks} for transitions reaching the target state, then \roux{replace}{replaces} $\omega$ with the bodies of these transitions.
 If the current target state is included in the initial state, we find the causal path from the initial state towards $\omega$, otherwise we continue the process, until we reach the initial state or local states we have already traversed.
 This process terminates because the local states are finite, of size $O(n)$, where $n$ is the number of automata.
 In the worst case, SLCG contains all the local states of the ABAN.
@@ -285,7 +285,7 @@ In an SLCG, a cycle is formed by a sequence of nodes linked as follows: $a_i\to 
 \end{definition}
 
 To identify cycles, we search instead Strongly Connected Components (SCC) of size greater than one.
-Because cycles may have intersections but there is no such problem with SCC.
+\roux{Because cycles may have intersections but there is no such problem with SCC}{REVOIR CETTE PHRASE INCOMPREHENSIBLE POUR MOI}.
 In other words, a SCC contains as many as possible nested cycles which strongly connect to each other.
 \cite{tarjan1972} shows that the detection of SCCs can be done in $O (|V|+|E|)$ time, with $|V|$ the number of the vertices and $|E|$ the number of the edges.
 SLCG is usually a sparse graph, as in biological systems, the automata mostly interact with only a part of the system, hence the out-degree can be considered of $O (1)$ and the detection of SCCs\footnote{Implementation in Python3 by Mario Alviano at \url{https://github.com/alviano/python/blob/master/rewrite_aggregates/scc.py}} can be done in $O(|V|)$, \textit{i.e.} linear time.
@@ -374,7 +374,7 @@ The next step is to analyze an SLCG with only \textbf{AND gates}.
 We need to find a trajectory reaching all the components of the \textbf{AND gates} simultaneously.
 Usually one cannot achieve good conclusiveness and low complexity at the same time, that is why we propose two solutions for different needs of conclusiveness-complexity balance: Reachability via search in permutations (PermReach) which is a partial search and Reachability via Answer Set Programming (ASPReach) which is a exhaustive search.
 
-\subsection{Reachability via Permutations}\label{sec:permreach}
+\subsection{Reachability via Permutations} \roux{}{[PermReach]}\label{sec:permreach}
 
 Before running into the definitions, we compare Example~\ref{example:unreach} and Example~\ref{example:order} with minor difference.
 
@@ -475,6 +475,7 @@ We state here several algorithmic properties of PermReach.
 \end{theorem}
 
 \subsection{Reachability via Answer Set Programming}\label{sec:aspreach}
+\roux{}{[PermReach]}
 
 As we have seen in the last section, PermReach is more conclusive than pure static analysis, but still fails in the cases where there are nested \textbf{AND gates} and the order of these \textbf{AND gates} influence the reachability.
 
@@ -789,15 +790,15 @@ To get rid of these constraints, we carry first preprocessing (Section~\ref{sec:
 With the preprocessed ABAN, we introduced two reachability analyzers based on SLCG: PermReach and ASPReach.
 
 PermReach relies on a complete search on the permutations of \textbf{AND gates}.
-However, permutations do not cover all the possible trajectories but PermReach is very efficient .
+However, permutations do not cover all the possible trajectories but PermReach is very efficient.
 
 ASPReach does a finer work than PermReach, searching all the possible trajectories of a preprocessed ABAN (without cycles and \textbf{OR gates}).
 
 An extension of the above reachability analysis to multi-valued models (restricted AAN and extended SLCG) allows one to partly discover the solutions but it appears to be also an interesting heuristics. 
 
-The experimental results are in Chapter~\ref{chap:test} Benchmark showing these two approaches can deal with more problems than pure static analysis.
+The experimental results are in Chapter~\ref{chap:test}\roux{}{dot . ~~~~~~~~~} Benchmark showing these two approaches can deal with more problems than pure static analysis.
 
 Like static analysis, those two analyzers are not fully conclusive.
-However, if one wants total conclusiveness, he will need a complete search over state space like exact model checkers do, resulting in state space explosion.
+However, if one wants total conclusiveness, he will \roux{}{probably} need a complete search over state space like exact model checkers do, resulting in state space explosion.
 
 In the next chapter, we will introduce three model inference approaches based on these reachability analyzers.
