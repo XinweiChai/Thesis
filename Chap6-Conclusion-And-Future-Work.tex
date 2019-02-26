@@ -31,7 +31,7 @@ To do so, we have to first develop efficient model checkers to verify whether th
 
 In Section~\ref{sec:modelchecking}, we stated that exact model checkers provide conclusive results of dynamic properties but the computational cost is unaffordable while the computational cost of abstract model checkers are acceptable but the results are not necessarily conclusive.
 
-With the previous work on the Asynchonous Automata Network (AAN) by Paulev\'e \textit{et al.} \cite{folschette2015},
+With the previous work on the Asynchronous Automata Network (AAN) by Paulev\'e \textit{et al.} \cite{folschette2015},
 we squeeze the application domain of AAN and simplified its semantics, called ABAN (Asynchronous Binary Automata Network).
 This semantic change is to give a possibility of making related reachability analyzer more conclusive.
 
@@ -51,7 +51,7 @@ They are based on heuristic methods and pure static analysis:
     \item ASPReach (Section~\ref{sec:aspreach})
         
         which performs a \textit{global search of possible nodes} order in the SLCG with the help of Answer Set Programming (ASP).
-        ASPReach covers the weakpoint of PermReach but is still inconclusive due to the heuristic preprocessing which simplifies the problem but creates inequivalence.
+        ASPReach covers the weak-point of PermReach but is still inconclusive due to the heuristic preprocessing which simplifies the problem but creates inequivalence.
 \end{itemize}
 
 PermReach and ASPReach perform normally on models with $1000$ components while traditional model checkers fail to compute and static analyzer Pint also fails to give conclusive results on certain instances (Section~\ref{sec:compReachAnalyzers}).
