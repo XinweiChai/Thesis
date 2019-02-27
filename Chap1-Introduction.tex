@@ -57,7 +57,8 @@ Their inner behaviors (\textit{e.g.} protein phosphorylation, activation/inhibit
 
 The values in models can be continuous or discrete which differentiate the modeling frameworks.
 
-\roux{Continue}{Continuous} values correspond directly to the measurement and can be used in the models based on the family of Ordinary Differential Equation (ODE), for example Stochastic Differential Equation (SDE), Delay Differential Equation (DDE).
+Continuous %\roux{Continue}{Continuous}
+ values correspond directly to the measurement and can be used in the models based on the family of Ordinary Differential Equation (ODE), for example Stochastic Differential Equation (SDE), Delay Differential Equation (DDE).
 
 Discrete values come from an approximation from sigmoid function to step functions. 
 Sigmoid function is a monotonic function and its change rate is high around a certain point (Proof in Appendix~\ref{sec:proof}).
@@ -78,7 +79,8 @@ In this thesis, we mainly work on \textbf{asynchronous discrete models} based on
 If one has an existing model, he might want to know what kind of properties this model satisfies, such as fixed points, safety, reachability.
 
 As stated in the beginning of this chapter, the verification of such properties in a concurrent system is costly in computation (PSPACE-complete) \cite{harel2002complexity}.
-We have to make a compromise on either efficiency or precision: exact analyzers are precise but need to traverse big state space; abstract analyzers solve a simplified version of the original problem so that the solution is not equivalent to the \roux{that}{one} of the original problem.
+We have to make a compromise on either efficiency or precision: exact analyzers are precise but need to traverse big state space; abstract analyzers solve a simplified version of the original problem so that the solution is not equivalent to the one %\roux{that}{one}
+ of the original problem.
 
 \subsection{Model Learning}
 Models are built by the biological knowledge, obtained either by certain experiments, either by generalized conclusions from biologists.
@@ -144,7 +146,8 @@ We then apply some different heuristics on the key components to solve them dyna
 Chapter~\ref{chap:modelInference} presents the methodology of model revision in this thesis and our model revisers mentioned above.
 These model revisers perform a model selection. 
 They choose a model from the candidates satisfying all the provided constraints.
-However the number of candidate models can be \roux{exponential}{huge}, our model revisers can shrink the search space drastically to obtain a result.
+However the number of candidate models can be huge%\roux{exponential}{huge}
+, our model revisers can shrink the search space drastically to obtain a result.
 
 Chapter~\ref{chap:test} shows some comparative and exploratory tests and their results on the approaches presented in Chapter~\ref{chap:refinement} and Chapter~\ref{chap:modelInference}.
 
