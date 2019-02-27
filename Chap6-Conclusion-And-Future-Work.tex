@@ -107,16 +107,22 @@ To sum up the contents in this thesis, we have:
     \item We studied only Boolean-related models in order to use a stronger conclusiveness of SLCG. 
     It is however possible to generalize the study to multi-valued systems.
     
-    NLP is a possible modeling because it ignores the pathway of a variable.
+    Normal Logic Program (NLP) might be a proper modeling because it ignores the state of departure while different pathways of a variable might be a cause of inconclusiveness.
+    For example, transition $a_1\to b_0\Rsh b_2$ has multiple pathways for automaton $b$: $b_0\to b_2, b_0\to b_3\to b_2$, \textit{etc}.
+    When this transition is translated to $b_2\gets a_1$, it does not require $b_0$ as a state of departure which does not cause such problems.
     
     %\item More applications to biology
-    \item We are now considering the incorporation of parameter space abstraction, like the work of \cite{PRNs-TCS18}, to improve the performance of our model checkers regarding runtime.
+    \item We are now considering the incorporation of parametrization space abstraction, like the work of \cite{PRNs-TCS18}, to improve the performance of our model checkers/revisors regarding versatility.
     
-    Details
+    The study of parametrization space allows us to obtain different properties of a set of models rather than only squeezing consistent transitions only by reachability properties.
+    Also, parametrization space methods is still restrictive: they can explore the full dynamics up to dozens of variables.
+    New model checkers with versatility and less time or memory cost may be interesting.
     
     
     \item M2RIT does not guarantee the minimal revision of the logic program.
-    Considering the metric for minimal revision and designing a related algorithm will be interesting.
     
-    Details
+    Considering the metric for minimal revision and designing a related algorithm will be interesting.
+    The definition of ``minimal'' can be of different means: allowing changing minimal number of transitions, allowing modifying minimal number of elements of each transition or allowing least inconsistency, \textit{etc}.
+    Also, when revising the models, there might be some common parts in the SLCGs of inconsistent reachability properties.
+    Making use of these common parts might be useful to reaching the goal of minimal revision.
 \end{itemize}

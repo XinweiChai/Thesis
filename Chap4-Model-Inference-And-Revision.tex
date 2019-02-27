@@ -30,10 +30,12 @@ DREAM11\footnote{\url{https://www.synapse.org/\#!Synapse:syn6131484/wiki/402026}
 Like in biology, the modeling structures in robotics are usually complex and with big scale, which is difficult in control, prediction and simulation.
 Constructing an abstracted (often approximated) model is a compromising way of dealing with the mechanical and computational complexity.
 However, the abstracted models are theoretically non-equivalent to the original ones because they contain different amount of information.
-Even though there always \roux{lies an}{remains a} an non-equivalence, we wish that the abstracted models are in bisimulation with the original systems with respect to certain variables and keep the same important properties as original systems.
+Even though there always remains a  %\roux{lies an}{remains a}
+non-equivalence, we wish that the abstracted models are in bisimulation with the original systems with respect to certain variables and keep the same important properties as original systems.
 
 As is mentioned in Section~\ref{sec:contribution} of Chapter~\ref{chap:intro}, as far as we know, there has been no work combining model inference and model revision.
-Some related works: Opgen-Rhein \textit{et als.} \roux{}{la morme exacte est : et al. aA REMPLACER PARTOUT CI-DESOUS (c'est du Latin à l'origine). Aussi, il faut unifier la position de cite[] avec have studied} have~\cite{opgen2007correlation} studied the undirectional inference \textit{via} correlation, Rodrigues \textit{et als.}~\cite{rodrigues2011active} have studied the learning of action models and Bonneau \textit{et als.}~\cite{bonneau2006inferelator} have studied the learning from continuous time-series data.
+Some related works: Opgen-Rhein \textit{et al.}~\cite{opgen2007correlation} %\roux{}{la morme exacte est : et al. aA REMPLACER PARTOUT CI-DESOUS (c'est du Latin à l'origine). Aussi, il faut unifier la position de cite[] avec have studied}
+have studied the undirectional inference \textit{via} correlation, Rodrigues \textit{et al.}~\cite{rodrigues2011active} have studied the learning of action models and Bonneau \textit{et al.}~\cite{bonneau2006inferelator} have studied the learning from continuous time-series data.
 
 Figure~\ref{fig:bigPicture} shows the methodology of this chapter.
 There are two parallel pathways: 
@@ -134,7 +136,8 @@ We introduce first the notion and the application of cut sets.
 
 \subsection{Cut set}\label{sec:cutsetModelInfer}
 
-Cut set operation works on the local states \roux{necessitating}{mandatory} for reachability. 
+Cut set operation works on the local states mandatory  %\roux{necessitating}{mandatory}
+for reachability. 
 It is used to inhibit certain local states to make wanted local states unreachable.
 However we cannot eliminates the states in a given network, what we can manipulate here are the transitions. 
 We present how cut set functions and then adapt it to our requirements.
@@ -212,9 +215,9 @@ We are going to run a tiny example on the mechanics of cut set.
 Figure~\ref{fig:cut} shows an ABAN and its under approximate SLCG of $a_1$.
 The ABAN has transitions $T=\{\acm{b_1,c_1}{}{a_1},\acm{a_1}{}{c_1},\acm{b_0}{}{a_1},\acm{d_1}{}{b_0},\acm{b_1}{}{d_1}\}$, and initial state $\alpha= \init{a_0,b_1,c_1,d_0}$, the target state is $\omega=a_1$.
 
-\roux{}{Ou je ne comprends pas bien ou il y a une grosse erreur : a3, c'est QUOI, CI-DESSOUS ? de meme pour b3 etc.}
+%\roux{}{Ou je ne comprends pas bien ou il y a une grosse erreur : a3, c'est QUOI, CI-DESSOUS ? de meme pour b3 etc.}
 Table~\ref{tab:cutset} shows the steps to obtain a saturated valuation.
-The cut set is $\{\{a_3\},\{b_1\},\{b_3,c_2\},\{c_2,d_2\}\}$, meaning that by inhibiting any of $\{a_3\}$ or $\{b_1\}$ or $\{b_3,c_2\}$ or $\{c_2,d_2\}$ leads to the unreachability of $a_1$.
+The cut set is $\{\{a_1\},\{b_1\},\{b_0,c_1\},\{c_1,d_1\}\}$, meaning that by inhibiting any of $\{a_1\}$ or $\{b_1\}$ or $\{b_0,c_1\}$ or $\{c_1,d_1\}$ leads to the unreachability of $a_1$.
 
 \end{example}
 
@@ -402,9 +405,10 @@ If one wants the guarantee of the reachability even at the price of redundant tr
 
 Under-approximation is a variation of SLCG reasoning. 
 It associates the local states and the transitions with the initial state and \textit{all the states which may appear}.
-This association covers more orders of occurrence than over-approximation as it takes into account the mutual reachability between local Boolean states if both are \roux{appeared}{appearing} in the SLCG.
+This association covers more orders of occurrence than over-approximation as it takes into account the mutual reachability between local Boolean states if both appear in the SLCG.
+The proof was done by Paulev\'e  \textit{et al.}~\cite{pauleve2012}.
 %if there is no cycle in the SLCG, proven by Paulev\'e \textit{et al.} \cite{pauleve2012}.  % (proof is given in Theorem~\ref{th:underapprox} of Appendix).
-\roux{}{WHERE IS THE PROOF?}
+%\roux{}{WHERE IS THE PROOF?}
 Similar to over-approximation, in the SLCG of under-approximation, if there is a pathway between target local state and the initial state, this target state might be reachable.
 
 However, all the orders of occurrence do not necessarily appear during the simulation, which suggest that this approach ``under-approximates'' the reachability.
@@ -477,7 +481,7 @@ In Figure~\ref{Under3}, the completed under-approximate SLCG shows $a_1$ is now 
 \end{figure}
 \end{example}
 
-To sum up the whole process, we begin with \roux{a}{an} incomplete model and a set of candidate regulations.
+To sum up the whole process, we begin with an incomplete model and a set of candidate regulations.
 
 
 Algorithm~\ref{algComUnder} in Appendix shows the detailed procedures of completion by under-approximation.
@@ -877,7 +881,7 @@ First we obtain the model to be revised via learning method LFIT, then we modify
 
 
 \subsection{Learning From Interpretation Transitions (LFIT)}\label{sec:lfit}
-LFIT framework so far can only capture finite dynamical properties, i.e. relation at $T$-$1$ or $T$-$k$ and the system has to be synchronous deterministic.
+LFIT framework so far can only capture finite dynamical properties, \textit{i.e.} relation at $T$-$1$ or $T$-$k$ and the system has to be synchronous deterministic.
 In asynchronous systems, non-determinism can lead to loops for several times before taking a path to a certain state.
 In this thesis, we adapt the algorithms of~\cite{ribeiro2015learning,DMTRICLP15} to capture asynchronous dynamics and extend upon this method to propose an approach allowing to fit a logic program to reachability properties.
 By modifying rules of the program using logic generalization/specialization operations, we iteratively revise the program to fit a set of reachability/unreachability constraints while keeping the observation and the learned rules consistent.
@@ -925,7 +929,7 @@ the notions of consistency, realization and successor have to be redefined as fo
 \end{definition}
 
 Former definition of consistency is Definition~\ref{def:consistencyFirst} on page \pageref{def:consistencyFirst}.
-Here we enlarge the domain to the consistency between logic programs and state transitions (time-series data), i.e. all rules are applied in the state transitions. 
+Here we enlarge the domain to the consistency between logic programs and state transitions (time-series data), \textit{i.e.} all rules are applied in the state transitions. 
 
 \begin{definition}[Program realization]
 	Let $P$ be a logic program and $E$ be a set of state transitions.
@@ -952,13 +956,13 @@ $h(R)=var^{val}, h(R')=var^{val'}, val \neq val'$ and $var^{val''} \in b(R), var
 In~\cite{DMTRICLP15}, multi-valued least specialization was used to learn multi-valued \textit{synchronous} systems dynamics.
 Like in previous versions of LFIT, asynchronous LFIT takes a set of state transitions $E$ as input and outputs a logic program $P$ that realizes $E$.
 
-Starting from the most general rules, least specialization allows one to learn the minimal rules of such system iteratively from its state transition $(I,J) \in E$.
-For every possible $var^{val}$, $var^{val} \not \in J$ the most specific rule that is not consistent, with the transition, i.e. an anti-rule, was generated: $MSR := var^{val} \leftarrow I$.
+Starting from the most general rules, least specialization allows one to learn the minimal rules of such system iteratively from its state transitions $(I,J) \in E$.
+For every possible $var^{val}$, $var^{val} \not \in J$ the most specific rule that is not consistent, with the transition, \textit{i.e.} an anti-rule, was generated: $MSR := var^{val} \leftarrow I$.
 Here, for the \textit{asynchronous} case, this anti-rule is generated and the revision occurs only if $\nexists (I,J') \in E, var^{val'} \in J'$,
 i.e. it is impossible to have a transition to $var^{val}$ from $I$.
 Each rule of the currently learned program $P$ that subsumes such an anti-rule is specialized using least specialization.
-The resulting program $P'$ is consistent \roux{}{with what} and realizes all previously treated transition plus $(I,J)$ \roux{}{consistent according to Def. 4.17 page 82 ????}.
-By doing so iteratively for each transition, the algorithm outputs a program $P$ which models the dynamics of the system observed in the transitions $E$.
+The resulting program $P'$ realizes all previously treated state transitions plus $(I,J)$. %\roux{}{consistent according to Def. 4.17 page 82 ????}.
+By doing so iteratively for each transition, the algorithm outputs a program $P$ which models the dynamics of the system observed in the state transitions $E$.
 
 \textbf{Asynchronous LFIT algorithm}
 \begin{itemize}
@@ -1029,6 +1033,7 @@ In the next section, we propose an algorithm exploiting the SLCG structure to re
     If it is not possible, they try to revise the successor, if there is no possible solution, return $\varnothing$ to show the input logic program is not revisable.
     Specialization operation is limited by the observation. If $P$ after specialization can not explain all the transitions, the specialization is not admissible.
     If the direct revision on the unsatisfied element fails, we replace the element with its successsors in the SLCG.
+    
     Well-formed detailed algorithms of specialization and generalization are Algorithm~\ref{alg:specialization} and Algorithm~\ref{alg:generalization} in Appendix~\ref{chap:algo}.
     %When specializing one rule, we check if all appeared transitions are explained, if not, check if there are other rules can explain it, otherwise we can not specialize it.
    
@@ -1051,7 +1056,7 @@ In the next section, we propose an algorithm exploiting the SLCG structure to re
         \item There is no revision for $reach(\alpha,\omega)=\false$, \textbf{return} $\varnothing$
     \end{enumerate}
     
-     Generalization is similar \roux{}{TO WHAT ?} but without the constraint of the observation, as the observation is partial, $P$ may describe some state transitions never observed.
+     Generalization is similar to specialization but without the constraint of the observation, as the observation is partial, $P$ may describe some state transitions never observed.
      
     \textbf{Generalization algorithm}:
     
@@ -1069,9 +1074,9 @@ In the next section, we propose an algorithm exploiting the SLCG structure to re
         \item There is no revision for $reach(\alpha,\omega)=\true$, \textbf{return} $\varnothing$
     \end{enumerate}
     
-    \roux{}{POURQUOI PAS D'ENVIRONNEMENT ALGORITHM ? AVEC DES NUMEROS 4.N QUI PERMET DE INDIQUER QUEL ALGORITHME EST REFERENCE...}
+    %\roux{}{POURQUOI PAS D'ENVIRONNEMENT ALGORITHM ? AVEC DES NUMEROS 4.N QUI PERMET DE INDIQUER QUEL ALGORITHME EST REFERENCE...}
     
-    The main revision algorithm \roux{}{(see above)} starts with constructing the SLCGs to verify $Re$ and $Un$ in order to ensure the reachability/unreachability properties to be satisfied.
+    The main revision algorithm (see below) starts with constructing the SLCGs to verify $Re$ and $Un$ so as to obtain the reachability/unreachability properties to be satisfied.
     Then, for the unsatisfied properties, the program $P$ has to be revised.
     SLCG for one target state may contain the topology of SLCGs for other target states, hence revision based on one SLCG can influence other SLCGs.
     By starting with the SLCGs with least dependencies on others, \textit{i.e.} the ones containing the least other SLCGs (the ones with the smallest cardinality of $l_i$), it increases the chance of partially satisfying other unsatisfied properties (step~\ref{step:dependency} and~\ref{step:cardinality}). 
@@ -1083,7 +1088,7 @@ In the next section, we propose an algorithm exploiting the SLCG structure to re
     %we revise first the elements whose SLCG contain least other elements in order to modify less $P$.
     Finally, if a revision of $P$ consistent with all given properties is found the algorithm terminates and outputs it.
     
-    \textbf{Main algorithm of revision}:
+    \textbf{Main revision algorithm}:
     \begin{itemize}
         \item \textbf{Input}: a logic program $P$, a reachable set $Re$ and an unreachable set $Un$
         \item \textbf{Output}: revised logic program $P$ or $\varnothing$ if not revisable
