@@ -292,9 +292,10 @@ In an SLCG, a cycle is formed by a sequence of nodes linked as follows: $a_i\to 
 \end{definition}
 
 To identify cycles, we search Strongly Connected Components (SCC) of size greater than one instead of cycles, because there may be common nodes and edges shared by multiple cycles.
-Modifying/removing such nodes or edges effects multiple cycles which causes excessive task
+When removing cycles,  modifying such nodes or edges effects multiple cycles causes excessive task.
 %\roux{Because cycles may have intersections but there is no such problem with SCC}{REVOIR CETTE PHRASE INCOMPREHENSIBLE POUR MOI}.
 In other words, a SCC contains as many as possible nested cycles which strongly connect to each other.
+Removing all the SCCs guarantees the nonexistence of cycles.
 \cite{tarjan1972} shows that the detection of SCCs can be done in $O (|V|+|E|)$ time, with $|V|$ the number of the vertices and $|E|$ the number of the edges.
 SLCG is usually a sparse graph, as in biological systems, the automata mostly interact with only a part of the system, hence the out-degree can be considered of $O (1)$ and the detection of SCCs\footnote{Implementation in Python3 by Mario Alviano at \url{https://github.com/alviano/python/blob/master/rewrite_aggregates/scc.py}} can be done in $O(|V|)$, \textit{i.e.} linear time.
 
@@ -382,7 +383,7 @@ The next step is to analyze an SLCG with only \textbf{AND gates}.
 We need to find a trajectory reaching all the components of the \textbf{AND gates} simultaneously.
 Usually one cannot achieve good conclusiveness and low complexity at the same time, that is why we propose two solutions for different needs of conclusiveness-complexity balance: Reachability via search in permutations (PermReach) which is a partial search and Reachability via Answer Set Programming (ASPReach) which is a exhaustive search.
 
-\subsection{Reachability via Permutations} \roux{}{[PermReach]}\label{sec:permreach}
+\subsection{Reachability via Permutations (PermReach)}\label{sec:permreach}
 
 Before running into the definitions, we compare Example~\ref{example:unreach} and Example~\ref{example:order} with minor difference.
 
@@ -482,8 +483,7 @@ We state here several algorithmic properties of PermReach.
     The proof is given in Theorem~\ref{th:PermReachComplexity} in Appendix.
 \end{theorem}
 
-\subsection{Reachability via Answer Set Programming}\label{sec:aspreach}
-\roux{}{[PermReach]}
+\subsection{Reachability via ASP (ASPReach)}\label{sec:aspreach}
 
 As we have seen in the last section, PermReach is more conclusive than pure static analysis, but still fails in the cases where there are nested \textbf{AND gates} and the order of these \textbf{AND gates} influence the reachability.
 
@@ -804,9 +804,12 @@ ASPReach does a finer work than PermReach, searching all the possible trajectori
 
 An extension of the above reachability analysis to multi-valued models (restricted AAN and extended SLCG) allows one to partly discover the solutions but it appears to be also an interesting heuristics. 
 
-The experimental results are in Chapter~\ref{chap:test}\roux{}{dot . ~~~~~~~~~} Benchmark showing these two approaches can deal with more problems than pure static analysis.
+The experimental results are shown in Chapter~\ref{chap:test} Tests and Benchmarks.
+%\roux{}{dot . ~~~~~~~~~}
+From the results of multiple tests, these two approaches can deal with more problems than pure static analysis.
 
 Like static analysis, those two analyzers are not fully conclusive.
-However, if one wants total conclusiveness, he will \roux{}{probably} need a complete search over state space like exact model checkers do, resulting in state space explosion.
+However, if one wants total conclusiveness, he will probably %\roux{}{probably}
+need a complete search over state space like exact model checkers do, resulting in state space explosion.
 
 In the next chapter, we will introduce three model inference approaches based on these reachability analyzers.
