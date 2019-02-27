@@ -6,7 +6,8 @@ Concretely speaking, we are going to present the state of the art constituting o
 
 \begin{itemize}
     \item Several modeling frameworks, some of which are the ancestors of the new modelings to be used in this thesis and some of which will be used in comparison
-    \item The notion of model-checking and some \roux{existed}{existing} model checkers 
+    \item The notion of model-checking and some existing %\roux{existed}{existing}
+    model checkers 
     \item Different update schemes of modeling frameworks
     \item Several model learning/inference techniques
 \end{itemize}
@@ -187,12 +188,13 @@ This translation may create non-equivalence and non-determinism.
 Detailed applications are in Section~\ref{sec:lfit} of Chapter~\ref{chap:modelInference}.
 
 \subsection{Process Hitting (PH)}
-If one wants to describes the dynamics more finely with reasonable memory use, Process Hitting (PH) framework is a good choice,  \roux{which}{which was} introduced by Paulev\'e \textit{et al.}~\cite{pauleve2011}.
+If one wants to describes the dynamics more finely with reasonable memory use, Process Hitting (PH) framework is a good choice, which was %\roux{which}{which was}
+introduced by Paulev\'e \textit{et al.}~\cite{pauleve2011}.
 
 PH is inspired by $\pi$-calculus, which expresses the communication between canals. 
 In PH, the corresponding meaning becomes the interaction between different components.
 Process Hitting is an asynchronous automata network, \textit{i.e.} allowing at most one transition fired simultaneously. 
-PH is more expressive than Asynchronous Thomas' model~\cite{thomas1978} or Asynchronous BN \roux{}{[biblio reference]}. 
+PH is more expressive than Asynchronous Thomas' model~\cite{thomas1978} or Asynchronous BN~\cite{glass1975classification}. %\roux{}{[biblio reference]}. 
 Actions in Process Hitting are more capable of describing various transitions than Boolean functions or attractors as it specifies the regulating and regulated components and their quantitative levels.
 Also it expresses explicitly the cooperation between several components and stochastic features using $\pi$-calculus which are not detailed in this thesis~\cite{pauleve2014}.
 
@@ -255,10 +257,9 @@ In Chapter~\ref{chap:refinement}, we will make use of the definition of AAN by l
 \section{Semantics of Modelings}\label{sec:semantics}
 For a given modeling framework, even if the components and transitions are defined, the dynamics of the system is not unique. 
 Different update schemes lead to different dynamics.
-The main difference lies on the relations of the number of transitions \roux{}{that} \textit{can} be fired and the number of transitions \roux{}{that} \textit{will} be fired at given time point $t$~\cite{ribeiro2018learning,chatain2018boolean}.
-
-%\cite{ribeiro2018learning}
-
+The main difference lies on the relations of the number of transitions that %\roux{}{that}
+\textit{can} be fired and the number of transitions that %\roux{}{that}
+\textit{will} be fired at given time point $t$~\cite{ribeiro2018learning,chatain2018boolean}.
 
 \subsection{Synchronicity}
 Literally, synchronous update scheme implies that all fireable transitions are fired simultaneously.
@@ -381,6 +382,9 @@ For synchronous cases we can consider the possible future states is of $O(1)$ as
 The possible future states is polynomial for asynchronous cases.
 However generalized update scheme has to consider the combinatorial results of the fireable transitions.
 
+As to asynchronous case, there can be no fireable transitions where $n=0$.
+Hence, the number of transitions will be fired is $\min(1,n)$.
+
 The benchmark part of~\cite{ribeiro2018learning} shows the complexity of generalized semantics, where the model inference fails with 12 components in the model. 
 
 \begin{table}[ht]
@@ -391,11 +395,12 @@ The benchmark part of~\cite{ribeiro2018learning} shows the complexity of general
         \hline
         nb of fireable transitions&\multicolumn{3}{c}{$n$}\\
         \hline
-        nb of transitions \textit{will} be fired&$m$&$\min(1,m)$&$[0;m]$\\
+        nb of transitions \textit{will} be fired&$m$&$\min(1,n)$&$[0;m]$\\
         \hline
         nb of possible future states& at most $O(3^m)$&$m$&$[2^m;2^n]$
     \end{tabular}
-    \caption[Update schemes]{Numbers of fireable transitions \roux{}{dans ce tableau, je ne comprends pas pourquoi min(1,m) n'est pas simplement 1 ?} in different updating scheme, where $m$ stands for the number of different variables in all the heads of fireable rule.}
+    \caption[Update schemes]{Numbers of fireable transitions %\roux{}{dans ce tableau, je ne comprends pas pourquoi min(1,m) n'est pas simplement 1 ?}
+    in different updating scheme, where $m$ stands for the number of different variables in all the heads of fireable transitions.}
     \label{tab:semantics}
 \end{table}
 
@@ -417,7 +422,8 @@ The tests are illustrated in Chapter~\ref{chap:test}.
 \subsection{Static Analyzers}
 Model Checkers are widely applied to hardware and software.
 Especially when applied to software, algorithmic verification techniques have
-to deal with \roux{software’s}{softwares leading to} infinite state space, requiring abstraction techniques to make problems tractable.
+to deal with %\roux{software’s}{softwares leading to} 
+infinite state space of software, requiring abstraction techniques to make problems tractable.
 SPIN~\cite{holzmann1997model} and Goanna~\cite{fehnker2006goanna} are designed as source code analyzers, by verifying a set of over-approximate conditions, they managed to check the safety/liveness properties of a program or whether certain program behaves as expected. 
 However, the static code analyzers only determine run-time properties of programs by examining the code structure, which may produce false-positive and false-negative results~\cite{vorobyov2010comparing}.
 
@@ -464,12 +470,14 @@ Here we introduce some basic ideas of LFIT which will be of help in Chapter~\ref
 As for model revision, to our knowledge, model revision based on reachability properties has never been considered in the literature.
 One possible related work is cut set to be introduced after LFIT.
 Cut set is used to detect the atoms cutting critical paths from the initial state and the desired states.
-By \roux{inhibit}{inhibiting} these elements, we can ensure the unreachability of the desired states.
+By inhibiting %\roux{inhibit}{inhibiting}
+these elements, we can ensure the unreachability of the desired states.
 In practice, cut sets are useful for proposing potential therapeutic targets that have been formally identified from the model for preventing the activation of a particular molecule.
 However, cut sets are not of direct help in model revision, as they inhibit certain atoms to be reached rather than modifying the system topology.
 
 \subsection{Learning From Interpretation Transitions (LFIT)}\label{sec:lfitSyn}
-LFIT \roux{}{remettre biblio reference} aims at learning a logic program $P$ (definition in Section~\ref{sec:logicProgram} on page \pageref{sec:logicProgram}) from a set of state transitions $E$ in the form $S_1\to S_2$ where $S_1,S_2$ are the states of the system.
+Ribeiro \textit{et al.}~\cite{ribeiro2015learning} have designed LFIT %\roux{}{remettre biblio reference}
+aiming at learning a logic program $P$ (definition in Section~\ref{sec:logicProgram} on page \pageref{sec:logicProgram}) from a set of state transitions $E$ in the form $S_1\to S_2$ where $S_1,S_2$ are the states of the system.
 $E$ can be extracted from discretized time-series data.
 Here LFIT considers only synchronous updating scheme, hence we name it as ``synchronous LFIT''.
 
