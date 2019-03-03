@@ -16,6 +16,7 @@ This chapter is dedicated to the introduction of three different approaches of m
 There lies very little nuance between model inference and model revision: these two operations begin with some \textit{a priori} information and/or observations, aiming at constructing a new model/modifying an existed model.
 As a result, they take the information apart from the existing transitions into account, using different tools to transform this information into possible transitions in the model (also can modify or deny existing transitions).
 
+Following a 3-month research stay at Inoue Lab. at National Institute of Informatics, preliminary ideas behind Section~\ref{sec:m2rit} were presented in the ``work in progress'' track at ILP 2018 in Ferrara, Italy~\cite{chai2018using}.
 \end{mybox}
 
 \section{Background}
@@ -850,7 +851,7 @@ Last but not least, the high-correlated variable pairs are not necessarily the r
 In fact, there is no method that can guarantee it reveals the reality, as what model inference does is to infer \textit{via} the correlations instead of causality.
 Causality, or the reason behind the observation is very hard to retrieve.
 
-\section{Model Revision \textit{via} Reachability and Interpretation Transitions (M2RIT)}
+\section{Model Revision \textit{via} Reachability and Interpretation Transitions (M2RIT)}\label{sec:m2rit}
 When modeling a real system, instead of causality, one usually requires to assess the \textit{consistency} between a given modeling network and the concrete system by checking whether the observed configurations are indeed reachable in the Boolean network.
 Whenever it is not the case, it typically means that the designed Boolean functions do not model the given system correctly and thus should be revised before further model analysis.
 

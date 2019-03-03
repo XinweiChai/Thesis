@@ -278,7 +278,7 @@ Literally, synchronous update scheme implies that all fireable transitions are f
         1 & 1 & 0 & 1 \\
         2 & 1 & 2 & 1 \\
     \end{tabular}
-    \caption{Exemplary transition interpretation table indicating the tendency of system evolution from one state to another.}
+    \caption[Transition interpretation table]{Exemplary transition interpretation table indicating the tendency of system evolution from one state to another.}
     \label{tab:transTable}
 \end{table}
 
@@ -416,7 +416,7 @@ This representation however requires a memory growing exponentially with the num
 To avoid such explicit representation, state transition graphs were replaced by Boolean formulas.
 OBDD-based (Ordinary Binary Decision Diagram) Model Checkers were developed, having reached $10^{120}$ states, \textit{e.g.}
 SMV~\cite{mcmillan1993symbolic}, NuSMV~\cite{cimatti2000nusmv}, and VIS~\cite{brayton1996vis}.
-However, the performance is still not enough to analyze problems in systems biology due to its complexity (PSPACE-complete) \cite{harel2002complexity}.
+However, the performance is still not enough to analyze problems in systems biology due to their complexity (PSPACE-complete) \cite{harel2002complexity}.
 The tests are illustrated in Chapter~\ref{chap:test}.  
 
 \subsection{Static Analyzers}
@@ -468,7 +468,7 @@ If we consider another constraint that the revised model has to reproduce exactl
 Here we introduce some basic ideas of LFIT which will be of help in Chapter~\ref{chap:modelInference}.
 
 As for model revision, to our knowledge, model revision based on reachability properties has never been considered in the literature.
-One possible related work is cut set to be introduced after LFIT.
+One possible related work is cut set~\cite{PAK13-CAV} to be introduced after LFIT.
 Cut set is used to detect the atoms cutting critical paths from the initial state and the desired states.
 By inhibiting %\roux{inhibit}{inhibiting}
 these elements, we can ensure the unreachability of the desired states.
