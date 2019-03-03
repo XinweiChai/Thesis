@@ -20,7 +20,7 @@ Following a 3-month research stay at Inoue Lab. at National Institute of Informa
 \end{mybox}
 
 \section{Background}
-Model inference/learning can be useful not only in biology~\cite{ribeiro2015learning} but also in other domains with the need of abstraction, e.g. robotics~\cite{nguyen2011model}, multi-agent systems~\cite{foerster2016learning}.
+Model inference/learning can be useful not only in biology~\cite{ribeiro2015learning} but also in other domains with the need of abstraction, \textit{e.g.} robotics~\cite{nguyen2011model}, multi-agent systems~\cite{foerster2016learning}.
 In the community of bioinformatics, DREAM  challenge\footnote{\url{http://dreamchallenges.org/about-dream}} is a well-known organization calling for the participation of the whole world on the newest bio-medical problems (called challenges). 
 Among these challenges, some of them are in the domain of inference and prediction:
 DREAM2\footnote{\url{https://www.synapse.org/\#!Synapse:syn2825374/wiki/71143}},
@@ -69,7 +69,7 @@ We developed two learning approaches following the Big Picture in Figure~\ref{fi
     
     M2RIT is also run with two steps:
     \begin{enumerate}
-        \item Learns a Normal Logic Program from \textit{discretized} time-series data by asynchronous version of LFIT (synchronous version in Section~\ref{sec:lfitSyn})
+        \item Learn a Normal Logic Program from \textit{discretized} time-series data by asynchronous version of LFIT (synchronous version in Section~\ref{sec:lfitSyn})
         \item Modify the obtained NLP as little as possible to make it consistent with \textit{a priori} reachability information while keeping the consistency with the constraints of time-series data, i.e. the NLP has to reproduce the time-series data
     \end{enumerate}
 \end{itemize}
@@ -620,7 +620,7 @@ Partial Spearman correlation coefficient is denoted $prs$
 The possible value of all the mentioned correlation coefficients are in the interval $[-1,1]$.
 The closer to $1$ the absolute value of the coefficient is, the more correlated the variables are.
 Particularly, $1$ suggests total positive linear/monotonous correlation and $-1$ suggests total negative linear/monotonous correlation. 
-e.g. if we find the PSCC of $\ddv{a}{t}$ and $b$ is $-0.9$ (high enough), we can add $b\xrightarrow{-}a$ to the set of candidate regulations.
+\textit{e.g.} if we find the PSCC of $\ddv{a}{t}$ and $b$ is $-0.9$ (high enough), we can add $b\xrightarrow{-}a$ to the set of candidate regulations.
 
 \subsubsection{Overall Process}
 
@@ -632,7 +632,7 @@ With the former definitions, we propose a method applying partial correlation to
 \end{figure}
 
 Figure~\ref{plan} shows the procedure of regulation generation: before discretizing original data, Pearson or Spearman correlation coefficients~\cite{samaga2009logic,hauke2011comparison} are computed for identifying the relevance between original data and change rates of variables (in linear or monotonic way respectively). If cooperation between variables exists, former coefficients need replacing by partial ones~\cite{de2004discovery} for more precise result.
-Resulting coefficients above the threshold (One can set a threshold of correlation, e.g. 0.7) suggest there probably exist regulations between variables.
+Resulting coefficients above the threshold (One can set a threshold of correlation, \textit{e.g.} 0.7) suggest there probably exist regulations between variables.
 
 Furthermore, to complete Biological Regulatory Networks in the form of ABAN, more accurate regulations are inferred through variable reconstruction, which splits a variable into several new variable according to its qualitative levels.
 For example, variable $a$ has two discrete levels $a_0$ $a_1$, then the correlation coefficients as well as the partial coefficients are computed in the domain of $a_0$ and of $a_1$ separately.
@@ -829,7 +829,8 @@ b&0.65&1.0&0.75&-0.62\\
 c&-0.56&-0.71&1.0&0.70\\
 d&0.88&-0.87&0.91&1.0
 }$$
-We can set an arbitrary threshold e.g. $0.6$, all the coefficients with their absolute value greater than $0.6$ are listed below:
+We can set an arbitrary threshold \textit{e.g.} $0.6$. 
+All the coefficients with their absolute value greater than $0.6$ are listed below:
 $$(b,a,0.65),\ (b,c,0.75),\ (b,d,-0.62),\ (c,b,-0.71)$$
 $$(c,d,0.70),\ (d,a,0.89),\ (d,b,-0.87),\ (d,c,0.91)$$
 For example $(d,b,1,-0.87)$ tells that $d\xrightarrow{-}b$ is probably a good candidate regulation as its absolute value of correlation coefficient is close enough to 1. Like this, a BRN model is formed, see Figure~\ref{ResultBRN}. According to the configuration of ABAN (whether absence of regulation is regarded as counter regulation), an ABAN is then deduced.
@@ -866,7 +867,7 @@ all genes can make a transition simultaneously and need an equivalent amount of 
 Even if this is not realistic from a biological point of view, it is usually sufficient as the exact kinetics and order of transformations are generally unknown.
 However, asynchronous semantics helps one to capture more realistic behaviors~\cite{bernot2009}.
 At a given time point, at most one single gene can change its expression level.
-Non-deterministic behaviors are often observed in biological systems, e.g. cell differentiation.
+Non-deterministic behaviors are often observed in biological systems, \textit{e.g.} cell differentiation.
 From a given state, several possible behaviors can be expected as future states.
 Asynchronous update scheme results in a potential combinatorial explosion to the number of states.
 
