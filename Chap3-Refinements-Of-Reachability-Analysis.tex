@@ -592,6 +592,8 @@ reachable :- not unreachable.
 
 Notation: $a\rhd b$ means $a$ appears before $b$.
 
+
+
 \begin{example}
 Let us simulate the analysis of the SLCG in Figure~\ref{fig:limitation} using ASP.
 Rule 1 gives $b_0\rhd a_1$, $a_1\rhd c_1$, $a_0\rhd b_1$, $b_1\rhd c_1$; Rule 2 gives $a_0\rhd c_1$ and $b_0\rhd c_1$; Rule 3 gives $a_1\rhd b_1$ and $b_1\rhd a_1$ which is impossible, therefore there does not exist a state sequence to reach $c_1$ from initial state.
@@ -614,6 +616,7 @@ The ASP part searches thoroughly the result but does not traverse the whole stat
 %It has to be pointed out that INCONCLUSIVE may appear as an output of the Algorithm~\ref{algOverall}.
 %If the target state $\omega$ is in fact reachable, usually if there exists multiple assignments which contain an admissible solution.
 %Moreover, the bigger $k$ we set, the less probable we miss the good assignments.
+
 
 \paragraph{{\bf ASPReach}:}
 
@@ -792,6 +795,10 @@ $a_0$ is in fact reachable \textit{via} $\acm{a_1,b_0}{}{a_2}::\acm{a_2}{}{b_1}:
 \end{example}
 
 Even though this extension is not a complete method, it remains to be a heuristics to discover certain trajectories if there exist such.
+
+
+
+    
 
 \section{R\'esum\'e}
 In this chapter, we formally (re)defined the modeling framework used for static analysis: Asynchronous Binary Automata Network and some terminology.
