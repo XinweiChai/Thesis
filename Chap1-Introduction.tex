@@ -25,7 +25,7 @@ A good model is a model which:
     In the ideal situation, the model bisimulates the real system.
     \item is observable
     
-    To allow one to verify the behaviors, the state (historical, current and future) and the mechanics of the model has to be observable.
+    To allow one to verify the behaviors, the state (historical, current and future) and the mechanics of the model have to be observable.
     
     \item allows one to access the I/O of the model
     
@@ -45,7 +45,7 @@ In this thesis, we focus on modelings, their related analyzers of system propert
 Systems biologists are interested in highly abstracted models because they need abstract representation and/or flexibility to make model compatible with unknown biological knowledge.
 
 Tractability with big data is also important.
-``Big'' can refer to two meanings: one is that biological systems can be huge, with enormous number of components and interactions in between; another is that the number and the size of data sets can be huge.
+``Big'' refers to two meanings: one is that biological systems can be huge, with enormous number of components and interactions in between; another is that the number and the size of data sets can be huge.
 
 To model the real system, we need components to represent genes, RNA messengers, proteins, metabolites, \textit{etc}.
 At this stage, we can carry out a first-step abstraction.
@@ -123,11 +123,11 @@ To solve both the state space explosion problem and the unsatisfying precision o
 As far as we know, model revision based on reachability properties has never been considered in the literature.
 According to the problems of model inference above, we designed two algorithms:
 \begin{itemize}
-    \item algorithm based on learning from \textbf{raw} time-series data
+    \item an algorithm based on learning from \textbf{raw} time-series data
     
-    This algorithms uses correlation coefficients to infer the correlations between the change rate of each variable and other variables in order to suggest hypothetical regulations of the system.
+    This algorithm uses correlation coefficients to infer the correlations between the change rate of each variable and other variables in order to suggest hypothetical regulations of the system.
     With the hypothetical regulations and \textit{a priori} biological knowledge, we can revise incomplete models by adding transitions consistent with the real system.
-    \item algorithm based on learning from \textbf{discretized} time-series data
+    \item an algorithm based on learning from \textbf{discretized} time-series data
     
     The learning approach we applied is the one using Inductive Logic Programming~\cite{ribeiro2018learning}.
     This approach has more strict rule constraints, the model is either consistent with the original time-series data or not.

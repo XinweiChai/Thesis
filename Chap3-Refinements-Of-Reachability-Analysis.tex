@@ -6,7 +6,7 @@ We noticed that even though there exist already exact model checkers and static 
 Exact model checkers always face %\roux{face always}{always face}
 the state space explosion problem when analyzing large models (with more than %\roux{}{more than}
 50 variables);
-Static analyzer PINT, designed for Process Hitting/Automata Network is however, theoretically inconclusive, i.e. not able to provide a global solution to arbitrary input.
+Static analyzer PINT, designed for Process Hitting/Automata Network is however, theoretically inconclusive, \textit{i.e.} not able to provide a global solution to arbitrary input.
 This chapter is going to deepen into the reachability problem for Asynchronous Binary Automata Network %\roux{}{for Asynchronous Binary Automata Network}
 \textit{via} the following steps:
 
@@ -45,7 +45,7 @@ One has no idea whether there exists a solution beyond step $k$ or not.
 Beside these approaches, abstraction is an efficient strategy to deal with such models of big scale. 
 It aims at approximating the model while keeping the most important parts influencing the reachability.
 Abstract approaches often have better time-memory performance but with a loss of information. 
-They solve usually a simplified version of the original model, i.e. the results from these approaches are not necessarily compatible with all the properties of the original model.
+They solve usually a simplified version of the original model, \textit{i.e.} the results from these approaches are not necessarily compatible with all the properties of the original model.
 While studying reachability problems, the system dynamics is abstracted to static causalities between states and transitions.
 
 However, like BMC, abstract approaches do not solve all the instances.
@@ -175,7 +175,7 @@ Besides, BNs are transformable to ABANs, and this property makes our approach ap
 Paulev\'e \textit{et al.}~\cite{pauleve2011} have invented Local Causality Graph (LCG) to analyze reachability problems statically.
 LCG abstracts the original problem through an over-approximation (necessary condition) and an under-approximation (sufficient condition).
 It is a very efficient tool as there is no global search and all the operations are bounded in polynomial complexity.
-However LCG does not guarantee to obtain a result, i.e. some inconclusive instances satisfy the necessary condition but fail sufficient conditions, thus one has no clue about the reachability of these instances.
+However LCG does not guarantee to obtain a result, \textit{i.e.} some inconclusive instances satisfy the necessary condition but fail sufficient conditions, thus one has no clue about the reachability of these instances.
 
 In this thesis, we make use of the LCG by removing objective nodes needed only in multi-valued networks, naming it SLCG (Simplified LCG), then we try to analyze it more deeply to solve inconclusive cases of binary valued systems.
 In fact, Didier \textit{et al.}~\cite{didier2011mapping} have shown a technique to transform multi-valued networks to Boolean networks, which broadened the applicability to multi-valued networks.
@@ -217,7 +217,7 @@ This simplification in fact reduces the searching space and reinforces the concl
         \centering
         \input{LCGexampleAN.tex}
         \caption[Example of SLCG]{Visualization of SLCG, with the squares representing local states and small circles representing solution nodes.
-        $\varnothing$ signifies that there is no need to link any transitions, i.e the former state $d_0$ is in the initial state.}
+        $\varnothing$ signifies that there is no need to link any transitions, \textit{i.e.} the former state $d_0$ is in the initial state.}
         \label{LCGexample}
     \end{figure}
 \end{example}
@@ -237,7 +237,7 @@ With SLCG, it is easy to verify whether their are potential pathways from the ta
 If there does not exist such a pathway, one can ensure that $\omega$ is not reachable from $\alpha$.
 
 Pseudo-reachability is a procedure computing the existence of such pathway by confirming whether the transitions are enough (in causal sense) for $\omega$ to be reachable without considering the system evolution.
-However, pseudo-reachability is named ``pseudo'' because it is only an over-approximation of the reachability, i.e. it verifies a necessary condition of the reachability.
+However, pseudo-reachability is named ``pseudo'' because it is only an over-approximation of the reachability, \textit{i.e.} it verifies a necessary condition of the reachability.
 
 \begin{definition}[Pseudo-reachability]\label{defPseudoReach}
 Given an SLCG $l=(V_\st,V_\sol,E)$ with global initial state $\alpha$, the pseudo-reachability of node $v\in V_\st$ is defined as
@@ -329,7 +329,7 @@ Similarly, if there is an outside incoming edge $a\to \circ \to x$, $a$ must be 
     Self-dependence appears: $x$ is reachable if $x$ is reachable.
     Thus edge $z\to \circ \to x$ is deleted (dashed line).
 \end{example}
-Unfortunately, not all cycles are removable via Theorem~\ref{th:break_cycle}.
+Unfortunately, not all cycles are removable \textit{via} Theorem~\ref{th:break_cycle}.
 
 When there are cycles that cannot be deleted according to Theorem~\ref{th:break_cycle}, we can apply Theorem~\ref{th:break_cycle2}.
 It is associated with the decomposition of SLCG in the next section.
@@ -367,7 +367,7 @@ $reach'(\alpha,a_i)=reach'(\alpha,b_j)=\cdots =\false$.
 
 For every \textbf{OR gate}, it has multiple successor transitions (solution nodes) for reaching its corresponding local state.
 Fixing the transition choice of all the \textbf{OR gates} is called an \textit{assignment}.
-If one wants to discover all the solutions, he needs to traverse all the assignments which is exponential.
+If one wants to discover all the solutions, he needs to traverse all the assignments which are exponential.
 To avoid combinatorial explosion, we use a simple heuristic: 
 choose randomly one assignment for each trial.
 Then, we can construct a new SLCG without \textbf{OR gate}, every state node has exactly one successor solution node, see Figure~\ref{fig:heuristics}.
@@ -383,15 +383,15 @@ Then, we can construct a new SLCG without \textbf{OR gate}, every state node has
 After the preprocessings introduced in the previous section, we can get rid of cycles and \textbf{OR gates}.
 The next step is to analyze an SLCG with only \textbf{AND gates}.
 We need to find a trajectory reaching all the components of the \textbf{AND gates} simultaneously.
-Usually one cannot achieve good conclusiveness and low complexity at the same time, that is why we propose two solutions for different needs of conclusiveness-complexity balance: Reachability via search in permutations (PermReach) which is a partial search and Reachability via Answer Set Programming (ASPReach) which is a exhaustive search.
+Usually one cannot achieve good conclusiveness and low complexity at the same time, that is why we propose two solutions for different needs of conclusiveness-complexity balance: Reachability \textit{via} search in permutations (PermReach) which is a partial search and Reachability \textit{via} Answer Set Programming (ASPReach) which is a exhaustive search.
 
-\subsection{Reachability via Permutations (PermReach)}\label{sec:permreach}
+\subsection{Reachability \textit{via} Permutations (PermReach)}\label{sec:permreach}
 
 Before running into the definitions, we compare Example~\ref{example:unreach} and Example~\ref{example:order} with minor difference.
 
 \begin{example}\label{example:order}
 Figure~\ref{fig:unreach} shows the SLCG for the reachability of $c_1$ in ABAN with transitions $\mathbf{T}=\{\acm{a_1,b_1}{c_0}{c_1},\acm{b_0}{a_0}{a_1},\acm{c_0}{b_0}{b_1}\}$.
-The only difference with \textit{Example~\ref{example:unreach}} is the transition \ac{\mathbf{c_0}}{b_0}{b_1}.
+The only difference with Example~\ref{example:unreach} is transition \ac{\mathbf{c_0}}{b_0}{b_1}.
 $a_1$ and $b_1$ are reachable respectively but is not necessarily for the joint state $s=\{a_1,b_1\}$.
 If we begin with the branch with $a_1$, $s$ is reachable with trajectory $\acm{b_0}{a_0}{a_1}::\acm{c_0}{b_0}{b_1}::\acm{a_1,b_1}{c_0}{c_1}$. 
 However, if we begin with the branch $b_1$, after firing $\acm{c_0}{b_0}{b_1}$, $b_0$ is no longer reachable, resulting the unreachability of $a_1$.
@@ -409,7 +409,7 @@ The only difference with \textit{Example~\ref{example:unreach}} on page \pageref
 
 The head of a transition forms a joint state.
 If such joint state is reachable, the corresponding transition can be fired. 
-However in the Example~\ref{example:order}, $c_1$ can be reached only in \textit{certain order}. This order cannot be retrieved by SLCG, as SLCG works statically.  
+However in the Example~\ref{example:order}, $c_1$ can be reached only in \textit{certain orders}. These orders cannot be retrieved by SLCG, as SLCG works statically.  
 The following contents are contributed to retrieve an admissible order to reach a joint state.
 
 The reachability of a joint state can be formulated as sequential reachability:
@@ -442,8 +442,8 @@ As $Perm(s)$ covers all the possible orders, if there are any admissible ones, t
 \end{proof}
 
 In case where the successors of certain \textbf{AND gate} contain other \textbf{AND gates}, we cannot directly obtain its reachability because the reachability of the successor \textbf{AND gates} are unknown.
-We analyze first the simple \textbf{AND gates} $simp$, i.e. the successors of $simp$ do not contain any \textbf{AND gates}.
-If all local states within $simp$ are reachable via the search of permutations, we can update the initial state by firing all the transitions and also update the SLCG by deleting the successors of $simp$. 
+We analyze first the simple \textbf{AND gates} $simp$, \textit{i.e.} the successors of $simp$ do not contain any \textbf{AND gates}.
+If all local states within $simp$ are reachable \textit{via} the search of permutations, we can update the initial state by firing all the transitions and also update the SLCG by deleting the successors of $simp$. 
 Then, we restart this process from new simple \textbf{AND gates} until we reach finally the target state.
 Detailed algorithm is in Appendix Algorithm~\ref{alg:perm}.
 
@@ -485,7 +485,7 @@ We state here several algorithmic properties of PermReach.
     The proof is given in Theorem~\ref{th:PermReachComplexity} in Appendix.
 \end{theorem}
 
-\subsection{Reachability via ASP (ASPReach)}\label{sec:aspreach}
+\subsection{Reachability \textit{via} ASP (ASPReach)}\label{sec:aspreach}
 
 As we have seen in the last section, PermReach is more conclusive than pure static analysis, but still fails in the cases where there are nested \textbf{AND gates} and the order of these \textbf{AND gates} influence the reachability.
 
@@ -710,6 +710,7 @@ A model checker must terminate for any input like the standard for any algorithm
     
     The proof is given in Theorem~\ref{th:ASPReachCorrectness} in Appendix.
 \end{theorem}
+
 
 \begin{theorem}[Complexity of ASPReach] ~
     Let $l=(V_\st,V_\sol, E)$ be an SLCG with initial state $\alpha$ and $k > 0$ be an integer.

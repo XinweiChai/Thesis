@@ -3,7 +3,7 @@
 In the previous chapter, we introduced several approaches of refined reachability analysis, which are more suitable for practical use (more efficient and more conclusive).
 Nevertheless, these approaches can never take effect no matter how powerful they are, if the original model does not reflect the reality.
 
-To model a biological computational system, one may consider two possible aspects: a first-step model built by biologists (variables, some confirmed transitions, some \textit{a priori} properties etc.) and the observations from experiments (time-series data, steady states, oscillations, etc.).
+To model a biological computational system, one may consider two possible aspects: a first-step model built by biologists (variables, some confirmed transitions, some \textit{a priori} properties \textit{etc.}) and the observations from experiments (time-series data, steady states, oscillations, \textit{etc.}).
 
 This chapter is dedicated to the introduction of three different approaches of model inference/revision:
 
@@ -70,7 +70,7 @@ We developed two learning approaches following the Big Picture in Figure~\ref{fi
     M2RIT is also run with two steps:
     \begin{enumerate}
         \item Learn a Normal Logic Program from \textit{discretized} time-series data by asynchronous version of LFIT (synchronous version in Section~\ref{sec:lfitSyn})
-        \item Modify the obtained NLP as little as possible to make it consistent with \textit{a priori} reachability information while keeping the consistency with the constraints of time-series data, i.e. the NLP has to reproduce the time-series data
+        \item Modify the obtained NLP as little as possible to make it consistent with \textit{a priori} reachability information while keeping the consistency with the constraints of time-series data, \textit{i.e.} the NLP has to reproduce the time-series data
     \end{enumerate}
 \end{itemize}
 
@@ -79,7 +79,7 @@ This step has the least complexity.
 Because the most naive method, \textit{i.e.} brute force search is to verify every combination of the candidates if it satisfies the constraints. 
 The models to be verified are of $O(2^n)$, where $n$ is the number of candidate transitions.
 
-One may ask if we can run CRAC or M2RIT without being provided with time-series data, i.e. run directly step 2 of either method.
+One may ask if we can run CRAC or M2RIT without being provided with time-series data, \textit{i.e.} run directly step 2 of either method.
 Deleting can be done without additional data, as the number of transitions already \textit{assuring} certain reachability is very limited, which is shown in Section~\ref{sec:cutset} or~\cite{PAK13-CAV}.
 
 Nevertheless, adding transitions can be a more complex task.
@@ -216,7 +216,7 @@ We are going to run a tiny example on the mechanics of cut set.
 Figure~\ref{fig:cut} shows an ABAN and its under approximate SLCG of $a_1$.
 The ABAN has transitions $T=\{\acm{b_1,c_1}{}{a_1},\acm{a_1}{}{c_1},\acm{b_0}{}{a_1},\acm{d_1}{}{b_0},\acm{b_1}{}{d_1}\}$, and initial state $\alpha= \init{a_0,b_1,c_1,d_0}$, the target state is $\omega=a_1$.
 
-%\roux{}{Ou je ne comprends pas bien ou il y a une grosse erreur : a3, c'est QUOI, CI-DESSOUS ? de meme pour b3 etc.}
+%\roux{}{Ou je ne comprends pas bien ou il y a une grosse erreur : a3, c'est QUOI, CI-DESSOUS ? de meme pour b3 \textit{etc.}}
 Table~\ref{tab:cutset} shows the steps to obtain a saturated valuation.
 The cut set is $\{\{a_1\},\{b_1\},\{b_0,c_1\},\{c_1,d_1\}\}$, meaning that by inhibiting any of $\{a_1\}$ or $\{b_1\}$ or $\{b_0,c_1\}$ or $\{c_1,d_1\}$ leads to the unreachability of $a_1$.
 
@@ -336,6 +336,8 @@ Table~\ref{tab:completionset} shows the steps to complete the graph like the pro
     \caption[Completion set]{ABAN and SLCG for reachability of $a_1$}
     \label{fig:completionSet}
 \end{figure}
+
+
 
 \begin{table}[ht]
 \centering
@@ -464,7 +466,7 @@ Figure~\ref{Under1} shows the under-approximate SLCG of the reachability $a_1$.
 
 In Figure~\ref{Under2}, according to candidate regulation ${(d,c,-)}\in R$, transition \ac{d_1}{c_0}{c_1} is added.
 Thanks to the existence of \ac{b_1}{d_0}{d_1}, $d_1$ has successor $b_1$.
-However, the reachability of under-approximation requires all the possible occurrences are realizable, i.e. we need a transition with body $d_0$ for $d_0$ and $d_1$ can be reached from each other, because both $d_0$ and $d_1$ are present in the SLCG.
+However, the reachability of under-approximation requires all the possible occurrences are realizable, \textit{i.e.} we need a transition with body $d_0$ for $d_0$ and $d_1$ can be reached from each other, because both $d_0$ and $d_1$ are present in the SLCG.
 
 
 \begin{figure}[ht]
@@ -496,7 +498,7 @@ If one wants to assess if certain complex transition can be added to the incompl
 As we already have the completion methods, to make CRAC applicable, we need to obtain candidate regulations $R$.
 Here we introduce a method to generate candidate regulations to be verified from time series data.
 
-In the previous contents, only the systems consisting of transitions with delay of 1 time unit are discussed (BN, ABAN, etc.), i.e. the influence done by variables will take place at the next time point (immediately).
+In the previous contents, only the systems consisting of transitions with delay of 1 time unit are discussed (BN, ABAN, \textit{etc.}), \textit{i.e.} the influence done by variables will take place at the next time point (immediately).
 However, in biological context, some reactions have a long duration, and some even need a whole observation period to take place.
 For this reason, we require approaches to reveal transitions of different delays: for an observation of period $T$, possible delays lie in $[1;T-1]$.
 
@@ -535,7 +537,7 @@ To integrate these hypotheses, the equations are modified to:
 
 
 where $\delta\in \mathbb{N}^{*}$ is the delay of the regulation, $n\in \mathbb{R}^{+}$ is the order of regulation (corresponding to the reaction order).
-Also, self-regulations are not taken into account, i.e. $k_v$ and $\lambda_v$ are set to 0.
+Also, self-regulations are not taken into account, \textit{i.e.} $k_v$ and $\lambda_v$ are set to 0.
 
 The definition of RN (Definition~\ref{def:RN}) requires every regulation take effect immediately.
 To cooperate with the new equations, it is adapted to the version with delay.
@@ -721,7 +723,7 @@ In Figure~\ref{varRec}, with the Boolean discretization on the threshold, variab
 \end{figure}
 
 
-For the system with 2 Boolean variables $a,b$, the PCCC matrix is created according to Definition~\ref{def:corrMatrix}:
+For the system with two Boolean variables $a,b$, the PCCC matrix is created according to Definition~\ref{def:corrMatrix}:
 
 %Global state after discretization: $L=\{a_0,a_1\}\times \{b_0,b_1\}\ $
 
@@ -842,13 +844,13 @@ For example $(d,b,1,-0.87)$ tells that $d\xrightarrow{-}b$ is probably a good ca
 \end{figure}
 
 In fact, the choice of threshold of correlation coefficients has little influence if it is above $0.5$: we can even lower the threshold if resulting regulations do not satisfy desired properties.
-Because when coefficient $r =0.5$, then the $95\%$ prediction interval of $y|x$ will be about $13\%$ smaller than the $95\%$ prediction interval of $y$, i.e. $y$ behaves more relevantly than individually~\cite{hull1927correlation}.
+Because when coefficient $r =0.5$, then the $95\%$ prediction interval of $y|x$ will be about $13\%$ smaller than the $95\%$ prediction interval of $y$, \textit{i.e.} $y$ behaves more relevantly than individually~\cite{hull1927correlation}.
 
-It is worth noticing that this method does not take into account the interactions between regulations, i.e. we do not distinguish between the conjunctions and disjunctions.
+It is worth noticing that this method does not take into account the interactions between regulations, \textit{i.e.} we do not distinguish between the conjunctions and disjunctions.
 For candidate regulations $(a,c,+)$ and $(b,c,+)$, the following set of transitions are both consistent \{\ac{a_1,b_1}{c_0}{c_1}\} and \{\ac{a_1}{c_0}{c_1}, \ac{b_1}{c_0}{c_1}\}.
 In CRAC, we do not consider conjunctions for candidate regulations.
 
-Last but not least, the high-correlated variable pairs are not necessarily the reality but can also be a coincidence, i.e. the inferred candidate regulations/transitions can probably reproduce the system dynamics but cannot guarantee the identity.
+Last but not least, the high-correlated variable pairs are not necessarily the reality but can also be a coincidence, \textit{i.e.} the inferred candidate regulations/transitions can probably reproduce the system dynamics but cannot guarantee the identity.
 In fact, there is no method that can guarantee it reveals the reality, as what model inference does is to infer \textit{via} the correlations instead of causality.
 Causality, or the reason behind the observation is very hard to retrieve.
 
@@ -964,7 +966,7 @@ Like in previous versions of LFIT, asynchronous LFIT takes a set of state transi
 Starting from the most general rules, least specialization allows one to learn the minimal rules of such system iteratively from its state transitions $(I,J) \in E$.
 For every possible $var^{val}$, $var^{val} \not \in J$ the most specific rule that is not consistent, with the transition, \textit{i.e.} an anti-rule, was generated: $MSR := var^{val} \leftarrow I$.
 Here, for the \textit{asynchronous} case, this anti-rule is generated and the revision occurs only if $\nexists (I,J') \in E, var^{val'} \in J'$,
-i.e. it is impossible to have a transition to $var^{val}$ from $I$.
+\textit{i.e.} it is impossible to have a transition to $var^{val}$ from $I$.
 Each rule of the currently learned program $P$ that subsumes such an anti-rule is specialized using least specialization.
 The resulting program $P'$ realizes all previously treated state transitions plus $(I,J)$. %\roux{}{consistent according to Def. 4.17 page 82 ????}.
 By doing so iteratively for each transition, the algorithm outputs a program $P$ which models the dynamics of the system observed in the state transitions $E$.

@@ -117,23 +117,24 @@
 Concurrent systems have been of interest for decades.
 With their simple but expressive semantics, concurrent systems become a good choice to fit the data and analyze the underlying mechanics.
 However, \textit{learning} and \textit{analyzing} such concurrent systems are computationally difficult.
-When dealing with big data sets, the techniques state-of-the-art appear to be insufficient, either in term of efficiency or in term of precision.
+When dealing with big data sets, the state-of-the-art techniques appear to be insufficient, either in term of efficiency or in term of precision.
 
 In this thesis, we propose a refined modeling framework ABAN (Asynchronous Binary Automata Network) and develop reachability analysis techniques based on ABAN: PermReach (Reachability \textit{via} Permutation search) and ASPReach (Reachability \textit{via} Answer Set Programming).
 Then we propose two model learning/constructing methods: CRAC (Completion \textit{via} Reachability And Correlations) and M2RIT (Model Revision \textit{via} Reachability and Interpretation Transitions) using respectively continuous and discrete data to fit the model and using reachability properties to constrain the output models.
 
-Chapter~\ref{chap:intro} states briefly the background and the contribution of our research. 
+Chapter~\ref{chap:intro} states briefly the background and the contribution of our research.
+
 Chapter~\ref{chap:stateOfTheArt} introduces the state of the art on modeling frameworks, model checkers, different update schemes of modelings and model learning techniques.
 Some of them are referenced in the following chapters.
 
-Chapter~\ref{chap:refinement} presents our modeling framework and its relating reachability analyzers based on static analysis.
+Chapter~\ref{chap:refinement} presents our modeling framework and its related reachability analyzers based on static analysis.
 We focus on the inconclusive cases of pure static analysis and extract the key components preventing from a direct solution.
 We then apply heuristics on these components, solving them with a limited search to reach a more conclusive result of the reachability problem.
 
 Chapter~\ref{chap:modelInference} presents the methodology of model learning.
-Our model learners CRAC and M2RIT perform in fact a model selection. 
-They choose a model from the candidates satisfying all the provided reachability constraints.
-However the number of candidate models can be exponential, our model revisers can shrink the search space with constraints when generating the models.
+Our model learners CRAC and M2RIT perform in fact model selection. 
+They choose a model from the candidates satisfying the provided reachability constraints.
+However the number of candidate models can be exponential, our model learners can shrink the search space with constraints when generating the models.
 
 Chapter~\ref{chap:test} shows some comparative and exploratory tests and their results on the methods presented in Chapter~\ref{chap:refinement} and Chapter~\ref{chap:modelInference}.
 PermReach and ASPReach are more efficient than traditional model checkers on the reachability analysis and they perform a more conclusive analysis while holding the running time in the same scale as pure static analyzers have.
@@ -145,7 +146,7 @@ Chapter~\ref{chap:conclusion} concludes the thesis and proposes some possible fu
 \begin{abstract}
 Les syst\`emes concurrents pr\'esentent un int\'er\^et depuis des d\'ecennies.
 Avec leur s\'emantique simple mais expressive, les syst\`emes concurrents deviennent un bon choix pour ajuster les donn\'ees et analyser les m\'ecanismes sous-jacents.
-Cependant, l'apprentissage et l'analyse de tels syst\`emes concurrents sont difficiles pour ce qui concerne les calculs.%\roux{en calcul}{pour ce qui concerne les calculs}.
+Cependant, \textit{l'apprentissage et l'analyse} de tels syst\`emes concurrents sont difficiles pour ce qui concerne les calculs. %\roux{en calcul}{pour ce qui concerne les calculs}.
 Lorsqu'il s'agit de grands ensembles de donn\'ees, les techniques les plus r\'ecentes semblent insuffisantes, que ce soit en termes d'efficacit\'e ou de pr\'ecision.
 
 Dans cette th\`ese, nous proposons un cadre de mod\'elisation raffin\'e ABAN (Asynchronous Binary Automata Network) et d\'eveloppons des techniques d'analyse d'atteignabilit\'e bas\'ees sur ABAN: PermReach (Reachability \textit{via} Permutation search) et ASPReach (Reachability \textit{via} Answer Set Programming).
@@ -184,7 +185,7 @@ Le chapitre~\ref{chap:conclusion} conclut la th\`ese et propose des travaux futu
     $[i;j]$& the interval comprising integers $x$ satisfying $i\leq x\leq j$\\
     $C_n^k$& the $k$-combination in the set of $n$ elements, $C_n^k=\frac {n!}{k!(n-k)!}$\\
     $a_i$  & automaton $a$ is taking value $i$ \\
-    $x::y$ & event $x$ happens just before $y$\\
+    $x::y$ & event $x$ happens just before $y$ in the sequence\\
     $a.next$&the successor of $a$\\
     $a.pred$ & the predecessor of $a$\\
     $A\to b_j$ & condition $A$ allows automaton $b$ to reach qualitative level $j$\\

@@ -16,13 +16,13 @@ These notions will be helpful for readers to understand our new model-checkers a
 \end{mybox}
 
 In computational biology, there are plenty of modeling frameworks suiting different needs.
-Model is a useful tool to represent the abstraction of the real system, as the real system is usually mechanically complicated and not completely known.
+Models are a useful tool to represent the abstraction of the real system, as the real system is usually mechanically complicated and not completely known.
 
 From the point of view of data type, models are classified into continuous ones, discrete ones and their combination, hybrid models, where the last one is not the focus of this thesis.
 
 Continuous models are usually derived from real world data, as the data (no matter time-series data or static data) are obtained by measurement and can be used as input without preconditioning.
 Differential equations models~\cite{glass1973logical,snoussi1989qualitative,thomas1990biological} are based on the hypothesis that in biological systems, the change rate of variables is numerically related to the values of other variables. 
-Differential equations models deal with mainly the system dynamics, \textit{e.g.} biological regulations.
+Differential equations-based models deal with mainly the system dynamics, \textit{e.g.} biological regulations.
 Models based on Bayesian probability and Markov chain~\cite{huelsenbeck2001mrbayes,larget1999markov} study static topics, \textit{e.g.} phylogenetics.
 
 However, the following difficulties usually arise in the analysis of continuous models:
@@ -80,7 +80,7 @@ A regulatory network is a labeled digraph $G=(V,E)$ where
 \end{itemize}
 \end{definition}
 
-An example is shown in Figure~\ref{fig:booleannetwork} A, consisting of three entities $X,Y,Z$.
+An example is shown in Figure~\ref{fig:booleannetwork} A, consisting of three entities $X,Y,Z$ on page~\pageref{fig:booleannetwork}.
 Sharp arrows $\to$ stand for promotion while blunt arrows $\dashv$ stand for inhibition,
 \textit{e.g.} $X$ inhibits $Z$, $Z$ promotes $Y$.
 
@@ -364,7 +364,9 @@ We will still introduce in the last part of this section, a more global semantic
 
 \subsection{Generalized Semantics}
 Generalized semantics is even more complex than asynchronous semantics.
+At any given time, the system can change the values of \textit{any} number of variables.
 Given a BN and a current state, if there are $m$ variables which may change their value at the next time point, there will be $2^m$ possibilities of the next state.
+Generalized semantics contains synchronous and asynchronous semantics.
 
 \begin{example}
 Let us take the same transition interpretation table as Example~\ref{example:counterSynchronous}, we can update any number of variables at each time point.
