@@ -82,13 +82,13 @@ In the TCR tests, our approach gives exactly the same result as Pint did.
 As for EGFR tests, ASPReach returned no inconclusive output.
 
 \begin{table}[ht]
+\centering
+\begin{small}
     \begin{tabular}{|c|c|c|c|}
     \hline
      Model    &  \multicolumn{3}{c|}{$\lambda$-phage}\\
      \hline
-     Inputs    & \multicolumn{3}{c|}{4}\\
-     \hline
-     Outputs&\multicolumn{3}{c|}{4}\\
+     Inputs    & 4 & Outputs& 4\\%\multicolumn{3}{c|}{4}\\
      \hline
      Total tests&\multicolumn{3}{c|}{$2^4\times 4=64$}\\
      \hline
@@ -104,9 +104,7 @@ As for EGFR tests, ASPReach returned no inconclusive output.
     \hline
      Model    &  \multicolumn{3}{c|}{TCR}\\
      \hline
-     Inputs    & \multicolumn{3}{c|}{3}\\
-     \hline
-     Outputs&\multicolumn{3}{c|}{5}\\
+     Inputs    & 3 & Outputs& 5\\
      \hline
      Total tests&\multicolumn{3}{c|}{$2^3\times 5=40$}\\
      \hline
@@ -122,9 +120,7 @@ As for EGFR tests, ASPReach returned no inconclusive output.
     \hline
      Model    &  \multicolumn{3}{c|}{EGFR}\\
      \hline
-     Inputs    & \multicolumn{3}{c|}{13}\\
-     \hline
-     Outputs&\multicolumn{3}{c|}{12}\\
+     Inputs    & 13 & Outputs& 12\\
      \hline
      Total tests&\multicolumn{3}{c|}{$2^{13}\times 12=98,304$}\\
      \hline
@@ -139,6 +135,65 @@ As for EGFR tests, ASPReach returned no inconclusive output.
      Total time & \textbf{9h50min}      & \textbf{15min31s}         & \textbf{3h46min} \\
      \hline
     \end{tabular}
+\end{small}
+    %\begin{tabular}{|c|c|c|c|}
+    %\hline
+    % Model    &  \multicolumn{3}{c|}{$\lambda$-phage}\\
+    % \hline
+    % Inputs    & \multicolumn{3}{c|}{4}\\
+    % \hline
+    % Outputs&\multicolumn{3}{c|}{4}\\
+    % \hline
+    % Total tests&\multicolumn{3}{c|}{$2^4\times 4=64$}\\
+    % \hline
+    % Analyzer  &  Pint  &  \textbf{PermReach}   &\textbf{ASPReach}\\
+    % \hline
+    % Reachable & 36(56\%)& \multicolumn{2}{c|}{38(59\%)} \\
+    % \hline
+    % Unreachable&\multicolumn{3}{c|}{26(41\%)}\\
+    % \hline
+    % \textbf{Inconclusive} &\textcolor{red}{\textbf{2(3\%)}}&\multicolumn{2}{c|}{\textcolor{blue}{\textbf{0(0\%)}}}\\
+    % \hline
+    % Total time & \multicolumn{3}{c|}{$<1$s}\\
+    %\hline
+    % Model    &  \multicolumn{3}{c|}{TCR}\\
+    % \hline
+    % Inputs    & \multicolumn{3}{c|}{3}\\
+    % \hline
+    % Outputs&\multicolumn{3}{c|}{5}\\
+    % \hline
+    % Total tests&\multicolumn{3}{c|}{$2^3\times 5=40$}\\
+    % \hline
+    % Analyzer  &  Pint  &  \textbf{PermReach}   &\textbf{ASPReach}\\
+    % \hline
+    % Reachable & \multicolumn{3}{c|}{16(40\%)} \\
+    % \hline
+    % Unreachable&\multicolumn{3}{c|}{24(60\%)} \\
+    % \hline
+    % \textbf{Inconclusive} &\multicolumn{3}{c|}{\textcolor{blue}{\textbf{0(0\%)}}} \\
+    % \hline
+    % Total time &  7s     &0.85s  &  40s        \\
+    %\hline
+    % Model    &  \multicolumn{3}{c|}{EGFR}\\
+    % \hline
+    % Inputs    & \multicolumn{3}{c|}{13}\\
+    % \hline
+    % Outputs&\multicolumn{3}{c|}{12}\\
+    % \hline
+    % Total tests&\multicolumn{3}{c|}{$2^{13}\times 12=98,304$}\\
+    % \hline
+    % Analyzer  &  Pint  &  \textbf{PermReach}   &\textbf{ASPReach}\\
+    % \hline
+    % Reachable & 64,282(65.4\%)  & \multicolumn{2}{c|}{74,268(75.5\%)} \\
+    % \hline
+    % Unreachable&\multicolumn{3}{c|}{24,036(24.5\%)}\\
+    % \hline
+    % \textbf{Inconclusive} &\textcolor{red}{\textbf{9,986(10.1\%)}}&\multicolumn{2}{c|}{\textcolor{blue}{\textbf{0(0\%)}}}   \\
+    % \hline
+    % Total time & \textbf{9h50min}      & \textbf{15min31s}         & \textbf{3h46min} \\
+    % \hline
+    %\end{tabular}
+    
     %\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
     %\hline
   	%Model	&\multicolumn{3}{c|}{$\lambda$-phage}	&	  \multicolumn{3}{c|}{TCR} & \multicolumn{3}{c|}{EGFR}  \\
