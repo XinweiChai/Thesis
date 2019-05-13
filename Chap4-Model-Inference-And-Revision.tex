@@ -266,7 +266,7 @@ We change the $\mathsf{update}$ definition to $\mathsf{update_{trans}}$ in order
 %If certain state node does not have such, we delete the corresponding cut set because this local state is always reachable and can provide pathways for the target state.
 %The last step is to delete identical sets.
 
-\begin{definition}[$\mathsf{update_{trans}}$]
+\begin{definition}[$\mathsf{update_{trans}}$ for transitions]
 \begin{equation}  
 \mathsf{update_{trans}}(\mathbb{V},n)= 
       \begin{cases}
@@ -308,7 +308,7 @@ By deleting any set of transitions in the cut set w.r.t transitions, we can ensu
 \subsection{Completion Set}
 Likewise, for an SLCG with suggesting certain local state is unreachable, we can use an analogous algorithm to compute completion sets satisfying that if the elements one completion set are reachable, the target local state becomes reachable.
 
-\begin{definition}[\textsf{update for completion set}]
+\begin{definition}[$\mathsf{update'}$ for completion set]
 \begin{equation}  
 \nonumber
 \mathsf{update'}(\mathbb{V},n)= 
@@ -321,7 +321,7 @@ Likewise, for an SLCG with suggesting certain local state is unreachable, we can
 \end{equation}
 \end{definition}
 
-Using the same definition of valuation, \textsf{update for completion set} assigns every node with a valuation $\mathbb{V}$. 
+Using the same definition of valuation, $\mathsf{update'}$ for completion set assigns every node with a valuation $\mathbb{V}$. 
 When the valuations are saturated, they stand for the completion sets of $\omega$.
 
 \begin{example}
@@ -349,7 +349,7 @@ Table~\ref{tab:completionset} shows the steps to complete the graph like the pro
  \hline 
  $b_1$ & 2 & $\{\{b_1\}\}$ \\ 
  \hline 
- $\varnothing$ (of $c_1$) & 3 & $\{\varnothing\}$ \\ 
+ $\varnothing$ (of $c_0$) & 3 & $\{\varnothing\}$ \\ 
  \hline 
  $c_1$ & 4 & $\{\varnothing\}$ \\ 
  \hline 
@@ -401,6 +401,8 @@ $T'=\{\acm{a_1}{b_0}{b_1},\acm{c_0}{a_0}{a_1}\}$, $CS=\{\acm{c_0}{a_0}{a_1}\}$.
 \caption[Completion by over-approximation]{Completion by over-approximation. Dashed arrows represent added action.}\label{CompOv}
 \end{figure}
 Algorithm~\ref{algComOver} in Appendix shows the detailed algorithm of the completion by over-approximation.
+
+Likewise, we can define the completion by under-approximation.
 
 \subsection{Completion by Under-Approximation}\label{sec:completionUnder}
 Over-approximation is only a necessary condition of reachability.
