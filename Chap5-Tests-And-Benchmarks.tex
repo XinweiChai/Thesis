@@ -54,12 +54,12 @@ $\lambda$-phage is originally a multivalued model.
 We compressed its multivalued variables to transform it into a Boolean model.
 In this model with 4 automata and $12$ transitions (without taking consideration of the self-regulations),
 PermReach and ASPReach show complete conclusiveness while Pint cannot (Figure~\ref{fig:LCG_lambdaPhage}). %able to figure out the reachability of $cro_1$ when $cl_1$ and $cll_1$ are in the initial state (Figure~\ref{fig:LCG_lambdaPhage}).
-Pint cannot decide whether $cro_1$ is reachable or not, because it does not consider the order in the state sequence even though there exists a solution of length 3: $cll_0::cl_0::cro_1$ corresponding to the trajectory $\acm{cl_1}{cll_1}{cll_0}::\acm{cll_0}{cl_1}{cl_0}::\acm{cll_0,cl_0}{cro_0}{cro_1}$.
+Pint cannot decide whether $cro_1$ is reachable or not, because it does not consider the order in the state sequence even though there exists a solution of length 3: $cll_0::cl_0::cro_0$ corresponding to the trajectory $\acm{cl_1}{cll_1}{cll_0}::\acm{cll_0}{cl_1}{cl_0}::\acm{cll_0,cl_0}{cro_0}{cro_0}$.
 \begin{figure}[ht]
 \centering
     \input{LCG_lambda_phage.tex}
     \caption[SLCG of $\lambda$-phage model]{An SLCG of $\lambda$-phage model, automaton $cl$ appears in both branches of the \textbf{AND gate}.
-    Pint cannot decide the reachability of $cro_1$.}
+    Pint cannot decide the reachability of $cro_0$.}
     \label{fig:LCG_lambdaPhage}
 \end{figure}
 
