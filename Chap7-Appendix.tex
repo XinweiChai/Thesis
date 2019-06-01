@@ -25,11 +25,13 @@ The equivalent ABAN is then constructed: 5 automata $\mathbf{\Sigma}=\{a,b,c,d,e
 \begin{algorithmic}
     \State \textbf{Input}: a set of annotated atoms $\mathcal{B}$ and a set of state transitions $E$
     \State \textbf{Output}: an NLP $P$
-    \State Initialization: $P:= \{var^{val}\gets\varnothing|var^{val}\in \mathcal{B}\}$
+    \State Initialization: $P:= \{var^{val}\gets\varnothing\mid var^{val}\in \mathcal{B}\}$
     \While{$E\neq \varnothing$}
         \State Pick $(I,J)\in E,E:= E \miset{(I,J)}$
         \For{$A\in J$}
+            \State{\textcolor{gray}{// Create all the local state transitions}}
             \State $R_A^I:= (A\gets\underset{B_i\in I}{\bigwedge}B_i\land \underset{C_j\in (\mathcal{B}\setminus I)}{\bigwedge}\lnot C_j)$
+            \State{\textcolor{gray}{// Delete the rules in conflict}}
             \State $P:= \mathbf{Specialize}(P,R_A^I)$
         \EndFor
     \EndWhile
@@ -41,7 +43,7 @@ The equivalent ABAN is then constructed: 5 automata $\mathbf{\Sigma}=\{a,b,c,d,e
 \begin{algorithm}[ht]
 \begin{algorithmic}
     \State Input: an NLP $P$ and a rule $R$
-    \State Output: the maximal specialization of $P$ that does not subsumes $R$
+    \State Output: the maximal specialization of $P$ that does not subsume $R$
     \State Initialization: $conflicts := \varnothing$
     \State{\textcolor{gray}{// Search rules that need to be specialized}}
     \For{$R_P\in P$}
@@ -55,7 +57,7 @@ The equivalent ABAN is then constructed: 5 automata $\mathbf{\Sigma}=\{a,b,c,d,e
         \For{$l \in b(R)$}
             \If{$l \not\in b(R_c)$ and $\lnot l \not\in b(R_c)$}
                 \State $R'_c:= (h(R_c) \gets (b(R_c) \addset{\lnot l}))$
-                \If{$P$ does not subsumes $R_c$}
+                \If{$P$ does not subsume $R_c$}
                     \State $P := P \setminus$ all the rules subsumed by $R'_c$
                     \State $P := P \addset{ R'_c}$
                 \EndIf
@@ -114,6 +116,7 @@ The equivalent ABAN is then constructed: 5 automata $\mathbf{\Sigma}=\{a,b,c,d,e
     		\State $Ls\gets Ls\miset{a_i}$
     		\If{$a_i\in \alpha$}
     			\State $E\gets E\addset{(a_i,\varnothing)}$
+    			\State{\textcolor{gray}{// Revise the reachability of initial state}}
     			\State $rev\gets rev\addset{a_i}$
         	\Else
         	    \State{\textcolor{gray}{// Check if local initial state $a_{1-i}$ needs to be revised}}
@@ -312,6 +315,7 @@ The equivalent ABAN is then constructed: 5 automata $\mathbf{\Sigma}=\{a,b,c,d,e
         \State\Return{$(\true,\varnothing)$}
     \EndIf
     \While {$rev\neq \varnothing$}
+    \State{\textcolor{gray}{// $ls$: traversed local states, $fr$: local states to be revised in the next step, $tr$: transitions to be added}}
         \For {$i=(ls,fr,tr)\in rev$}
             \State $rev\gets rev \miset{i}$
             \If{$fr=\varnothing$}

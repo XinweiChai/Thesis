@@ -18,6 +18,7 @@
 \usepackage{siunitx}
 \usepackage[framemethod=tikz]{mdframed}
 \usepackage{multicol}
+\usepackage{pdfpages}
 \definecolor{mycolor}{rgb}{0.122, 0.435, 0.698}
 
 \newmdenv[innerlinewidth=0.5pt, roundcorner=4pt,linecolor=mycolor,innerleftmargin=6pt, innerrightmargin=6pt,innertopmargin=6pt,innerbottommargin=6pt]{mybox}
@@ -109,7 +110,45 @@
 \date{April 2019}
 \author{Xinwei Chai}
 \begin{document}
-\maketitle
+%\maketitle
+\includepdf{Thesis_cover.pdf}
+\pagenumbering{roman} 
+\setcounter{page}{1}
+\chapter*{Acknowledgement}
+First and foremost, I would like to express my sincere gratitude to my advisors Prof. Olivier ROUX and Prof. Morgan MAGNIN for the continuous support of my Ph.D. study for their patience, ideas and great contribution of time.
+This kind support also came to my personal life which helped me to regain motivation and carry on the research when I encountered at the same time academy and mental difficulties.
+I especially appreciate their tolerance allowing me to explore on my will even the outcome was not satisfying.
+
+Besides my advisor, I would like to thank the rest of my thesis committee: Prof. Gilles BERNOT, Prof. Pascal LE GALL, Prof. B\'eatrice DUVAL and Dr. Lo\"ic PAULEV\'E, for their patient reading, insightful comments and encouragement, but also for the questions which incented me to widen my research from various perspectives.
+
+My sincere thanks also goes to my kind team members.
+Dr. Emna BEN ABDALLAH, Dr. Maxime FOLSCHETTE, Samuel BUCHET and Dr. Lo\"ic PAULEV\'E provided me an opportunity to work with them even after their graduation. 
+Without their precious but abundant support and our interesting discussion, it would not be possible for me to conduct this research.
+I want to especially acknowledge Tony RIBEIRO Sensei for his kindness, intensity and genius ideas which and accelerated my Ph.D. study.
+I would like to show my deep respect to our collaborator Prof. Katsumi INOUE, who is kind to all, enthusiast in research, and showed us remarkable inspect in various domains during our collaboration of three months.
+Without his help, I could not have redirected my research.
+
+I gratefully acknowledge the funding provided by China Scholarship Council (CSC) that made my Ph.D. work possible.
+ 
+My life in Nantes was enriched by my warm-hearted neighbors Genevi\`eve ROCHE and the family of MARCHAND.
+Also I thank my friends in \'Ecole Centrale de Nantes for all the fun we have had in the last four years.
+
+Last but not the least, I would like to thank my family for all their love and encouragement. 
+For my parents who raised me with curiosity in science and supported me in all my pursuits.
+For my uncle who talked with me intimately in my sadness and confusion.
+For my girlfriend who accompanied me spiritually everyday across the ocean.
+
+Thank you.
+
+\begin{flushright}
+Xinwei Chai
+
+\'Ecole Centrale de Nantes
+
+May 2019
+\end{flushright}
+
+
 \tableofcontents
 \listoffigures
 \listoftables
@@ -143,8 +182,10 @@ PermReach and ASPReach are more efficient than traditional model checkers on the
 Chapter~\ref{chap:conclusion} concludes the thesis and proposes some possible future work.
 \end{abstract}
 
+\newpage
 \renewcommand{\abstractname}{R\'esum\'e} 
 \begin{abstract}
+\pagestyle{empty}
 Les syst\`emes concurrents pr\'esentent un int\'er\^et depuis des d\'ecennies.
 Avec leur s\'emantique simple mais expressive, les syst\`emes concurrents deviennent un bon choix pour ajuster les donn\'ees et analyser les m\'ecanismes sous-jacents.
 Cependant, \textit{l'apprentissage et l'analyse} de tels syst\`emes concurrents sont difficiles pour ce qui concerne les calculs. %\roux{en calcul}{pour ce qui concerne les calculs}.
@@ -176,7 +217,9 @@ PermReach et ASPReach sont plus efficaces que les v\'erificateurs de mod\`ele tr
 Le chapitre~\ref{chap:conclusion} conclut la th\`ese et propose des travaux futurs possibles.
 \end{abstract}
 
+\newpage
 \chapter*{List of symbols}
+\thispagestyle{empty}
 \begin{tabular}{l|l}
     $\land$ & logic AND\\
     $\lor$ & logic OR\\
@@ -193,7 +236,8 @@ Le chapitre~\ref{chap:conclusion} conclut la th\`ese et propose des travaux futu
     $\mathbb{N}$ & the set of all natural numbers\\
     $\bar{x}$ & the mean of variable $x$
 \end{tabular}
-
+\newpage
+\pagenumbering{arabic} 
 \input{Chap1-Introduction.tex}
 
 \input{Chap2-State-Of-The-Art.tex}
